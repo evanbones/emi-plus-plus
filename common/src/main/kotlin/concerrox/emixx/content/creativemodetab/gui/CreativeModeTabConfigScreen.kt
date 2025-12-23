@@ -12,6 +12,7 @@ class CreativeModeTabConfigScreen(parent: Screen) : GridListConfigScreen("creati
     private lateinit var disabledCreativeModeTabs: MutableSet<ResourceLocation>
 
     override fun createList(): GridList<*> {
+        EmiPlusPlusConfig.ensureLoaded()
         disabledCreativeModeTabs = EmiPlusPlusConfig.disabledCreativeModeTabs.get().map { ResourceLocation(it) }.toMutableSet()
         return CreativeModeTabGridList(this, disabledCreativeModeTabs)
     }

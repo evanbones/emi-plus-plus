@@ -81,10 +81,9 @@
   "stackgroup.emixx.spawn_eggs": "Spawn Eggs",
   "stackgroup.emixx.copper_blocks": "Copper Blocks",
 
-  "stackgroup.emixx.unit": "Mekanism Units",
-  "stackgroup.emixx.dirty_dusts": "Dirty Dusts",
-  "stackgroup.emixx.clumps": "Clumps",
-  "stackgroup.emixx.crystals": "Crystals",
-  "stackgroup.emixx.enriched": "Enriched",
-  "stackgroup.emixx.shards": "Shards"
+  "emixx.configuration.enableCreativeModeTabs.tooltip": "Enable or disable the Creative Mode Tabs sidebar entirely.",
+  "emixx.configuration.syncSelectedCreativeModeTab.tooltip": "If enabled, selecting a tab in EMI++ will select it in the Creative Inventory and vice versa.",
+  "emixx.configuration.disabledCreativeModeTabs.tooltip": "Configure which Creative Mode Tabs are hidden from the EMI++ sidebar.",
+  "emixx.configuration.enableStackGroups.tooltip": "Enable or disable collapsing item groups (like enchanted books or potions) into single entries.",
+  "emixx.configuration.disabledStackGroups.tooltip": "Configure which specific Stack Groups should not be collapsed."
 }

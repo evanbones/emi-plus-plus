@@ -5,7 +5,6 @@
   "minVersion": "0.8",
   "plugin": "concerrox.emixx.forge.mixinplugin.EmiPlusPlusForgeMixinPlugin",
   "client": [
-    "mekanism.GuiElementHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

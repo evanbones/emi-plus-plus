@@ -23,7 +23,7 @@ abstract class GridListConfigScreen(val name: String, val parent: Screen) : Scre
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE) {
             save()
-            onClose() // [Fix] onClose now handles the return logic
+            onClose()
             reload()
         }.bounds(this.width / 2 - 100, this.height - 27, 200, 20).build())
 

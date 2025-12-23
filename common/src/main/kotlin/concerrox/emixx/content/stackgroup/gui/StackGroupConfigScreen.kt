@@ -13,6 +13,7 @@ class StackGroupConfigScreen(parent: Screen) : GridListConfigScreen("stack_group
     private lateinit var disabledStackGroups: MutableSet<ResourceLocation>
 
     override fun createList(): GridList<*> {
+        EmiPlusPlusConfig.ensureLoaded()
         disabledStackGroups = EmiPlusPlusConfig.disabledStackGroups.get().map { ResourceLocation(it) }.toMutableSet()
         return StackGroupGridList(this, disabledStackGroups)
     }

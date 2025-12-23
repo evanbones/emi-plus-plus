@@ -23,7 +23,6 @@ class ItemTabNavigationBar(private val tabManager: ItemTabManager) :
 
     private var layout = GridLayout()
 
-    // CHANGED: Visibility changed from private to internal so CreativeModeTabManager can access it
     internal var tabButtons: List<TabButton> = emptyList()
 
     private var focusedChild: GuiEventListener? = null

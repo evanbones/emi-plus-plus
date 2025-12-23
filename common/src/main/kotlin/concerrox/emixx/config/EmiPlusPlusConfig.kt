@@ -1,5 +1,6 @@
 package concerrox.emixx.config
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig
 import concerrox.emixx.EmiPlusPlus
 import net.minecraftforge.common.ForgeConfigSpec
 import kotlin.io.path.div
@@ -19,6 +20,15 @@ class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
 
         fun save() {
             CONFIG_SPEC.save()
+        }
+
+        fun ensureLoaded() {
+            if (!CONFIG_SPEC.isLoaded) {
+                val configFile = CONFIG_DIRECTORY_PATH / "${EmiPlusPlus.MOD_ID}-common.toml"
+                val configData = CommentedFileConfig.builder(configFile).sync().build()
+                configData.load()
+                CONFIG_SPEC.setConfig(configData)
+            }
         }
 
         lateinit var enableCreativeModeTabs: ForgeConfigSpec.BooleanValue

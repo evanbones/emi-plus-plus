@@ -109,14 +109,11 @@ public class EmiSearch {
 
                 for (EmiIngredient ing : alias.stacks()) {
                     for (EmiStack stack : ing.getEmiStacks()) {
-                        // CHANGED: Use Comparison.compareNbt() instead of EmiPort.compareStrict()
                         aliases.add(stack.copy().comparison(Comparison.compareNbt()), text);
                     }
                 }
             }
         }
-
-        // REMOVED: EmiStackList.registryAliases loop (Feature does not exist in EMI 1.20.1)
 
         EmiConfig.appendItemModId = old;
         names.generate();

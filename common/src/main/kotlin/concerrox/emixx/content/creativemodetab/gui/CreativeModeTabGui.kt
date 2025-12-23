@@ -29,8 +29,17 @@ object CreativeModeTabGui {
     internal val tabNavigationBar = ItemTabNavigationBar(tabManager).pos(0, 0)
     internal var tabCount = 0u
 
-    private val buttonPrevious = ImageButton(16, 16, u = 0, v = 0, { true }, CreativeModeTabManager::previousPage).matchScreenManagerVisibility().pos(0, 0)
-    private val buttonNext = ImageButton(16, 16, u = 16, v = 0, { true }, CreativeModeTabManager::nextPage).matchScreenManagerVisibility().pos(0, 0)
+    private val buttonPrevious = ImageButton(16, 16, u = 0, v = 0, { true }) {
+        CreativeModeTabManager.previousPage()
+        tabManager.setCurrentTab(null, false)
+        true
+    }.matchScreenManagerVisibility().pos(0, 0)
+
+    private val buttonNext = ImageButton(16, 16, u = 16, v = 0, { true }) {
+        CreativeModeTabManager.nextPage()
+        tabManager.setCurrentTab(null, false)
+        true
+    }.matchScreenManagerVisibility().pos(0, 0)
 
     private var scrollAccumulator = 0.0
 
@@ -64,7 +73,13 @@ object CreativeModeTabGui {
         scrollAccumulator += amount
         val sa = scrollAccumulator.toInt()
         scrollAccumulator %= 1
-        if (sa > 0) CreativeModeTabManager.previousPage() else if (sa < 0) CreativeModeTabManager.nextPage()
+        if (sa > 0) {
+            CreativeModeTabManager.previousPage()
+            tabManager.setCurrentTab(null, false)
+        } else if (sa < 0) {
+            CreativeModeTabManager.nextPage()
+            tabManager.setCurrentTab(null, false)
+        }
         return true
     }
 

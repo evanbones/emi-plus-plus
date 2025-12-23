@@ -25,19 +25,8 @@ object ModTags {
         val NUGGETS = common("nuggets")
         val INGOTS = common("ingots")
 
-        val MEKANISM_UNITS = mekanism("unit")
-        val MEKANISM_DIRTY_DUSTS = mekanism("dirty_dusts")
-        val MEKANISM_CLUMPS = mekanism("clumps")
-        val MEKANISM_CRYSTALS = mekanism("crystals")
-        val MEKANISM_ENRICHED = mekanism("enriched")
-        val MEKANISM_SHARDS = mekanism("shards")
-
         private fun common(path: String): TagKey<net.minecraft.world.item.Item> {
             return TagKey.create(Registries.ITEM, ResourceLocation("c", path))
-        }
-
-        private fun mekanism(path: String): TagKey<net.minecraft.world.item.Item> {
-            return TagKey.create(Registries.ITEM, ResourceLocation("mekanism", path))
         }
 
 

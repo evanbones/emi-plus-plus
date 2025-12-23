@@ -85,14 +85,6 @@ object StackGroupManager {
         BannerPatternItemGroup(),
         SpawnEggItemGroup(),
         CopperBlockItemGroup(),
-
-        // Mekanism
-        EmiStackGroup.of(ModTags.Item.MEKANISM_UNITS),
-        EmiStackGroup.of(ModTags.Item.MEKANISM_DIRTY_DUSTS),
-        EmiStackGroup.of(ModTags.Item.MEKANISM_CLUMPS),
-        EmiStackGroup.of(ModTags.Item.MEKANISM_CRYSTALS),
-        EmiStackGroup.of(ModTags.Item.MEKANISM_ENRICHED),
-        EmiStackGroup.of(ModTags.Item.MEKANISM_SHARDS),
     )
 
     private val stackGroups = mutableListOf<StackGroup>()
