@@ -3,6 +3,7 @@ package concerrox.emixx.gui
 import com.mojang.blaze3d.systems.RenderSystem
 import concerrox.emixx.content.ScreenManager.ENTRY_SIZE
 import concerrox.emixx.gui.components.Switch
+import concerrox.emixx.res
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
@@ -15,7 +16,7 @@ abstract class ListEntry(private val container: ContainerEventHandler) :
     AbstractWidget(0, 0, WIDTH, HEIGHT, Component.empty()) {
 
     companion object {
-        private val BACKGROUND = ResourceLocation("textures/gui/inworld_menu_list_background.png")
+        private val BACKGROUND = res("textures/gui/inworld_menu_list_background.png")
 
         private val INWORLD_HEADER_SEPARATOR = ResourceLocation("textures/gui/header_separator.png")
         private val INWORLD_FOOTER_SEPARATOR = ResourceLocation("textures/gui/footer_separator.png")

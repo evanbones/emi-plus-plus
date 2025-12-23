@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import concerrox.emixx.EmiPlusPlus
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer
+import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.util.GsonHelper
@@ -54,9 +55,11 @@ class EmiStackGroup(
 
         fun <T> of(tag: TagKey<T>): EmiStackGroup {
             val targets = mutableSetOf<EmiIngredient>()
-            val ingredient = EmiIngredient.of(tag)
-            targets.add(ingredient)
-            targets.addAll(ingredient.emiStacks)
+            if (Minecraft.getInstance().level != null) {
+                val ingredient = EmiIngredient.of(tag)
+                targets.add(ingredient)
+                targets.addAll(ingredient.emiStacks)
+            }
             return EmiStackGroup(tag.location, targets)
         }
 

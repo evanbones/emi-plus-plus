@@ -18,7 +18,7 @@ import kotlin.io.path.*
 object StackGroupManager {
 
     private val STACK_GROUP_DIRECTORY_PATH = EmiPlusPlusConfig.CONFIG_DIRECTORY_PATH / "groups"
-    private val DEFAULT_STACK_GROUPS = arrayOf(
+    private val defaultStackGroups get() = listOf(
         SimpleItemGroup("enchanted_books", listOf(Ingredient.of(Items.ENCHANTED_BOOK))),
         SimpleItemGroup(
             "potions", listOf(Ingredient.of(Items.POTION))
@@ -100,7 +100,7 @@ object StackGroupManager {
 
     internal fun reload() {
         stackGroups.clear()
-        stackGroups.addAll(DEFAULT_STACK_GROUPS)
+        stackGroups.addAll(defaultStackGroups)
         // TODO: check this
         stackGroups.forEach {
             it.isEnabled = true

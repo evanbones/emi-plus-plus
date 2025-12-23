@@ -42,8 +42,6 @@ dependencies {
     modImplementation("dev.emi:emi-forge:$emiVersion")
     modImplementation("mekanism:Mekanism:1.20.1-10.4.16.80")
 
-    modImplementation("mezz.jei:jei-1.20.1-forge:15.2.0.27")
-
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)
 
