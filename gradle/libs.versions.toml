@@ -1,9 +1,9 @@
 [versions]
-emi = "1.1.22+1.21.1"
+emi = "1.1.22+1.20.1"
 
 [libraries]
-rhino = { group = "dev.latvian.mods", name = "rhino", version = "2101.2.7-build.77" }
-kubejs-neoforge = { group = "dev.latvian.mods", name = "kubejs-neoforge", version = "2101.7.2-build.250" }
+rhino = { group = "dev.latvian.mods", name = "rhino", version = "2001.2.2-build.18" }
+kubejs-forge = { group = "dev.latvian.mods", name = "kubejs-forge", version = "2001.6.5-build.14" }
 
 emi-fabric = { group = "dev.emi", name = "emi-fabric", version.ref = "emi" }
 fabric-kotlin = { group = "net.fabricmc", name = "fabric-language-kotlin", version = "1.13.5+kotlin.2.2.10" }

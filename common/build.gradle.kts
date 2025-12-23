@@ -25,7 +25,7 @@ dependencies {
 
     modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common:$forgeConfigApiPortVersion")
 
-    modCompileOnly(libs.kubejs.neoforge)
+    modCompileOnly(libs.kubejs.forge)
 }
 
 tasks.remapJar {

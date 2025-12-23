@@ -282,7 +282,7 @@ public class EmiSearch {
 
                     List<EmiStack> ess = stack.getEmiStacks();
                     if (ess.size() == 1) {
-                        EmiStack es = ess.getFirst();
+                        EmiStack es = ess.get(0);
                         if (compiled.test(es)) {
                             stacks.add(stack);
                         }

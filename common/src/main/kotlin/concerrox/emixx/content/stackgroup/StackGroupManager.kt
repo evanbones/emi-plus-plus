@@ -11,6 +11,8 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.crafting.Ingredient
+import concerrox.emixx.integration.kubejs.EmiPlusPlusKubeJSPlugin
+import concerrox.emixx.integration.kubejs.RegisterStackGroupsEventJS
 import kotlin.io.path.*
 
 object StackGroupManager {
@@ -110,6 +112,18 @@ object StackGroupManager {
         }
         EmiPlusPlusConfig.disabledStackGroups.get().forEach { disabledStackGroupId ->
             stackGroups.firstOrNull { it.id == ResourceLocation(disabledStackGroupId) }?.isEnabled = false
+        }
+        val isKubeJSLoaded = try {
+            Class.forName("dev.latvian.mods.kubejs.KubeJSPlugin")
+            true
+        } catch (_: Throwable) {
+            false
+        }
+
+        if (isKubeJSLoaded) {
+            EmiPlusPlusKubeJSPlugin.REGISTER_GROUPS.post(
+                RegisterStackGroupsEventJS()
+            )
         }
     }
 

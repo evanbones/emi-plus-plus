@@ -98,7 +98,7 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
             if (hovered != -1 && EmiConfig.showHoverOverlay && startIndex + hovered < stacks.size()) {
                 hx = getRawX(hovered);
                 hy = getRawY(hovered);
-                EmiRenderHelper.drawSlotHightlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE);
+                EmiRenderHelper.drawSlotHighlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE);
             }
             context.push();
             outer:

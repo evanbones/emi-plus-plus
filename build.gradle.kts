@@ -7,12 +7,6 @@ plugins {
     id("com.gradleup.shadow") version "8.3.6" apply false
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
 val minecraftVersion: String by project
 architectury {
     minecraft = minecraftVersion
@@ -29,6 +23,19 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "architectury-plugin")
     apply(plugin = "dev.architectury.loom")
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            freeCompilerArgs.add("-Xjdk-release=17")
+        }
+    }
 
     val loom = project.extensions.getByName<LoomGradleExtensionAPI>("loom").apply {
         silentMojangMappingsLicense()

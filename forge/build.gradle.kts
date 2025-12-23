@@ -9,6 +9,11 @@ architectury {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    forge {
+        mixinConfig("emixx-common.mixins.json")
+        mixinConfig("emixx.mixins.json")
+    }
 }
 
 val common: Configuration by configurations.creating
