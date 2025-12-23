@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.ClassNode
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
 
-class EmiPlusPlusNeoForgeMixinPlugin : IMixinConfigPlugin {
+class EmiPlusPlusForgeMixinPlugin : IMixinConfigPlugin {
 
     private val conditionalMixinModIds = arrayOf(MekanismAPI.MEKANISM_MODID)
 

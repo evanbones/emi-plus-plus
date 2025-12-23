@@ -3,7 +3,7 @@
   "package": "concerrox.emixx.forge.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
-  "plugin": "concerrox.emixx.forge.mixinplugin.EmiPlusPlusNeoForgeMixinPlugin",
+  "plugin": "concerrox.emixx.forge.mixinplugin.EmiPlusPlusForgeMixinPlugin",
   "client": [
     "mekanism.GuiElementHandlerMixin"
   ],
@@ -11,6 +11,6 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "neoforge.BasicItemListingAccessor"
+    "forge.BasicItemListingAccessor"
   ]
 }

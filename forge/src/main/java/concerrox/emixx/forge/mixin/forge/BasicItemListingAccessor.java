@@ -1,4 +1,4 @@
-package concerrox.emixx.forge.mixin.neoforge;
+package concerrox.emixx.forge.mixin.forge;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.BasicItemListing;

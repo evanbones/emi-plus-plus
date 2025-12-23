@@ -1,15 +1,15 @@
 modLoader = "kotlinforforge"
 loaderVersion = "[5.3,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/ConcerroX/emi-plus-plus/issues"
 license = "MIT Licensed"
 
 [[mods]]
 modId = "emixx"
 version = "${version}"
 displayName = "EMI++"
-authors = "ConcerroX"
+authors = "ConcerroX, evanbones"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Adds many useful features to EMI!
 '''
 logoFile = "icon.png"
 
@@ -20,9 +20,9 @@ config = "emixx.mixins.json"
 config = "emixx-common.mixins.json"
 
 [[dependencies.emixx]]
-modId = "neoforge"
+modId = "forge"
 mandatory = true
-versionRange = "[21.1,)"
+versionRange = "[47,)"
 ordering = "NONE"
 side = "CLIENT"
 

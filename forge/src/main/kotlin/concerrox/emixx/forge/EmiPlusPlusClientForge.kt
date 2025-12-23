@@ -11,10 +11,10 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 
 @Mod(EmiPlusPlus.MOD_ID, dist = [Dist.CLIENT])
-class EmiPlusPlusClientNeoForge(eventBus: IEventBus, container: ModContainer) {
+class EmiPlusPlusClientForge(eventBus: IEventBus, container: ModContainer) {
 
     init {
-        EmiPlusPlus.initializeClient(EmiPlusPlusPlatformNeoForge)
+        EmiPlusPlus.initializeClient(EmiPlusPlusPlatformForge)
         container.registerConfig(ModConfig.Type.CLIENT, EmiPlusPlusConfig.CONFIG_SPEC, "emixx/emixx-client.toml")
         container.registerExtensionPoint(IConfigScreenFactory::class.java, IConfigScreenFactory(::ConfigurationScreen))
     }
