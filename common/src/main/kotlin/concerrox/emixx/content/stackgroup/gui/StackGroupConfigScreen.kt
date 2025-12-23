@@ -5,23 +5,27 @@ import concerrox.emixx.content.StackManager
 import concerrox.emixx.content.stackgroup.StackGroupManager
 import concerrox.emixx.gui.GridList
 import concerrox.emixx.gui.GridListConfigScreen
+import net.minecraft.client.gui.screens.Screen
 import net.minecraft.resources.ResourceLocation
 
-class StackGroupConfigScreen : GridListConfigScreen("stack_group_config") {
+class StackGroupConfigScreen(parent: Screen) : GridListConfigScreen("stack_group_config", parent) {
 
-    private val disabledStackGroups =
-        EmiPlusPlusConfig.disabledStackGroups.get().map { ResourceLocation(it) }.toMutableSet()
+    private lateinit var disabledStackGroups: MutableSet<ResourceLocation>
 
-    override fun createList(): GridList<*> = StackGroupGridList(this, disabledStackGroups)
+    override fun createList(): GridList<*> {
+        disabledStackGroups = EmiPlusPlusConfig.disabledStackGroups.get().map { ResourceLocation(it) }.toMutableSet()
+        return StackGroupGridList(this, disabledStackGroups)
+    }
 
     override fun save() {
-        EmiPlusPlusConfig.disabledStackGroups.set(disabledStackGroups.map { it.toString() }.toList())
-        EmiPlusPlusConfig.save()
+        if (::disabledStackGroups.isInitialized) {
+            EmiPlusPlusConfig.disabledStackGroups.set(disabledStackGroups.map { it.toString() }.toList())
+            EmiPlusPlusConfig.save()
+        }
     }
 
     override fun reload() {
         StackGroupManager.reload()
         StackManager.reload()
     }
-
 }

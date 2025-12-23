@@ -55,13 +55,13 @@ object ConfigScreenManager {
                         itemTitle,
                         itemTooltip,
                         searcher,
-                        createBM(configScreen, itemValue, EmiPlusPlusConfig.CONFIG_SPEC)
+                        createBM(itemValue, EmiPlusPlusConfig.CONFIG_SPEC)
                     )
 
                     else -> ActionWidget(itemTitle, itemTooltip, searcher) {
                         Minecraft.setScreen(when (itemValue) {
-                            EmiPlusPlusConfig.disabledCreativeModeTabs -> CreativeModeTabConfigScreen()
-                            EmiPlusPlusConfig.disabledStackGroups -> StackGroupConfigScreen()
+                            EmiPlusPlusConfig.disabledCreativeModeTabs -> CreativeModeTabConfigScreen(configScreen)
+                            EmiPlusPlusConfig.disabledStackGroups -> StackGroupConfigScreen(configScreen)
                             else -> error("[EMI++] Undefined config screen for $itemKey!")
                         })
                     }
@@ -88,7 +88,7 @@ object ConfigScreenManager {
     }
 
     private fun createBM(
-        configScreen: ConfigScreen, bv: ForgeConfigSpec.BooleanValue, configSpec: ForgeConfigSpec
+        bv: ForgeConfigSpec.BooleanValue, configSpec: ForgeConfigSpec
     ): Mutator<Boolean> {
         return this.configScreen.run {
             object : Mutator<Boolean>() {

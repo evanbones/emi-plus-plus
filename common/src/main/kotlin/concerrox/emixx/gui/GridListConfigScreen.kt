@@ -1,12 +1,13 @@
 package concerrox.emixx.gui
 
 import concerrox.emixx.text
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.CommonComponents
 
-abstract class GridListConfigScreen(val name: String) : Screen(text("gui", name)) {
+abstract class GridListConfigScreen(val name: String, val parent: Screen) : Screen(text("gui", name)) {
 
     private lateinit var list: GridList<*>
 
@@ -22,7 +23,7 @@ abstract class GridListConfigScreen(val name: String) : Screen(text("gui", name)
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE) {
             save()
-            onClose()
+            onClose() // [Fix] onClose now handles the return logic
             reload()
         }.bounds(this.width / 2 - 100, this.height - 27, 200, 20).build())
 
@@ -40,5 +41,9 @@ abstract class GridListConfigScreen(val name: String) : Screen(text("gui", name)
         if (::list.isInitialized) {
             list.updateSize(width, height, 32, height - 32)
         }
+    }
+
+    override fun onClose() {
+        Minecraft.getInstance().setScreen(parent)
     }
 }

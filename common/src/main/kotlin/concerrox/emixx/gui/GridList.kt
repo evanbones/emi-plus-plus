@@ -18,6 +18,10 @@ abstract class GridList<Contents>(
 
     override fun getRowWidth() = TripleEntry.WIDTH
 
+    override fun getScrollbarPosition(): Int {
+        return this.width - 6
+    }
+
     abstract fun getContents(): Collection<Contents>
 
     abstract fun getEntryForContent(content: Contents?, triple: TripleEntry<Contents>): ListEntry
