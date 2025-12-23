@@ -7,6 +7,12 @@ plugins {
     id("com.gradleup.shadow") version "8.3.6" apply false
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 val minecraftVersion: String by project
 architectury {
     minecraft = minecraftVersion
@@ -47,7 +53,7 @@ subprojects {
         "minecraft"("com.mojang:minecraft:$minecraftVersion")
         @Suppress("UnstableApiUsage") "mappings"(loom.layered {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.21.1:2024.11.17@zip")
+            parchment("org.parchmentmc.data:parchment-1.20.1:2023.09.03@zip")
         })
     }
 
