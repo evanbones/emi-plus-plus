@@ -8,7 +8,10 @@ import concerrox.emixx.gui.components.ImageButton
 import concerrox.emixx.util.pos
 import dev.emi.emi.config.EmiConfig
 import dev.emi.emi.config.HeaderType
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
+import net.minecraft.sounds.SoundEvents
 
 object CreativeModeTabGui {
 
@@ -57,7 +60,7 @@ object CreativeModeTabGui {
         return xRange.contains(mouseX.toInt()) && yRange.contains(mouseY.toInt())
     }
 
-    internal fun onMouseScrolled(mouseX: Double, mouseY: Double, amount: Double): Boolean {
+    internal fun onMouseScrolled(amount: Double): Boolean {
         scrollAccumulator += amount
         val sa = scrollAccumulator.toInt()
         scrollAccumulator %= 1
@@ -69,8 +72,7 @@ object CreativeModeTabGui {
         if (tabIndex in tabNavigationBar.tabButtons.indices) {
             val selectedButton = tabNavigationBar.tabButtons[tabIndex]
             tabNavigationBar.setFocusedChild(selectedButton)
-            // TODO: play sound here?
-            // if (playClickSound) Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
+            if (playClickSound) Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
         }
     }
 }

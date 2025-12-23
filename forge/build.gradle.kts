@@ -31,22 +31,19 @@ val kotlinForForgeVersion: String by project
 val emiVersion: String by project
 val mixinExtrasVersion: String by project
 dependencies {
-    forge("net.neoforged:forge:$forgeVersion")
-    implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion") {
-        exclude(group = "net.neoforged.fancymodloader", module = "loader")
-    }
+    forge("net.minecraftforge:forge:$forgeVersion")
+    implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion")
+
     modImplementation("dev.emi:emi-forge:$emiVersion")
-    modImplementation("mekanism:Mekanism:1.20.1-10.4.9.61")
+    modImplementation("mekanism:Mekanism:1.20.1-10.4.16.80")
+
+    modImplementation("mezz.jei:jei-1.20.1-forge:15.2.0.27")
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)
 
     common(project(":common", "namedElements")) { isTransitive = false }
     shadowCommon(project(":common", "transformProductionForge")) { isTransitive = false }
-
-//    modImplementation("dev.latvian.apps:tiny-java-server:1.0.0-build.26")
-//    modImplementation(libs.rhino)
-//    modImplementation(libs.kubejs.forge)
 }
 
 tasks.processResources {

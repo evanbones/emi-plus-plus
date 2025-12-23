@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
 
-@Mixin(targets = "dev.emi.emi.search.EmiSearch$SearchWorker", remap = false)
+@Mixin(value = EmiSearch.SearchWorker.class, remap = false)
 public class EmiSearchSearchWorkerMixin {
 
     @WrapOperation(method = "run", at = @At(value = "INVOKE",

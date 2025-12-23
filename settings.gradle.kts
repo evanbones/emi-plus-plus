@@ -2,7 +2,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven("https://maven.fabricmc.net/")
-        maven("https://maven.neoforged.net/releases/")
+        maven("https://maven.minecraftforge.net/releases/")
         maven("https://maven.architectury.dev/")
     }
 }

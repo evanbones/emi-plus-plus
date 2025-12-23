@@ -37,7 +37,7 @@ object ScreenManager {
 
     fun onMouseScrolled(mouseX: Double, mouseY: Double, amount: Double): Boolean {
         return if (isCreativeModeTabEnabled && indexScreenSpace != null && CreativeModeTabGui.contains(mouseX, mouseY)) {
-            CreativeModeTabGui.onMouseScrolled(mouseX, mouseY, amount)
+            CreativeModeTabGui.onMouseScrolled(amount)
         } else false
     }
 

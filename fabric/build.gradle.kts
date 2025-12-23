@@ -22,7 +22,7 @@ val developmentFabric: Configuration by configurations.getting
 
 val fabricLoaderVersion: String by rootProject
 val forgeConfigApiPortVersion: String by project
-val neoForgeVersion: String by project
+val forgeVersion: String by project
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
     modImplementation(libs.fabric.kotlin)

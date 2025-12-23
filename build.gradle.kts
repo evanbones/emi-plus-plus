@@ -41,7 +41,7 @@ subprojects {
 
     repositories {
         maven("https://maven.parchmentmc.org") // ParchmentMC
-        maven("https://maven.neoforged.net/releases/") // NeoForge
+        maven("https://maven.minecraftforge.net/releases/") // Forge
         maven("https://maven.terraformersmc.com/") // EMI
         maven("https://jitpack.io/") // Animated GIF
         maven("https://maven.latvian.dev/releases/") // KubeJS, Rhino
