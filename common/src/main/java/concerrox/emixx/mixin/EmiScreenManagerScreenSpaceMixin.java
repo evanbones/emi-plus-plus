@@ -11,10 +11,10 @@ import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.SidebarType;
-import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiHidden;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.screen.StackBatcher;
+import dev.emi.emi.runtime.EmiDrawContext;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -98,7 +98,8 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
             if (hovered != -1 && EmiConfig.showHoverOverlay && startIndex + hovered < stacks.size()) {
                 hx = getRawX(hovered);
                 hy = getRawY(hovered);
-                EmiRenderHelper.drawSlotHighlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE);
+
+                EmiRenderHelper.drawSlotHightlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE, 0);
             }
             context.push();
             outer:
@@ -132,5 +133,4 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
                 Layout.INSTANCE.buildLayoutTiles(EmiScreenManager.ScreenSpace.class.cast(this), context);
         }
     }
-
 }
