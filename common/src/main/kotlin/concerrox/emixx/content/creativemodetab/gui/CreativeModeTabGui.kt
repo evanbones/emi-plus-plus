@@ -31,13 +31,11 @@ object CreativeModeTabGui {
 
     private val buttonPrevious = ImageButton(16, 16, u = 0, v = 0, { true }) {
         CreativeModeTabManager.previousPage()
-        tabManager.setCurrentTab(null, false)
         true
     }.matchScreenManagerVisibility().pos(0, 0)
 
     private val buttonNext = ImageButton(16, 16, u = 16, v = 0, { true }) {
         CreativeModeTabManager.nextPage()
-        tabManager.setCurrentTab(null, false)
         true
     }.matchScreenManagerVisibility().pos(0, 0)
 

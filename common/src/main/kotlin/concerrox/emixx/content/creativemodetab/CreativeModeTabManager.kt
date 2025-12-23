@@ -72,12 +72,14 @@ object CreativeModeTabManager {
     @Suppress("unused_parameter")
     internal fun nextPage(button: Button? = null) {
         if (currentTabPage < lastTabPage) currentTabPage++ else currentTabPage = 0u
+        currentTab = null
         updateTabs()
     }
 
     @Suppress("unused_parameter")
     internal fun previousPage(button: Button? = null) {
         if (currentTabPage > 0u) currentTabPage-- else currentTabPage = lastTabPage
+        currentTab = null
         updateTabs()
     }
 
