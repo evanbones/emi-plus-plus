@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "concerrox.emixx.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
     "BoMScreenMixin",
@@ -12,8 +12,7 @@
     "EmiScreenManagerScreenSpaceMixin",
     "EmiScreenManagerSidebarPanelMixin",
     "EmiSearchSearchWorkerMixin",
-    "NameQueryMixin",
-    "RecipeCostTooltipComponentMixin"
+    "NameQueryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

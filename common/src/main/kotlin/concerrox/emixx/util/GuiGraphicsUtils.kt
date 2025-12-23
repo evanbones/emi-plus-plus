@@ -35,7 +35,7 @@ object GuiGraphicsUtils {
             val crashReport = CrashReport.forThrowable(throwable, "Rendering item")
             crashReport.addCategory("Item being rendered").apply {
                 setDetail("Item Type") { stack.item.toString() }
-                setDetail("Item Components") { stack.components.toString() }
+                setDetail("Item Components") { stack.tag.toString() }
                 setDetail("Item Foil") { stack.hasFoil().toString() }
             }
             throw ReportedException(crashReport)

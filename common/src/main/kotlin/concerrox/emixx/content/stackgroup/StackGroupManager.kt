@@ -19,7 +19,7 @@ object StackGroupManager {
     private val DEFAULT_STACK_GROUPS = arrayOf(
         SimpleItemGroup("enchanted_books", listOf(Ingredient.of(Items.ENCHANTED_BOOK))),
         SimpleItemGroup(
-            "potions", listOf(Ingredient.of(Items.POTION), Ingredient.of(Items.OMINOUS_BOTTLE))
+            "potions", listOf(Ingredient.of(Items.POTION))
         ),
         SimpleItemGroup("splash_potions", listOf(Ingredient.of(Items.SPLASH_POTION))),
         SimpleItemGroup("lingering_potions", listOf(Ingredient.of(Items.LINGERING_POTION))),
@@ -32,10 +32,6 @@ object StackGroupManager {
         EmiStackGroup.of(ItemTags.AXES),
         EmiStackGroup.of(ItemTags.SWORDS),
         EmiStackGroup.of(ItemTags.HOES),
-        EmiStackGroup.of(ItemTags.HEAD_ARMOR),
-        EmiStackGroup.of(ItemTags.CHEST_ARMOR),
-        EmiStackGroup.of(ItemTags.LEG_ARMOR),
-        EmiStackGroup.of(ItemTags.FOOT_ARMOR),
         AnimalArmorItemGroup(),
 
         InfestedBlockItemGroup(),
@@ -50,7 +46,6 @@ object StackGroupManager {
         EmiStackGroup.of(ItemTags.TRAPDOORS),
         PressurePlateItemGroup(),
         MinecartItemGroup(),
-        EmiStackGroup.of(ItemTags.SKULLS),
         EmiStackGroup.of(ItemTags.RAILS),
         EmiStackGroup.of(ModTags.Item.DYES),
         EmiStackGroup.of(ItemTags.BUTTONS),
@@ -114,7 +109,7 @@ object StackGroupManager {
             if (result != null) stackGroups += result
         }
         EmiPlusPlusConfig.disabledStackGroups.get().forEach { disabledStackGroupId ->
-            stackGroups.firstOrNull { it.id == ResourceLocation.parse(disabledStackGroupId) }?.isEnabled = false
+            stackGroups.firstOrNull { it.id == ResourceLocation(disabledStackGroupId) }?.isEnabled = false
         }
     }
 

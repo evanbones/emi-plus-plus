@@ -5,7 +5,7 @@ import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.BannerPatternItem
 
-internal class BannerPatternItemGroup: StackGroup(ResourceLocation.withDefaultNamespace("banner_patterns")) {
+internal class BannerPatternItemGroup: StackGroup(ResourceLocation("banner_patterns")) {
 
     override fun match(stack: EmiIngredient): Boolean {
         if (stack !is EmiStack) return false

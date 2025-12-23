@@ -23,18 +23,23 @@ val developmentForge: Configuration by configurations.getting
 repositories {
     maven("https://thedarkcolour.github.io/KotlinForForge/")
     maven("https://modmaven.dev/")
+    maven("https://jitpack.io")
 }
 
-val neoForgeVersion: String by project
+val forgeVersion: String by project
 val kotlinForForgeVersion: String by project
 val emiVersion: String by project
+val mixinExtrasVersion: String by project
 dependencies {
-    forge("net.neoforged:forge:$neoForgeVersion")
+    forge("net.neoforged:forge:$forgeVersion")
     implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion") {
         exclude(group = "net.neoforged.fancymodloader", module = "loader")
     }
     modImplementation("dev.emi:emi-forge:$emiVersion")
-    modImplementation("mekanism:Mekanism:1.21.1-10.7.0.55")
+    compileOnly("mekanism:Mekanism:1.20.1-10.4.9.61")
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
+    implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)
 
     common(project(":common", "namedElements")) { isTransitive = false }
     shadowCommon(project(":common", "transformProductionForge")) { isTransitive = false }

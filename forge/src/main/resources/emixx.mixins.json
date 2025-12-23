@@ -11,6 +11,5 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "forge.BasicItemListingAccessor"
   ]
 }

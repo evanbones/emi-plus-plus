@@ -2,21 +2,30 @@ package concerrox.emixx.forge
 
 import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.config.EmiPlusPlusConfig
-import net.neoforged.api.distmarker.Dist
-import net.neoforged.bus.api.IEventBus
-import net.neoforged.fml.ModContainer
-import net.neoforged.fml.common.Mod
-import net.neoforged.fml.config.ModConfig
-import net.neoforged.neoforge.client.gui.ConfigurationScreen
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory
+import net.minecraftforge.client.ConfigScreenHandler
+import net.minecraftforge.fml.ModLoadingContext
+import net.minecraftforge.fml.config.ModConfig
 
-@Mod(EmiPlusPlus.MOD_ID, dist = [Dist.CLIENT])
-class EmiPlusPlusClientForge(eventBus: IEventBus, container: ModContainer) {
+object EmiPlusPlusClientForge {
 
-    init {
+    fun init() {
         EmiPlusPlus.initializeClient(EmiPlusPlusPlatformForge)
-        container.registerConfig(ModConfig.Type.CLIENT, EmiPlusPlusConfig.CONFIG_SPEC, "emixx/emixx-client.toml")
-        container.registerExtensionPoint(IConfigScreenFactory::class.java, IConfigScreenFactory(::ConfigurationScreen))
+
+        // Register Config
+        ModLoadingContext.get().registerConfig(
+            ModConfig.Type.CLIENT,
+            EmiPlusPlusConfig.CONFIG_SPEC,
+            "emixx/emixx-client.toml"
+        )
+
+        // Register Config Screen
+        /*
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory::class.java) {
+            ConfigScreenHandler.ConfigScreenFactory { _, parent ->
+                ConfigurationScreen(parent)
+            }
+        }
+        */
     }
 
 }

@@ -29,10 +29,13 @@ class ItemTabButton(private val tabManager: ItemTabManager, private val tab: Ite
     override fun renderWidget(raw: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         RenderSystem.enableBlend()
         val context = EmiDrawContext.wrap(raw)
+
+        val right = x + width
+        val bottom = y + height
+
         if (isVisible) {
             if (isSelected) {
                 context.drawTexture(TEXTURE, x, y, 32, if (isHoveredOrFocused) 50 else 32, width, 18)
-                renderMenuBackground(raw, x + 2, y + 2, right - 2, bottom)
             } else {
                 context.drawTexture(TEXTURE, x, y + 2, 32, if (isHoveredOrFocused) 16 else 0, width, 16)
             }

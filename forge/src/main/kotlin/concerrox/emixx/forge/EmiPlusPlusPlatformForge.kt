@@ -1,7 +1,7 @@
 package concerrox.emixx.forge
 
 import concerrox.emixx.EmiPlusPlusPlatform
-import net.neoforged.fml.loading.FMLPaths
+import net.minecraftforge.fml.loading.FMLPaths
 import java.nio.file.Path
 
 object EmiPlusPlusPlatformForge : EmiPlusPlusPlatform {

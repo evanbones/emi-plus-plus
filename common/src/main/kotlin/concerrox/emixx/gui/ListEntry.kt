@@ -5,22 +5,21 @@ import concerrox.emixx.content.ScreenManager.ENTRY_SIZE
 import concerrox.emixx.gui.components.Switch
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.AbstractContainerWidget
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.events.ContainerEventHandler
 import net.minecraft.client.gui.narration.NarrationElementOutput
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
 abstract class ListEntry(private val container: ContainerEventHandler) :
-    AbstractContainerWidget(
-        0, 0, WIDTH, HEIGHT, Component.empty()
-    ) {
+    AbstractWidget(0, 0, WIDTH, HEIGHT, Component.empty()) {
 
     companion object {
-        private val BACKGROUND =
-            ResourceLocation.withDefaultNamespace("textures/gui/inworld_menu_list_background.png")
+        private val BACKGROUND = ResourceLocation("textures/gui/inworld_menu_list_background.png")
+
+        private val INWORLD_HEADER_SEPARATOR = ResourceLocation("textures/gui/header_separator.png")
+        private val INWORLD_FOOTER_SEPARATOR = ResourceLocation("textures/gui/footer_separator.png")
+
         private const val PADDING = 8
         private const val BORDER_WIDTH = 1
         const val WIDTH = ENTRY_SIZE * 8 + PADDING * 2 + BORDER_WIDTH * 2
@@ -53,16 +52,7 @@ abstract class ListEntry(private val container: ContainerEventHandler) :
                     0xFFFFFF
                 )
             } else {
-                renderScrollingString(
-                    guiGraphics,
-                    font,
-                    it,
-                    startX,
-                    startY,
-                    startX + maxWidth,
-                    startY + 2 + font.lineHeight,
-                    0xFFFFFF
-                )
+                guiGraphics.drawString(font, it, startX, startY + 2, 0xFFFFFF)
             }
         }
         renderEntry(guiGraphics, mouseX, mouseY, startX, startY, partialTick)
@@ -73,6 +63,7 @@ abstract class ListEntry(private val container: ContainerEventHandler) :
     }
 
     override fun setFocused(isFocused: Boolean) {
+        super.setFocused(isFocused)
         if (!isFocused) children.forEach {
             it.isFocused = false
         }
@@ -80,21 +71,32 @@ abstract class ListEntry(private val container: ContainerEventHandler) :
 
     private fun renderBorders(guiGraphics: GuiGraphics) {
         RenderSystem.enableBlend()
-        val resourceLocation = Screen.INWORLD_HEADER_SEPARATOR
-        val resourceLocation2 = Screen.INWORLD_FOOTER_SEPARATOR
-        guiGraphics.blit(resourceLocation, x, y, 0f, 0f, getWidth(), 2, 32, 2)
-        guiGraphics.blit(resourceLocation2, x, bottom, 0f, 0f, getWidth(), 2, 32, 2)
+        val resourceLocation = INWORLD_HEADER_SEPARATOR
+        val resourceLocation2 = INWORLD_FOOTER_SEPARATOR
+        guiGraphics.blit(resourceLocation, x, y, 0f, 0f, width, 2, 32, 2)
+        guiGraphics.blit(resourceLocation2, x, y + height - 2, 0f, 0f, width, 2, 32, 2)
         RenderSystem.disableBlend()
     }
 
     private fun renderBackground(guiGraphics: GuiGraphics) {
         RenderSystem.enableBlend()
-        guiGraphics.blit(BACKGROUND, x, y, right.toFloat(), bottom.toFloat(), getWidth(), getHeight(), 32, 32)
+        val right = x + width
+        val bottom = y + height
+        guiGraphics.blit(BACKGROUND, x, y, right.toFloat(), bottom.toFloat(), width, height, 32, 32)
         RenderSystem.disableBlend()
+    }
+
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        for (child in children) {
+            if (child.mouseClicked(mouseX, mouseY, button)) {
+                this.setFocused(true)
+                return true
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button)
     }
 
     override fun isFocused() = container.focused === this
     override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {}
-    override fun children() = children
 
 }

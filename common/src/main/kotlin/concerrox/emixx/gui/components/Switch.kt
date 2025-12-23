@@ -1,7 +1,6 @@
 package concerrox.emixx.gui.components
 
 import com.mojang.blaze3d.systems.RenderSystem
-import concerrox.emixx.gui.components.Switch.OnCheckedChangeListener
 import concerrox.emixx.res
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
@@ -76,17 +75,6 @@ class Switch private constructor(x: Int, y: Int, message: Component, private var
             this.isChecked = isChecked
             this.option = null
             return this
-        }
-
-        fun setOption(option: OptionInstance<Boolean>): Builder {
-            this.option = option
-            this.isChecked = option.get()
-            return this
-        }
-
-        fun build(action: Builder.() -> Unit): Switch {
-            action(this)
-            return build()
         }
 
         fun build(): Switch {

@@ -1,5 +1,5 @@
 modLoader = "kotlinforforge"
-loaderVersion = "[5.3,)"
+loaderVersion = "[4.10,)"
 issueTrackerURL = "https://github.com/ConcerroX/emi-plus-plus/issues"
 license = "MIT Licensed"
 
@@ -29,6 +29,6 @@ side = "CLIENT"
 [[dependencies.emixx]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.21.1,)"
+versionRange = "[1.20.1, 1.21)"
 ordering = "NONE"
 side = "CLIENT"

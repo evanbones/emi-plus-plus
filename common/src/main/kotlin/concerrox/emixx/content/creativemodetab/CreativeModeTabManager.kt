@@ -19,7 +19,7 @@ object CreativeModeTabManager {
 
     val HIDDEN_CREATIVE_MODE_TABS = listOf(
         CreativeModeTabs.INVENTORY, CreativeModeTabs.HOTBAR, CreativeModeTabs.SEARCH
-    ).map(BuiltInRegistries.CREATIVE_MODE_TAB::get)
+    ).mapNotNull(BuiltInRegistries.CREATIVE_MODE_TAB::get)
 
     private var currentTabPage = 0u
     private var lastTabPage = 0u
@@ -33,12 +33,14 @@ object CreativeModeTabManager {
     private val creativeModeTabs = getVisibleCreativeModeTabs()
 
     internal fun loadDisabledTabs() = EmiPlusPlusConfig.disabledCreativeModeTabs.get().map {
-        BuiltInRegistries.CREATIVE_MODE_TAB.get(ResourceLocation.parse(it))
-    }.mapNotNull { creativeModeTab -> creativeModeTab }
+        ResourceLocation(it)
+    }.mapNotNull { creativeModeTab -> BuiltInRegistries.CREATIVE_MODE_TAB.get(creativeModeTab) }
 
     internal fun getVisibleCreativeModeTabs() = BuiltInRegistries.CREATIVE_MODE_TAB.toMutableList().apply {
         removeIf { shouldHideTab(it) }
-        addFirst(indexCreativeModeTab)
+        if (indexCreativeModeTab != null) {
+            add(0, indexCreativeModeTab)
+        }
     }
 
     internal fun initialize() {
@@ -46,13 +48,13 @@ object CreativeModeTabManager {
         currentTabPage = 0u
         val page = updateTabs()
 
-        if (page.isEmpty()) return // TODO: fix this
+        if (page.isEmpty()) return
 
-        // TODO: fix the sound
-        // Select the index tab by default
         if (currentTab == null) {
             CreativeModeTabGui.selectTab(0, false)
-            onTabSelected(CreativeModeTabGui.tabNavigationBar.tabs[0] as ItemTab)
+            if (CreativeModeTabGui.tabNavigationBar.visibleTabs.isNotEmpty()) {
+                onTabSelected(CreativeModeTabGui.tabNavigationBar.visibleTabs[0])
+            }
         }
     }
 
@@ -65,7 +67,7 @@ object CreativeModeTabManager {
     }
 
     internal fun shouldHideTab(tab: CreativeModeTab) =
-        !tab.shouldDisplay() || tab in HIDDEN_CREATIVE_MODE_TABS || tab in disabledCreativeModeTabs
+        tab.displayItems.isEmpty() || tab in HIDDEN_CREATIVE_MODE_TABS || tab in disabledCreativeModeTabs
 
     @Suppress("unused_parameter")
     internal fun nextPage(button: Button? = null) {
@@ -84,8 +86,7 @@ object CreativeModeTabManager {
             Minecraft.execute { onTabSelected(tab) }
             return
         }
-        // TODO: refactor this
-        val newTab = CreativeModeTabGui.tabNavigationBar.tabs.indexOf(tab).toUInt()
+        val newTab = CreativeModeTabGui.tabNavigationBar.visibleTabs.indexOf(tab).toUInt()
         if (currentTab == newTab) return
         currentTab = newTab
 
@@ -94,7 +95,6 @@ object CreativeModeTabManager {
         }
 
         val screen = Minecraft.screen
-        // Pass if it's selected by clicking the tab bar from vanilla
         if (!isSelectingEmiPlusPlusCreativeModeTabByVanilla && EmiPlusPlusConfig.syncSelectedCreativeModeTab.get() && tab.creativeModeTab != null && screen is CreativeModeInventoryScreen) {
             isSelectingVanillaCreativeInventoryTabByEmiPlusPlus = true
             screen.selectTab(tab.creativeModeTab)
@@ -104,7 +104,6 @@ object CreativeModeTabManager {
         }
 
         val sourceStacks = if (tab.creativeModeTab == indexCreativeModeTab) StackManager.indexStacks else {
-            // Tabs with null creativeModeTab will not be selected as it's not visible.
             tab.creativeModeTab!!.displayItems.map(EmiStack::of)
         }
         if (ScreenManager.isSearching) {
@@ -119,10 +118,9 @@ object CreativeModeTabManager {
 
         if (!EmiPlusPlusConfig.syncSelectedCreativeModeTab.get()) return
         var notHiddenTab = tab
-        // Pass if it's selected by clicking the tab bar from EMI++
         if (isSelectingVanillaCreativeInventoryTabByEmiPlusPlus) return
         if (shouldHideTab(tab) && indexCreativeModeTab != null) {
-            notHiddenTab = indexCreativeModeTab // If the tab is hidden in EMI++, select the index tab
+            notHiddenTab = indexCreativeModeTab
         }
         for (i in 0u..lastTabPage) {
             val tabIndex = getTabPage(i).indexOfFirst { it.creativeModeTab == notHiddenTab }
@@ -148,7 +146,6 @@ object CreativeModeTabManager {
 
     private fun updateTabs(): List<ItemTab> {
         val page = getTabPage(currentTabPage)
-        // TODO: check this
         val safePage = page.toMutableList()
         CreativeModeTabGui.tabNavigationBar.setTabs(safePage)
         CreativeModeTabGui.tabNavigationBar.arrangeElements()

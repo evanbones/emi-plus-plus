@@ -1,46 +1,44 @@
 package concerrox.emixx.config
 
 import concerrox.emixx.EmiPlusPlus
-import net.neoforged.neoforge.common.ModConfigSpec
+import net.minecraftforge.common.ForgeConfigSpec
 import kotlin.io.path.div
 
-private fun ModConfigSpec.Builder.group(path: String, action: ModConfigSpec.Builder.() -> Unit) = apply {
+private fun ForgeConfigSpec.Builder.group(path: String, action: ForgeConfigSpec.Builder.() -> Unit) = apply {
     push(path)
     action(this)
     pop()
 }
 
-class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
+class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
 
     companion object {
-        private val CONFIG_PAIR = ModConfigSpec.Builder().configure(::EmiPlusPlusConfig)
-        val CONFIG_SPEC: ModConfigSpec = CONFIG_PAIR.right
+        private val CONFIG_PAIR = ForgeConfigSpec.Builder().configure(::EmiPlusPlusConfig)
+        val CONFIG_SPEC: ForgeConfigSpec = CONFIG_PAIR.right
         val CONFIG_DIRECTORY_PATH = EmiPlusPlus.PLATFORM.configDirectoryPath / EmiPlusPlus.MOD_ID
 
         fun save() {
             CONFIG_SPEC.save()
         }
 
-        lateinit var enableCreativeModeTabs: ModConfigSpec.BooleanValue
-        lateinit var syncSelectedCreativeModeTab: ModConfigSpec.BooleanValue
-        lateinit var disabledCreativeModeTabs: ModConfigSpec.ConfigValue<List<String>>
-        lateinit var enableStackGroups: ModConfigSpec.BooleanValue
-        lateinit var disabledStackGroups: ModConfigSpec.ConfigValue<List<String>>
+        lateinit var enableCreativeModeTabs: ForgeConfigSpec.BooleanValue
+        lateinit var syncSelectedCreativeModeTab: ForgeConfigSpec.BooleanValue
+        lateinit var disabledCreativeModeTabs: ForgeConfigSpec.ConfigValue<List<String>>
+        lateinit var enableStackGroups: ForgeConfigSpec.BooleanValue
+        lateinit var disabledStackGroups: ForgeConfigSpec.ConfigValue<List<String>>
     }
 
     init {
         builder.group("creativeModeTabs") {
             enableCreativeModeTabs = define("enableCreativeModeTabs", true)
             syncSelectedCreativeModeTab = define("syncSelectedCreativeModeTab", true)
-            disabledCreativeModeTabs = defineListAllowEmpty("disabledCreativeModeTabs", {
-                listOf(
-                    "minecraft:op_blocks"
-                )
-            }, { "" }, { it is String })
+            disabledCreativeModeTabs = defineListAllowEmpty(listOf("disabledCreativeModeTabs"), {
+                listOf("minecraft:op_blocks")
+            }, { it is String })
         }
         builder.group("stackGroups") {
             enableStackGroups = define("enableStackGroups", true)
-            disabledStackGroups = defineListAllowEmpty("disabledStackGroups", {
+            disabledStackGroups = defineListAllowEmpty(listOf("disabledStackGroups"), {
                 listOf(
                     "minecraft:shovels",
                     "minecraft:pickaxes",
@@ -93,10 +91,9 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
                     "c:buckets",
                     "minecraft:copper_blocks"
                 )
-            }, { "" }, { it is String })
+            }, { it is String })
         }
         builder.group("miscellaneous") {
         }
     }
-
 }

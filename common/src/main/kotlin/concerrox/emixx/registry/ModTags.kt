@@ -33,11 +33,11 @@ object ModTags {
         val MEKANISM_SHARDS = mekanism("shards")
 
         private fun common(path: String): TagKey<net.minecraft.world.item.Item> {
-            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", path))
+            return TagKey.create(Registries.ITEM, ResourceLocation("c", path))
         }
 
         private fun mekanism(path: String): TagKey<net.minecraft.world.item.Item> {
-            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("mekanism", path))
+            return TagKey.create(Registries.ITEM, ResourceLocation("mekanism", path))
         }
 
 

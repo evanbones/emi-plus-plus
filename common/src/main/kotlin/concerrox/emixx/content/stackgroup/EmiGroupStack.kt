@@ -11,10 +11,9 @@ import dev.emi.emi.runtime.EmiDrawContext
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
-import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import java.util.*
 
 class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEmiStack<EmiStack>>) : EmiStack() {
 
@@ -23,14 +22,17 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
     @Deprecated("")
     internal val items = mutableListOf<GroupedEmiStack<EmiStack>>()
 
-    override fun isEmpty() = true
+    override fun isEmpty() = false
+
     override fun getKey() = group
 
     @Deprecated("")
     override fun getId() = group.id
 
     override fun equals(other: Any?) = this === other
-    override fun toString() = key.toString()
+
+    override fun toString() = getKey().toString()
+
     override fun getTooltip() = listOf(
         ClientTooltipComponent.create(name.visualOrderText),
         ClientTooltipComponent.create(
@@ -39,7 +41,7 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
         ),
     )
 
-    override fun getComponentChanges(): DataComponentPatch = DataComponentPatch.EMPTY
+    override fun getNbt(): CompoundTag? = null
 
     override fun render(raw: GuiGraphics, x: Int, y: Int, delta: Float, flags: Int) {
         EmiDrawContext.wrap(raw).push {
@@ -52,7 +54,6 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
             }
 
             matrices().pushPose()
-            // (16 - (16 * 0.8)) / 2 = 1.6 (keeps scaled stacks centered)
             matrices().translate(x.toFloat() + 1.6F, y.toFloat() + 1.6F, 0F)
             matrices().scale(0.8F, 0.8F, 0.8F)
             if (items.size == 1) {
@@ -81,16 +82,11 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
     }
 
     override fun getName(): MutableComponent {
-        return Component.translatableWithFallback("stackgroup.emixx.${group.id}", buildStackDefaultName())
+        return Component.translatable("stackgroup.emixx.${group.id.path}")
     }
 
     override fun getTooltipText(): MutableList<Component> {
         return mutableListOf(name, text("stackgroup", "tooltip").withStyle(ChatFormatting.DARK_GRAY))
-    }
-
-    private fun buildStackDefaultName(): String {
-        return group.id.path.split("_")
-            .joinToString(" ") { it.replaceFirstChar { c -> c.titlecase(Locale.getDefault()) } }
     }
 
     override fun hashCode(): Int {
@@ -99,5 +95,4 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
         result = 31 * result + items.hashCode()
         return result
     }
-
 }

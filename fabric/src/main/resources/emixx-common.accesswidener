@@ -3,13 +3,10 @@ accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (L
 accessible method net/minecraft/client/gui/screens/Screen addWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
 accessible method net/minecraft/client/gui/screens/Screen removeWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)V
 
-accessible method net/minecraft/client/gui/components/tabs/TabNavigationBar <init> (ILnet/minecraft/client/gui/components/tabs/TabManager;Ljava/lang/Iterable;)V
-mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/LinearLayout;
+mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/GridLayout;
 mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar tabButtons Lcom/google/common/collect/ImmutableList;
-mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar tabs Lcom/google/common/collect/ImmutableList;
-accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/LinearLayout;
+accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/GridLayout;
 accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar tabButtons Lcom/google/common/collect/ImmutableList;
-accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar tabs Lcom/google/common/collect/ImmutableList;
 accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar width I
 
 accessible field net/minecraft/client/gui/GuiGraphics pose Lcom/mojang/blaze3d/vertex/PoseStack;
@@ -21,36 +18,3 @@ accessible field net/minecraft/world/item/CreativeModeTabs SEARCH Lnet/minecraft
 
 accessible method net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen selectTab (Lnet/minecraft/world/item/CreativeModeTab;)V
 accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen searchBox Lnet/minecraft/client/gui/components/EditBox;
-
-accessible class net/minecraft/world/entity/npc/VillagerTrades$EmeraldForItems
-accessible field net/minecraft/world/entity/npc/VillagerTrades$EmeraldForItems itemStack Lnet/minecraft/world/item/trading/ItemCost;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$EmeraldForItems emeraldAmount I
-accessible class net/minecraft/world/entity/npc/VillagerTrades$ItemsForEmeralds
-accessible field net/minecraft/world/entity/npc/VillagerTrades$ItemsForEmeralds itemStack Lnet/minecraft/world/item/ItemStack;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$ItemsForEmeralds emeraldCost I
-accessible class net/minecraft/world/entity/npc/VillagerTrades$TreasureMapForEmeralds
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TreasureMapForEmeralds displayName Ljava/lang/String;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TreasureMapForEmeralds destinationType Lnet/minecraft/core/Holder;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TreasureMapForEmeralds emeraldCost I
-accessible class net/minecraft/world/entity/npc/VillagerTrades$EnchantedItemForEmeralds
-accessible field net/minecraft/world/entity/npc/VillagerTrades$EnchantedItemForEmeralds itemStack Lnet/minecraft/world/item/ItemStack;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$EnchantedItemForEmeralds baseEmeraldCost I
-accessible class net/minecraft/world/entity/npc/VillagerTrades$SuspiciousStewForEmerald
-accessible field net/minecraft/world/entity/npc/VillagerTrades$SuspiciousStewForEmerald effects Lnet/minecraft/world/item/component/SuspiciousStewEffects;
-accessible class net/minecraft/world/entity/npc/VillagerTrades$ItemsAndEmeraldsToItems
-accessible field net/minecraft/world/entity/npc/VillagerTrades$ItemsAndEmeraldsToItems fromItem Lnet/minecraft/world/item/trading/ItemCost;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$ItemsAndEmeraldsToItems emeraldCost I
-accessible field net/minecraft/world/entity/npc/VillagerTrades$ItemsAndEmeraldsToItems toItem Lnet/minecraft/world/item/ItemStack;
-accessible class net/minecraft/world/entity/npc/VillagerTrades$EmeraldsForVillagerTypeItem
-accessible field net/minecraft/world/entity/npc/VillagerTrades$EmeraldsForVillagerTypeItem trades Ljava/util/Map;
-accessible class net/minecraft/world/entity/npc/VillagerTrades$EnchantBookForEmeralds
-accessible field net/minecraft/world/entity/npc/VillagerTrades$EnchantBookForEmeralds tradeableEnchantments Lnet/minecraft/tags/TagKey;
-accessible class net/minecraft/world/entity/npc/VillagerTrades$DyedArmorForEmeralds
-accessible field net/minecraft/world/entity/npc/VillagerTrades$DyedArmorForEmeralds value I
-accessible field net/minecraft/world/entity/npc/VillagerTrades$DyedArmorForEmeralds item Lnet/minecraft/world/item/Item;
-accessible class net/minecraft/world/entity/npc/VillagerTrades$TippedArrowForItemsAndEmeralds
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TippedArrowForItemsAndEmeralds toItem Lnet/minecraft/world/item/ItemStack;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TippedArrowForItemsAndEmeralds toCount I
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TippedArrowForItemsAndEmeralds emeraldCost I
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TippedArrowForItemsAndEmeralds fromItem Lnet/minecraft/world/item/Item;
-accessible field net/minecraft/world/entity/npc/VillagerTrades$TippedArrowForItemsAndEmeralds fromCount I

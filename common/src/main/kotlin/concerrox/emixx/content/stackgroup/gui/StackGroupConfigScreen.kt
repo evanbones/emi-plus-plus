@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation
 class StackGroupConfigScreen : GridListConfigScreen("stack_group_config") {
 
     private val disabledStackGroups =
-        EmiPlusPlusConfig.disabledStackGroups.get().map { ResourceLocation.parse(it) }.toMutableSet()
+        EmiPlusPlusConfig.disabledStackGroups.get().map { ResourceLocation(it) }.toMutableSet()
 
     override fun createList(): GridList<*> = StackGroupGridList(this, disabledStackGroups)
 

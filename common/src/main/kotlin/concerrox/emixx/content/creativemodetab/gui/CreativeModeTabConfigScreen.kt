@@ -8,8 +8,8 @@ import net.minecraft.resources.ResourceLocation
 
 class CreativeModeTabConfigScreen : GridListConfigScreen("creative_mode_tab_config") {
 
-    private val disabledCreativeModeTabs =
-        EmiPlusPlusConfig.disabledCreativeModeTabs.get().map { ResourceLocation.parse(it) }.toMutableSet()
+    private val disabledCreativeModeTabs: MutableSet<ResourceLocation> =
+        EmiPlusPlusConfig.disabledCreativeModeTabs.get().map { ResourceLocation(it) }.toMutableSet()
 
     override fun createList(): GridList<*> = CreativeModeTabGridList(this, disabledCreativeModeTabs)
 

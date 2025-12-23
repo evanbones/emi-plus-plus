@@ -1,7 +1,6 @@
 package concerrox.emixx.content.stackgroup.data
 
 import com.google.common.collect.Sets
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import concerrox.emixx.EmiPlusPlus
@@ -26,7 +25,7 @@ class EmiStackGroup(
                 if (!GsonHelper.isStringValue(json, "id"))
                     throw Exception("ID is either not present or not a string")
 
-                val id = ResourceLocation.parse(json.get("id").asString)
+                val id = ResourceLocation(json.get("id").asString)
 
                 if (!GsonHelper.isArrayNode(json, "contents"))
                     throw Exception("Contents are either not present or not a list")
@@ -53,7 +52,6 @@ class EmiStackGroup(
             }
         }
 
-        // TODO: check this
         fun <T> of(tag: TagKey<T>): EmiStackGroup {
             val targets = mutableSetOf<EmiIngredient>()
             val ingredient = EmiIngredient.of(tag)
@@ -67,7 +65,7 @@ class EmiStackGroup(
     fun serialize(): JsonElement {
         val json = JsonObject()
         json.addProperty("id", id.toString())
-        val contents = JsonArray()
+        val contents = com.google.gson.JsonArray()
         for (ingredient in targets) {
             contents.add(EmiIngredientSerializer.getSerialized(ingredient))
         }

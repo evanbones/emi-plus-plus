@@ -5,8 +5,7 @@ import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
-import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.core.component.DataComponentType
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
@@ -23,7 +22,9 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
     override fun getRemainder(): EmiStack = realStack.remainder
     override fun isEmpty() = realStack.isEmpty
     override fun copy(): EmiStack = realStack.copy()
-    override fun getComponentChanges(): DataComponentPatch = realStack.componentChanges
+
+    override fun getNbt(): CompoundTag? = realStack.nbt
+
     override fun getKey(): Any = realStack.key
     override fun getId(): ResourceLocation = realStack.id
     override fun getTooltipText(): MutableList<Component> = realStack.tooltipText
@@ -32,10 +33,8 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
     override fun setAmount(amount: Long): EmiStack = realStack.setAmount(amount)
     override fun getChance(): Float = realStack.chance
     override fun setChance(chance: Float): EmiStack = realStack.setChance(chance)
-    override fun <T : Any?> get(type: DataComponentType<out T>?): T? = realStack.get(type)
-    override fun <T : Any?> getOrDefault(type: DataComponentType<out T>?, fallback: T): T =
-        realStack.getOrDefault(type, fallback)
-    override fun <T : Any?> getKeyOfType(clazz: Class<T>?): T? = realStack.getKeyOfType(clazz)
+
+    override fun <T> getKeyOfType(clazz: Class<T>?): T? = realStack.getKeyOfType(clazz)
     override fun getItemStack(): ItemStack = realStack.itemStack
     override fun isEqual(stack: EmiStack?): Boolean = realStack.isEqual(stack)
     override fun isEqual(stack: EmiStack?, comparison: Comparison?): Boolean = realStack.isEqual(stack, comparison)

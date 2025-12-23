@@ -67,10 +67,6 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
     @Shadow
     public abstract SidebarType getType();
 
-    @Shadow
-    @Final
-    public int tw;
-
     @Inject(method = "<init>", at = @At("TAIL"))
     private void createGrid(int tx, int ty, int tw, int th, boolean rtl, List<Bounds> exclusion,
                             Supplier<SidebarType> typeSupplier, boolean search, CallbackInfo ci) {
@@ -102,7 +98,7 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
             if (hovered != -1 && EmiConfig.showHoverOverlay && startIndex + hovered < stacks.size()) {
                 hx = getRawX(hovered);
                 hy = getRawY(hovered);
-                EmiRenderHelper.drawSlotHightlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE, 0);
+                EmiRenderHelper.drawSlotHightlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE);
             }
             context.push();
             outer:

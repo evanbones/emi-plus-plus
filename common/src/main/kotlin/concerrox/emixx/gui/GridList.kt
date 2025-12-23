@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.Screen
 abstract class GridList<Contents>(
     private val screen: Screen
 ) : ContainerObjectSelectionList<GridList.TripleEntry<Contents>>(
-    Minecraft.getInstance(), screen.width, screen.height, 0, TripleEntry.HEIGHT
+    Minecraft.getInstance(), screen.width, screen.height, 32, screen.height - 32, TripleEntry.HEIGHT
 ) {
 
     init {
@@ -17,7 +17,6 @@ abstract class GridList<Contents>(
     }
 
     override fun getRowWidth() = TripleEntry.WIDTH
-    //override fun getListOutlinePadding() = TripleEntry.GUTTER
 
     abstract fun getContents(): Collection<Contents>
 
@@ -28,10 +27,6 @@ abstract class GridList<Contents>(
             addEntry(TripleEntry(this, triple))
         }
     }
-
-//    override fun getRowTop(index: Int): Int {
-//        return y + TripleEntry.GUTTER * 2 - scrollAmount.toInt() + index * itemHeight + headerHeight
-//    }
 
     class TripleEntry<Contents>(
         val listWidget: GridList<Contents>,

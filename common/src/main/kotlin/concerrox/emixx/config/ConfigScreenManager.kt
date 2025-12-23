@@ -6,8 +6,6 @@ import concerrox.emixx.Minecraft
 import concerrox.emixx.content.creativemodetab.gui.CreativeModeTabConfigScreen
 import concerrox.emixx.content.stackgroup.gui.StackGroupConfigScreen
 import concerrox.emixx.text
-import dev.emi.emi.EmiPort
-import dev.emi.emi.api.render.EmiTooltipComponents
 import dev.emi.emi.config.EmiConfig
 import dev.emi.emi.screen.ConfigScreen
 import dev.emi.emi.screen.ConfigScreen.Mutator
@@ -16,10 +14,9 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.contents.TranslatableContents
-import net.neoforged.neoforge.common.ModConfigSpec
-import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue
+import net.minecraftforge.common.ForgeConfigSpec
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue
 import java.util.function.Supplier
-
 
 object ConfigScreenManager {
 
@@ -36,6 +33,7 @@ object ConfigScreenManager {
 
         val searcher = { search.search }
         val configSpec = EmiPlusPlusConfig.CONFIG_SPEC
+
         configSpec.spec.entrySet().forEach { group ->
             val groupKey = group.key
             val groupValue = configSpec.values.get<AbstractConfig>(groupKey)
@@ -49,9 +47,11 @@ object ConfigScreenManager {
                 val itemKey = item.key
                 val itemValue = groupValue.get<ConfigValue<Any>>(itemKey)
                 val itemTitle = text("configuration.$itemKey")
-                val itemTooltip = listOf(EmiTooltipComponents.of(text("configuration.$itemKey.tooltip")))
+
+                val itemTooltip = listOf(ClientTooltipComponent.create(text("configuration.$itemKey.tooltip").visualOrderText))
+
                 val itemWidget = when (itemValue) {
-                    is ModConfigSpec.BooleanValue -> BooleanWidget(
+                    is ForgeConfigSpec.BooleanValue -> BooleanWidget(
                         itemTitle,
                         itemTooltip,
                         searcher,
@@ -65,7 +65,7 @@ object ConfigScreenManager {
                             else -> error("[EMI++] Undefined config screen for $itemKey!")
                         })
                     }
-                }?.apply {
+                }.apply {
                     this.group = EmiConfig.ConfigGroup(groupKey)
                     parentGroups.add(rootNameWidget)
                     rootNameWidget.children.add(this)
@@ -73,23 +73,22 @@ object ConfigScreenManager {
                     groupNameWidget.children.add(this)
                 }
                 if (item == items.last()) {
-                    itemWidget?.endGroup = true
+                    itemWidget.endGroup = true
                 }
-                itemWidget?.apply {
+                itemWidget.apply {
                     list.addEntry(itemWidget)
                 }
             }
         }
 
-        unsavedChanges.forEach {
-
-                (key, value) ->
-            @Suppress("UNCHECKED_CAST") (key as ConfigValue<Any>).set(value)
+        unsavedChanges.forEach { (key, value) ->
+            @Suppress("UNCHECKED_CAST")
+            (key as ConfigValue<Any>).set(value)
         }
     }
 
     private fun createBM(
-        configScreen: ConfigScreen, bv: ModConfigSpec.BooleanValue, configSpec: ModConfigSpec
+        configScreen: ConfigScreen, bv: ForgeConfigSpec.BooleanValue, configSpec: ForgeConfigSpec
     ): Mutator<Boolean> {
         return this.configScreen.run {
             object : Mutator<Boolean>() {
@@ -111,9 +110,10 @@ object ConfigScreenManager {
         onClickedListener: Button.OnPress
     ) : ConfigEntryWidget(name, tooltip, search, 20) {
 
-        private val button = EmiPort.newButton(
-            0, 0, 150, 20, text("${(name.contents as TranslatableContents).key}.manage"), onClickedListener
-        )
+        private val button = Button.builder(
+            text("${(name.contents as TranslatableContents).key}.manage"),
+            onClickedListener
+        ).bounds(0, 0, 150, 20).build()
 
         init {
             setChildren(listOf(button))
@@ -123,7 +123,5 @@ object ConfigScreenManager {
             button.x = x + width - button.width
             button.y = y
         }
-
     }
-
 }

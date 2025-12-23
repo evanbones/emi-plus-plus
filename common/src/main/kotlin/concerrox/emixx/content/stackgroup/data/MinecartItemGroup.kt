@@ -5,7 +5,7 @@ import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.MinecartItem
 
-internal class MinecartItemGroup: StackGroup(ResourceLocation.withDefaultNamespace("minecarts")) {
+internal class MinecartItemGroup: StackGroup(ResourceLocation("minecarts")) {
 
     override fun match(stack: EmiIngredient): Boolean {
         if (stack !is EmiStack) return false

@@ -10,10 +10,7 @@ import dev.emi.emi.screen.widget.SizedButtonWidget
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
-import net.minecraft.network.chat.Component
 import java.util.function.BooleanSupplier
-import java.util.function.IntSupplier
-import java.util.function.Supplier
 
 
 class ImageButton : SizedButtonWidget {
@@ -22,43 +19,6 @@ class ImageButton : SizedButtonWidget {
     constructor(
         width: Int, height: Int, u: Int, v: Int, isActive: BooleanSupplier, action: OnPress
     ) : super(0, 0, width, height, u, v, isActive, action)
-
-    constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        u: Int,
-        v: Int,
-        isActive: BooleanSupplier,
-        action: OnPress,
-        text: List<Component>
-    ) : super(x, y, width, height, u, v, isActive, action, text)
-
-    constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        u: Int,
-        v: Int,
-        isActive: BooleanSupplier,
-        action: OnPress,
-        vOffset: IntSupplier?
-    ) : super(x, y, width, height, u, v, isActive, action, vOffset)
-
-    constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        u: Int,
-        v: Int,
-        isActive: BooleanSupplier,
-        action: OnPress,
-        vOffset: IntSupplier?,
-        text: Supplier<List<Component>>
-    ) : super(x, y, width, height, u, v, isActive, action, vOffset, text)
 
     companion object {
         internal val TEXTURE = res("textures/gui/buttons.png")

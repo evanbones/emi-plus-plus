@@ -1,7 +1,6 @@
 package concerrox.emixx.content.creativemodetab.gui
 
 import concerrox.emixx.content.ScreenManager
-import concerrox.emixx.content.ScreenManager.ENTRY_SIZE
 import concerrox.emixx.content.creativemodetab.CreativeModeTabManager
 import concerrox.emixx.content.creativemodetab.gui.itemtab.ItemTabManager
 import concerrox.emixx.content.creativemodetab.gui.itemtab.ItemTabNavigationBar
@@ -21,7 +20,6 @@ object CreativeModeTabGui {
     private val isHeaderVisible
         get() = EmiConfig.rightSidebarHeader == HeaderType.VISIBLE
 
-    // Use the function but not the method reference since the screen is not initialized yet
     private val tabManager = ItemTabManager({ screen.addRenderableWidget(it) }, { screen.removeWidget(it) }).apply {
         onTabSelectedListener = CreativeModeTabManager::onTabSelected
     }
@@ -34,7 +32,6 @@ object CreativeModeTabGui {
     private var scrollAccumulator = 0.0
 
     private fun onLayout() {
-        // TODO: check this
         val indexScreenSpace = ScreenManager.indexScreenSpace
         val startX = indexScreenSpace?.tx ?: 0
         val startY = (indexScreenSpace?.ty ?: 0) - (if (isHeaderVisible) EMI_HEADER_HEIGHT else 0) - CREATIVE_MODE_TAB_HEIGHT
@@ -42,10 +39,7 @@ object CreativeModeTabGui {
         tabCount = (tileW.toUInt() - 2u).coerceIn(1u, UByte.MAX_VALUE.toUInt())
 
         buttonPrevious.pos(startX, startY + 2)
-        tabNavigationBar.pos(startX + buttonPrevious.width, startY).apply {
-            width = tabCount.toInt() * ENTRY_SIZE + 4
-        }
-        // Position the buttonNext after the tabNavigationBar since it uses the tab's width
+        tabNavigationBar.pos(startX + buttonPrevious.width, startY)
         buttonNext.pos(tabNavigationBar.x + tabNavigationBar.width, startY + 2)
     }
 
@@ -65,16 +59,18 @@ object CreativeModeTabGui {
 
     internal fun onMouseScrolled(mouseX: Double, mouseY: Double, amount: Double): Boolean {
         scrollAccumulator += amount
-        val sa = scrollAccumulator.toInt() // Decelerate the scroll so that it doesn't get too fast
+        val sa = scrollAccumulator.toInt()
         scrollAccumulator %= 1
         if (sa > 0) CreativeModeTabManager.previousPage() else if (sa < 0) CreativeModeTabManager.nextPage()
         return true
     }
 
     internal fun selectTab(tabIndex: Int, playClickSound: Boolean) {
-        tabNavigationBar.tabButtons.forEach { it.isFocused = false }
-        tabNavigationBar.selectTab(tabIndex, playClickSound)
-        tabNavigationBar.tabButtons[tabIndex].isFocused = true
+        if (tabIndex in tabNavigationBar.tabButtons.indices) {
+            val selectedButton = tabNavigationBar.tabButtons[tabIndex]
+            tabNavigationBar.setFocusedChild(selectedButton)
+            // TODO: play sound here?
+            // if (playClickSound) Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
+        }
     }
-
 }

@@ -2,7 +2,6 @@ package concerrox.emixx.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.BoMScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,22 +20,13 @@ public class BoMScreenMixin extends Screen {
 
     @Inject(at = @At("HEAD"), method = "render", remap = true)
     private void render(GuiGraphics raw, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        renderBackground(raw, mouseX, mouseY, delta); // Render the vanilla blurry background
+        this.renderBackground(raw);
     }
 
     @WrapOperation(method = "render",
-            at = @At(value = "INVOKE", target = "Ldev/emi/emi/runtime/EmiDrawContext;fill(IIIII)V", remap = false),
+            at = @At(value = "INVOKE", target = "Ldev/emi/emi/screen/BoMScreen;renderDirtBackground(Lnet/minecraft/client/gui/GuiGraphics;)V"),
             remap = true)
-    private void modifyMouseReleased(EmiDrawContext instance, int x, int y, int width, int height, int color,
-                                     Operation<Void> original) {
-        // Passed so that the dark background will not be rendered
-    }
-
-    @WrapOperation(method = "render", at = @At(value = "INVOKE",
-            target = "Ldev/emi/emi/screen/BoMScreen;renderMenuBackground(Lnet/minecraft/client/gui/GuiGraphics;)V"),
-            remap = true)
-    private void modifyMouseReleased(BoMScreen instance, GuiGraphics guiGraphics, Operation<Void> original) {
-        // Passed so that the dirt background will not be rendered
+    private void suppressDirtBackground(BoMScreen instance, GuiGraphics guiGraphics, Operation<Void> original) {
     }
 
 }
