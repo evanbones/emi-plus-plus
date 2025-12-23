@@ -94,7 +94,7 @@ abstract class ListEntry(private val container: ContainerEventHandler) :
                 return true
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return false
     }
 
     override fun isFocused() = container.focused === this

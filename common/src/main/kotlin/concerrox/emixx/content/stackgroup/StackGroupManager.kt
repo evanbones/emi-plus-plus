@@ -87,7 +87,7 @@ object StackGroupManager {
         CopperBlockItemGroup(),
     )
 
-    private val stackGroups = mutableListOf<StackGroup>()
+    internal val stackGroups = mutableListOf<StackGroup>()
     internal var groupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
     internal fun reload() {

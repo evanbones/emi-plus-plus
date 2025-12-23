@@ -15,8 +15,14 @@ class StackGroupGridList(
     screen: StackGroupConfigScreen, private val disabledStackGroups: MutableSet<ResourceLocation>
 ) : GridList<EmiGroupStack>(screen) {
 
-    override fun getContents(): Collection<EmiGroupStack> =
-        StackGroupManager.stackGroupToGroupStacks.values
+    override fun getContents(): Collection<EmiGroupStack> {
+        if (StackGroupManager.stackGroups.isEmpty()) {
+            StackGroupManager.reload()
+        }
+        return StackGroupManager.stackGroups.map {
+            StackGroupManager.groupToGroupStacks[it] ?: EmiGroupStack(it, listOf())
+        }
+    }
 
     override fun getEntryForContent(
         content: EmiGroupStack?,

@@ -20,7 +20,8 @@ class CreativeModeTabGridList(
     override fun getContents(): Collection<ResourceLocation> =
         BuiltInRegistries.CREATIVE_MODE_TAB.keySet().filter {
             val tab = BuiltInRegistries.CREATIVE_MODE_TAB.get(it) ?: return@filter false
-            return@filter tab.displayItems.isNotEmpty() && tab !in CreativeModeTabManager.HIDDEN_CREATIVE_MODE_TABS
+            val isNotEmpty = tab.displayItems.isNotEmpty() || Minecraft.getInstance().level == null
+            return@filter isNotEmpty && tab !in CreativeModeTabManager.HIDDEN_CREATIVE_MODE_TABS
         }
 
     override fun getEntryForContent(
