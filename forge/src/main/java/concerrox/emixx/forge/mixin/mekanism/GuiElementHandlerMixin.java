@@ -1,7 +1,7 @@
 package concerrox.emixx.forge.mixin.mekanism;
 
 import concerrox.emixx.gui.components.ImageButton;
-import mekanism.client.recipe_viewer.GuiElementHandler;
+import mekanism.client.jei.GuiElementHandler;
 import net.minecraft.client.gui.components.AbstractWidget;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;

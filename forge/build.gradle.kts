@@ -36,7 +36,7 @@ dependencies {
         exclude(group = "net.neoforged.fancymodloader", module = "loader")
     }
     modImplementation("dev.emi:emi-forge:$emiVersion")
-    compileOnly("mekanism:Mekanism:1.20.1-10.4.9.61")
+    modImplementation("mekanism:Mekanism:1.20.1-10.4.9.61")
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)
