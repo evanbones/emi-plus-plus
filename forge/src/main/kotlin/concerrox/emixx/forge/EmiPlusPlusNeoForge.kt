@@ -1,8 +1,8 @@
-package concerrox.emixx.neoforge
+package concerrox.emixx.forge
 
 import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.content.villagertrade.VillagerTradeManager
-import concerrox.emixx.neoforge.mixin.neoforge.BasicItemListingAccessor
+import concerrox.emixx.forge.mixin.neoforge.BasicItemListingAccessor
 import dev.emi.emi.api.stack.EmiStack
 import net.neoforged.bus.api.IEventBus
 import net.neoforged.fml.ModContainer

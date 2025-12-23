@@ -1,4 +1,4 @@
-package concerrox.emixx.neoforge
+package concerrox.emixx.forge
 
 import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.config.EmiPlusPlusConfig

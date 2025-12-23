@@ -25,7 +25,7 @@ dependencies {
 //    modCompileOnly("dev.emi:emi-xplat-intermediary:$emiVersion")
     modCompileOnly("dev.emi:emi-xplat-intermediary:$emiVersion")
 
-    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:$forgeConfigApiPortVersion")
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common:$forgeConfigApiPortVersion")
 
     modCompileOnly(libs.kubejs.neoforge)
 }

@@ -1,4 +1,4 @@
-package concerrox.emixx.neoforge
+package concerrox.emixx.forge
 
 import concerrox.emixx.EmiPlusPlusPlatform
 import net.neoforged.fml.loading.FMLPaths

@@ -1,4 +1,4 @@
-package concerrox.emixx.neoforge.mixin.mekanism;
+package concerrox.emixx.forge.mixin.mekanism;
 
 import concerrox.emixx.gui.components.ImageButton;
 import mekanism.client.recipe_viewer.GuiElementHandler;

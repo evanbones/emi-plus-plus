@@ -13,4 +13,4 @@ include("stub")
 
 include("common")
 include("fabric")
-include("neoforge")
+include("forge")

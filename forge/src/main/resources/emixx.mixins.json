@@ -1,9 +1,9 @@
 {
   "required": true,
-  "package": "concerrox.emixx.neoforge.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "package": "concerrox.emixx.forge.mixin",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
-  "plugin": "concerrox.emixx.neoforge.mixinplugin.EmiPlusPlusNeoForgeMixinPlugin",
+  "plugin": "concerrox.emixx.forge.mixinplugin.EmiPlusPlusNeoForgeMixinPlugin",
   "client": [
     "mekanism.GuiElementHandlerMixin"
   ],

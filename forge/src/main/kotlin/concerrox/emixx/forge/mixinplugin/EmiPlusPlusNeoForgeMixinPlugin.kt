@@ -1,4 +1,4 @@
-package concerrox.emixx.neoforge.mixinplugin
+package concerrox.emixx.forge.mixinplugin
 
 import mekanism.api.MekanismAPI
 import net.neoforged.fml.loading.LoadingModList
