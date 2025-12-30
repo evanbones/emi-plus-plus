@@ -34,12 +34,15 @@ class ItemTabButton(private val tabManager: ItemTabManager, private val tab: Ite
         val bottom = y + height
 
         if (isVisible) {
+            val yOff: Float
             if (isSelected) {
                 context.drawTexture(TEXTURE, x, y, 32, if (isHoveredOrFocused) 50 else 32, width, 18)
+                yOff = 4F
             } else {
                 context.drawTexture(TEXTURE, x, y + 2, 32, if (isHoveredOrFocused) 16 else 0, width, 16)
+                yOff = 5F
             }
-            GuiGraphicsUtils.renderItem(raw, tab.creativeModeTab?.iconItem, x + 4F, y + 5F, 10F)
+            GuiGraphicsUtils.renderItem(raw, tab.creativeModeTab?.iconItem, x + 4F, y + yOff, 10F)
 
             if (isHovered && title != null) {
                 ScreenManager.customIndexTitle = title
