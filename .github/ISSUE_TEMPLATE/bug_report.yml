@@ -41,16 +41,6 @@ body:
             required: true
     -   type: dropdown
         attributes:
-          label: Style
-          description: The style of EMI++ Backport you were using
-          options:
-              - "Default"
-              - "Vanilla"
-              - "Berry"
-        validations:
-          required: true
-    -   type: dropdown
-        attributes:
             label: Mod Loader
             description: Which mod loader were you using?
             options:
