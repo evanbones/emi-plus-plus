@@ -1,5 +1,5 @@
 name: Addition or Enhancement
-description: Suggest something that would improve Reliable Recipes
+description: Suggest something that would improve EMI++ Backport
 labels: [ "enhancement" ]
 body:
     -   type: textarea
@@ -22,4 +22,4 @@ body:
             required: false
     -   type: markdown
         attributes:
-            value: "Thank you for taking the time to suggest this addition and to help improve Reliable Recipes!"
+            value: "Thank you for taking the time to suggest this addition and to help improve EMI++!"
