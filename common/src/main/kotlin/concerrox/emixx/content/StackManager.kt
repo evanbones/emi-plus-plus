@@ -8,6 +8,8 @@ import dev.emi.emi.api.stack.EmiStack
 import dev.emi.emi.registry.EmiStackList
 import dev.emi.emi.screen.EmiScreenManager
 import dev.emi.emi.search.EmiSearch
+import dev.emi.emi.config.EmiConfig
+import dev.emi.emi.runtime.EmiHidden
 
 typealias Array2D<T> = Array<Array<T>>
 
@@ -71,7 +73,11 @@ object StackManager {
     }
 
     internal fun buildStacks(searchedStacks: List<EmiStack>) {
-        this.searchedStacks = searchedStacks
+        this.searchedStacks = if (EmiConfig.editMode) {
+            searchedStacks
+        } else {
+            searchedStacks.filter { !EmiHidden.isHidden(it) }
+        }
         buildGroupedStacks()
         buildDisplayedStacks()
     }
