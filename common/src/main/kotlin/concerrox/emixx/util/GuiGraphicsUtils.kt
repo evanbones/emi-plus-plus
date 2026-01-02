@@ -24,6 +24,8 @@ object GuiGraphicsUtils {
             val bl = !bakedModel.usesBlockLight()
             if (bl) {
                 Lighting.setupForFlatItems()
+            } else {
+                Lighting.setupFor3DItems()
             }
             minecraft.itemRenderer.render(stack, ItemDisplayContext.GUI, false, guiGraphics.pose,
                 guiGraphics.bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, bakedModel)

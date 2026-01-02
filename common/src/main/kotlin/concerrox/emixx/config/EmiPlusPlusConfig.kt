@@ -33,6 +33,7 @@ class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
 
         lateinit var enableCreativeModeTabs: ForgeConfigSpec.BooleanValue
         lateinit var syncSelectedCreativeModeTab: ForgeConfigSpec.BooleanValue
+        lateinit var enableBerryTheme: ForgeConfigSpec.BooleanValue // Added
         lateinit var disabledCreativeModeTabs: ForgeConfigSpec.ConfigValue<List<String>>
         lateinit var enableStackGroups: ForgeConfigSpec.BooleanValue
         lateinit var disabledStackGroups: ForgeConfigSpec.ConfigValue<List<String>>
@@ -42,6 +43,7 @@ class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
         builder.group("creativeModeTabs") {
             enableCreativeModeTabs = define("enableCreativeModeTabs", true)
             syncSelectedCreativeModeTab = define("syncSelectedCreativeModeTab", true)
+            enableBerryTheme = define("enableBerryTheme", false) // Added
             disabledCreativeModeTabs = defineListAllowEmpty(listOf("disabledCreativeModeTabs"), {
                 listOf("minecraft:op_blocks")
             }, { it is String })

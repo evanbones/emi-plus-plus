@@ -44,7 +44,8 @@ object CreativeModeTabManager {
     }
 
     internal fun initialize() {
-        lastTabPage = (creativeModeTabs.size - 1).toUInt() / CreativeModeTabGui.tabCount
+        val tabCount = CreativeModeTabGui.tabCount.coerceAtLeast(1u)
+        lastTabPage = (creativeModeTabs.size - 1).toUInt() / tabCount
         currentTabPage = 0u
         val page = updateTabs()
 
@@ -52,8 +53,12 @@ object CreativeModeTabManager {
 
         if (currentTab == null) {
             CreativeModeTabGui.selectTab(0, false)
-            if (CreativeModeTabGui.tabNavigationBar.visibleTabs.isNotEmpty()) {
-                onTabSelected(CreativeModeTabGui.tabNavigationBar.visibleTabs[0])
+            val bar = if (CreativeModeTabGui.currentTheme == CreativeModeTabGui.TabTheme.DEFAULT)
+                CreativeModeTabGui.topTabNavigationBar
+            else CreativeModeTabGui.leftTabNavigationBar
+
+            if (bar.visibleTabs.isNotEmpty()) {
+                onTabSelected(bar.visibleTabs[0])
             }
         }
     }
@@ -88,12 +93,40 @@ object CreativeModeTabManager {
             Minecraft.execute { onTabSelected(tab) }
             return
         }
-        val newTab = CreativeModeTabGui.tabNavigationBar.visibleTabs.indexOf(tab).toUInt()
+
+        val theme = CreativeModeTabGui.currentTheme
+        var newTab: UInt? = null
+
+        if (theme == CreativeModeTabGui.TabTheme.BERRY) {
+            val leftIndex = CreativeModeTabGui.leftTabNavigationBar.visibleTabs.indexOf(tab)
+            val rightIndex = CreativeModeTabGui.rightTabNavigationBar.visibleTabs.indexOf(tab)
+            if (leftIndex != -1) newTab = leftIndex.toUInt()
+            else if (rightIndex != -1) newTab = (rightIndex + 5).toUInt()
+        } else {
+            // Default or Vanilla (Single bar)
+            val bar = if (theme == CreativeModeTabGui.TabTheme.DEFAULT) CreativeModeTabGui.topTabNavigationBar else CreativeModeTabGui.leftTabNavigationBar
+            val index = bar.visibleTabs.indexOf(tab)
+            if (index != -1) newTab = index.toUInt()
+        }
+
+        if (newTab == null) return
         if (currentTab == newTab) return
         currentTab = newTab
 
-        CreativeModeTabGui.tabNavigationBar.tabButtons.forEachIndexed { i, it ->
-            if (i.toUInt() != currentTab) it.isFocused = false
+        // Unfocus other tabs
+        val resetFocus = { bar: concerrox.emixx.content.creativemodetab.gui.itemtab.ItemTabNavigationBar, offset: Int ->
+            bar.tabButtons.forEachIndexed { i, it ->
+                if ((i + offset).toUInt() != currentTab) it.isFocused = false
+            }
+        }
+
+        if (theme == CreativeModeTabGui.TabTheme.BERRY) {
+            resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
+            resetFocus(CreativeModeTabGui.rightTabNavigationBar, 5)
+        } else if (theme == CreativeModeTabGui.TabTheme.DEFAULT) {
+            resetFocus(CreativeModeTabGui.topTabNavigationBar, 0)
+        } else {
+            resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
         }
 
         val screen = Minecraft.screen
@@ -141,17 +174,31 @@ object CreativeModeTabManager {
     }
 
     private fun getTabPage(page: UInt): MutableList<ItemTab> {
-        return MutableList(CreativeModeTabGui.tabCount.toInt()) { i ->
-            ItemTab(creativeModeTabs.getOrNull((page * CreativeModeTabGui.tabCount).toInt() + i))
+        val count = CreativeModeTabGui.tabCount.toInt()
+        val start = (page.toInt() * count)
+        val list = mutableListOf<ItemTab>()
+        for (i in 0 until count) {
+            val tab = creativeModeTabs.getOrNull(start + i) ?: break
+            list.add(ItemTab(tab))
         }
+        return list
     }
 
     private fun updateTabs(): List<ItemTab> {
         val page = getTabPage(currentTabPage)
-        val safePage = page.toMutableList()
-        CreativeModeTabGui.tabNavigationBar.setTabs(safePage)
-        CreativeModeTabGui.tabNavigationBar.arrangeElements()
-        return safePage
-    }
 
+        if (CreativeModeTabGui.currentTheme == CreativeModeTabGui.TabTheme.BERRY) {
+            val leftTabs = page.take(5).toMutableList()
+            val rightTabs = page.drop(5).take(6).toMutableList()
+
+            CreativeModeTabGui.leftTabNavigationBar.setTabs(leftTabs)
+            CreativeModeTabGui.rightTabNavigationBar.setTabs(rightTabs)
+        } else if (CreativeModeTabGui.currentTheme == CreativeModeTabGui.TabTheme.VANILLA) {
+            CreativeModeTabGui.leftTabNavigationBar.setTabs(page.toMutableList())
+        } else {
+            CreativeModeTabGui.topTabNavigationBar.setTabs(page.toMutableList())
+        }
+
+        return page
+    }
 }

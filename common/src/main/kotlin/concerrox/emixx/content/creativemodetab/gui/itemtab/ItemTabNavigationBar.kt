@@ -14,8 +14,11 @@ import net.minecraft.client.gui.layouts.GridLayout
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 
-class ItemTabNavigationBar(private val tabManager: ItemTabManager) :
-    AbstractWidget(0, 0, 0, 0, Component.empty()) {
+class ItemTabNavigationBar(
+    private val tabManager: ItemTabManager,
+    private val isVertical: Boolean = false,
+    private val isRightSide: Boolean = false
+) : AbstractWidget(0, 0, 0, 0, Component.empty()) {
 
     companion object {
         private val TEXTURE = res("textures/gui/buttons.png")
@@ -46,9 +49,21 @@ class ItemTabNavigationBar(private val tabManager: ItemTabManager) :
         val buttonBuilder = ImmutableList.builder<TabButton>()
 
         tabs.forEachIndexed { index, tab ->
-            val button = ItemTabButton(tabManager, tab, ENTRY_SIZE, ENTRY_SIZE)
+            val buttonStyle = if (!isVertical) ItemTabButton.ButtonStyle.TOP
+            else if (isRightSide) ItemTabButton.ButtonStyle.RIGHT
+            else ItemTabButton.ButtonStyle.LEFT
+
+            val width = if(isVertical) 35 else ENTRY_SIZE
+            val height = if(isVertical) 27 else ENTRY_SIZE
+
+            val button = ItemTabButton(tabManager, tab, width, height, buttonStyle, index == 0)
             buttonBuilder.add(button)
-            newLayout.addChild(button, 0, index)
+
+            if (isVertical) {
+                newLayout.addChild(button, index, 0)
+            } else {
+                newLayout.addChild(button, 0, index)
+            }
         }
 
         this.tabButtons = buttonBuilder.build()
@@ -58,29 +73,48 @@ class ItemTabNavigationBar(private val tabManager: ItemTabManager) :
     }
 
     fun arrangeElements() {
-        tabButtons.forEach { it.width = ENTRY_SIZE }
+        if (!isVertical) {
+            tabButtons.forEach { it.width = ENTRY_SIZE }
+        }
 
-        layout.x = this.x + 2
+        layout.x = if (!isVertical) this.x + 2 else this.x
         layout.y = this.y
         layout.arrangeElements()
 
-        this.width = layout.width + 4
-        this.height = layout.height
+        if (isVertical) {
+            this.width = 35
+            setWidgetHeight(layout.height)
+        } else {
+            this.width = layout.width + 4
+            this.height = layout.height
+        }
+    }
+
+    private fun setWidgetHeight(newHeight: Int) {
+        try {
+            val field = AbstractWidget::class.java.getDeclaredField("height")
+            field.isAccessible = true
+            field.setInt(this, newHeight)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun renderWidget(raw: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         if (EmiScreenManager.isDisabled()) return
 
-        RenderSystem.enableBlend()
-        EmiDrawContext.wrap(raw).apply {
-            drawTexture(TEXTURE, x, y + 2, 32, 0, 1, 16)
-            drawTexture(TEXTURE, x + 1, y + 2, 32, 0, 1, 16)
-            drawTexture(TEXTURE, x + width - 1, y + 2, 32, 0, 1, 16)
-            drawTexture(TEXTURE, x + width - 2, y + 2, 32, 0, 1, 16)
+        if (!isVertical) {
+            RenderSystem.enableBlend()
+            EmiDrawContext.wrap(raw).apply {
+                drawTexture(TEXTURE, x, y + 2, 32, 0, 1, 16)
+                drawTexture(TEXTURE, x + 1, y + 2, 32, 0, 1, 16)
+                drawTexture(TEXTURE, x + width - 1, y + 2, 32, 0, 1, 16)
+                drawTexture(TEXTURE, x + width - 2, y + 2, 32, 0, 1, 16)
+            }
+            RenderSystem.disableBlend()
         }
 
         tabButtons.forEach { it.render(raw, mouseX, mouseY, partialTick) }
-        RenderSystem.disableBlend()
     }
 
     fun setFocusedChild(child: GuiEventListener?) {
@@ -114,6 +148,5 @@ class ItemTabNavigationBar(private val tabManager: ItemTabManager) :
         return super.mouseClicked(mouseX, mouseY, button)
     }
 
-    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {
-    }
+    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {}
 }

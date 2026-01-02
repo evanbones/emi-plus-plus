@@ -40,16 +40,19 @@ public abstract class EmiScreenManagerMixin {
     }
 
     /**
-     * Add extra space for the EMI++ header
+     * Add extra space for the EMI++ header, ONLY if in Default theme.
+     * Vanilla and Berry themes put tabs on the sides, so no header offset is needed.
      */
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "createScreenSpace", name = "headerOffset")
     private static int modifyHeaderOffset(int original, EmiScreenManager.SidebarPanel panel, Screen screen,
                                           List<Bounds> exclusion) {
         if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get()) {
-            return original + CreativeModeTabGui.CREATIVE_MODE_TAB_HEIGHT;
-        } else {
-            return original;
+            // Check current theme
+            if (CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.DEFAULT) {
+                return original + CreativeModeTabGui.CREATIVE_MODE_TAB_HEIGHT;
+            }
         }
+        return original;
     }
 
     /**
@@ -74,7 +77,7 @@ public abstract class EmiScreenManagerMixin {
                     opcode = Opcodes.GETSTATIC))
     private static List<? extends EmiIngredient> redirectCachedStacksToEmixx(List<? extends EmiIngredient> original) {
         if (getSearchPanel().getType() == SidebarType.INDEX) {
-            Layout.INSTANCE.setTextureDirty(true); // TODO: fix  this
+            Layout.INSTANCE.setTextureDirty(true);
             return StackManager.INSTANCE.getDisplayedStacks$emixx_common();
         } else {
             return original;
@@ -107,5 +110,4 @@ public abstract class EmiScreenManagerMixin {
         if (instance instanceof EmiGroupStack) StackManager.INSTANCE.onStackInteractionDeprecated(instance);
         return original.call(instance);
     }
-
 }

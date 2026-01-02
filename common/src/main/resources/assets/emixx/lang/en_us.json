@@ -13,6 +13,8 @@
   "emixx.configuration.enableCreativeModeTabs": "Enable Creative Mode Tabs",
   "emixx.configuration.syncSelectedCreativeModeTab": "Sync Selected Creative Mode Tab",
   "emixx.configuration.disabledCreativeModeTabs": "Disabled Creative Mode Tabs",
+  "emixx.configuration.enableBerryTheme": "Enable Berry Theme",
+  "emixx.configuration.enableBerryTheme.tooltip": "Changes the tab icons to two separate rows",
   "emixx.emixx.configuration.disabledCreativeModeTabs.manage": "Configure...",
   "emixx.configuration.stackGroups": "Stack Groups",
   "emixx.configuration.enableStackGroups": "Enable Stack Groups",

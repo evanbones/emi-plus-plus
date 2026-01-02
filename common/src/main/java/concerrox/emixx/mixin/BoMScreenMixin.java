@@ -2,7 +2,9 @@ package concerrox.emixx.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.emi.emi.config.SidebarTheme;
 import dev.emi.emi.screen.BoMScreen;
+import dev.emi.emi.config.EmiConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -20,7 +22,14 @@ public class BoMScreenMixin extends Screen {
 
     @Inject(at = @At("HEAD"), method = "render", remap = true)
     private void render(GuiGraphics raw, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        this.renderBackground(raw);
+        if (EmiConfig.rightSidebarTheme == SidebarTheme.VANILLA) {
+            raw.pose().pushPose();
+            raw.pose().translate(0, 0, -200);
+            this.renderBackground(raw);
+            raw.pose().popPose();
+        } else {
+            this.renderBackground(raw);
+        }
     }
 
     @WrapOperation(method = "render",
@@ -28,5 +37,4 @@ public class BoMScreenMixin extends Screen {
             remap = true)
     private void suppressDirtBackground(BoMScreen instance, GuiGraphics guiGraphics, Operation<Void> original) {
     }
-
 }
