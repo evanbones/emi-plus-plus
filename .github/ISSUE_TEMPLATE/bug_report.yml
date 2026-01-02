@@ -35,7 +35,7 @@ body:
             label: Mod Version
             description: The version of EMI++ Backport you were using
             options:
-                - "1.0.1"
+                - "1.1.0"
                 - "1.0.0"
         validations:
             required: true
