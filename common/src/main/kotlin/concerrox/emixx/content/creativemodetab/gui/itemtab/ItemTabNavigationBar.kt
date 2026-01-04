@@ -83,20 +83,10 @@ class ItemTabNavigationBar(
 
         if (isVertical) {
             this.width = 35
-            setWidgetHeight(layout.height)
+            this.height = layout.height
         } else {
             this.width = layout.width + 4
             this.height = layout.height
-        }
-    }
-
-    private fun setWidgetHeight(newHeight: Int) {
-        try {
-            val field = AbstractWidget::class.java.getDeclaredField("height")
-            field.isAccessible = true
-            field.setInt(this, newHeight)
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
