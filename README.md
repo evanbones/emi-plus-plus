@@ -98,7 +98,7 @@ EmiPlusPlusEvents.registerGroups(event => {
 
 ### Notes
 
-* You may need to restart the game or run `/reload` to see changes.
+* You may need to restart the game to see changes.
 * You can disable specific groups (default or custom) in the main `emixx-common.toml` config file under `disabledStackGroups`.
 
 ## License
