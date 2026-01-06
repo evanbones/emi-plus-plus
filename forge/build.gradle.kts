@@ -40,6 +40,7 @@ dependencies {
     implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion")
 
     modImplementation("dev.emi:emi-forge:$emiVersion")
+    modImplementation(libs.kubejs.forge)
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)

@@ -27,6 +27,9 @@
         "adapter": "kotlin",
         "value": "concerrox.emixx.fabric.EmiPlusPlusClientFabric"
       }
+    ],
+    "kubejs": [
+      "concerrox.emixx.integration.kubejs.EmiPlusPlusKubeJSPlugin"
     ]
   },
   "mixins": [
