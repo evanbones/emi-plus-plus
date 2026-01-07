@@ -30,7 +30,11 @@ class RegisterStackGroupsEventJS : EventJS() {
         val vanillaIngredient = InputItem.of(ingredient).ingredient
         val emiIngredient = EmiIngredient.of(vanillaIngredient)
 
-        val group = EmiStackGroup(resourceLocation, setOf(emiIngredient))
+        val targets = mutableSetOf<EmiIngredient>()
+        targets.add(emiIngredient)
+        targets.addAll(emiIngredient.emiStacks)
+
+        val group = EmiStackGroup(resourceLocation, targets)
         addStackGroup(group)
     }
 
