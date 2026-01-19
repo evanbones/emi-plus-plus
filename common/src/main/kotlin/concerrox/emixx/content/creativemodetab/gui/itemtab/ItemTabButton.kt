@@ -63,11 +63,8 @@ class ItemTabButton(
                 raw.pose().popPose()
 
                 tab.creativeModeTab?.iconItem?.let { stack ->
-                    raw.pose().pushPose()
-                    raw.pose().translate(0.0, 0.0, 150.0)
-                    val iconX = if (style == ButtonStyle.RIGHT) x + 6 else x + 8
-                    raw.renderItem(stack, iconX, y + 5)
-                    raw.pose().popPose()
+                    val iconX = if (style == ButtonStyle.RIGHT) x + 6F else x + 8F
+                    GuiGraphicsUtils.renderItem(raw, stack, iconX, y + 5F, 16F)
                 }
             }
 
