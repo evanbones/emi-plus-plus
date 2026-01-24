@@ -29,6 +29,7 @@ repositories {
     maven("https://thedarkcolour.github.io/KotlinForForge/")
     maven("https://modmaven.dev/")
     maven("https://jitpack.io")
+    maven("https://api.modrinth.com/maven")
 }
 
 val forgeVersion: String by project
@@ -39,6 +40,7 @@ dependencies {
     forge("net.minecraftforge:forge:$forgeVersion")
     implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion")
 
+    modImplementation("maven.modrinth:mekanism:uxe1WQp4")
     modImplementation("dev.emi:emi-forge:$emiVersion")
     modImplementation(libs.kubejs.forge)
 
@@ -68,4 +70,8 @@ tasks.shadowJar {
 tasks.remapJar {
     inputFile.set(tasks.shadowJar.get().archiveFile)
     atAccessWideners.add("emixx-common.accesswidener")
+}
+
+tasks.withType<net.fabricmc.loom.task.RemapSourcesJarTask> {
+    enabled = false
 }

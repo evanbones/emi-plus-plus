@@ -5,6 +5,7 @@ import concerrox.emixx.content.stackgroup.StackGroupManager;
 import concerrox.emixx.gui.components.ImageButton;
 import dev.emi.emi.api.recipe.EmiIngredientRecipe;
 import dev.emi.emi.api.widget.WidgetHolder;
+import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.recipe.EmiTagRecipe;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -23,13 +24,16 @@ public class EmiIngredientRecipeMixin {
     @Inject(method = "addWidgets", at = @At("TAIL"))
     public void addCreateStackGroupButton(WidgetHolder widgets, CallbackInfo ci) {
         if (EmiIngredientRecipe.class.cast(this) instanceof EmiTagRecipe emiTagRecipe) {
-            widgets.addButton(0, 0, 12, 12, 50, 0, ImageButton.Companion.getTEXTURE$emixx_common(), () -> true, (b, n, k) -> {
-                StackGroupManager.INSTANCE.create$emixx_common((TagKey<Item>) emiTagRecipe.key);
-                StackGroupManager.INSTANCE.reload$emixx_common();
-                StackManager.INSTANCE.reload$emixx_common();
-            });
+            widgets.addButton(24, 0, 12, 12, 50, 0, ImageButton.Companion.getTEXTURE$emixx_common(),
+                    () -> EmiConfig.editMode,
+                    (b, n, k) -> {
+                        StackGroupManager.INSTANCE.create$emixx_common((TagKey<Item>) emiTagRecipe.key);
+                        StackGroupManager.INSTANCE.reload$emixx_common();
+                        StackManager.INSTANCE.reload$emixx_common();
+                    });
+
             widgets.addTooltip(List.of(ClientTooltipComponent.create(Component.literal("Create Stack Group")
-                    .getVisualOrderText())), 0, 0, 12, 12);
+                    .getVisualOrderText())), 24, 0, 12, 12);
         }
     }
 
