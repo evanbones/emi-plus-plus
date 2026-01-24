@@ -25,7 +25,7 @@ public class EmiIngredientRecipeMixin {
     public void addCreateStackGroupButton(WidgetHolder widgets, CallbackInfo ci) {
         if (EmiIngredientRecipe.class.cast(this) instanceof EmiTagRecipe emiTagRecipe) {
             widgets.addButton(24, 0, 12, 12, 50, 0, ImageButton.Companion.getTEXTURE$emixx_common(),
-                    () -> EmiConfig.editMode,
+                    () -> EmiConfig.devMode,
                     (b, n, k) -> {
                         StackGroupManager.INSTANCE.create$emixx_common((TagKey<Item>) emiTagRecipe.key);
                         StackGroupManager.INSTANCE.reload$emixx_common();
