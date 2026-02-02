@@ -1,15 +1,14 @@
 package concerrox.emixx.content
 
-import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.content.stackgroup.EmiGroupStack
 import concerrox.emixx.content.stackgroup.StackGroupManager
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
+import dev.emi.emi.config.EmiConfig
 import dev.emi.emi.registry.EmiStackList
+import dev.emi.emi.runtime.EmiHidden
 import dev.emi.emi.screen.EmiScreenManager
 import dev.emi.emi.search.EmiSearch
-import dev.emi.emi.config.EmiConfig
-import dev.emi.emi.runtime.EmiHidden
 
 typealias Array2D<T> = Array<Array<T>>
 
@@ -86,7 +85,6 @@ object StackManager {
         // If we're using the index stacks, use the grouped index stacks so we don't have to group them every time
         groupedStacks = if (searchedStacks == indexStacks) groupedIndexStacks.map {
             // TODO: fix this
-//            if (it is EmiGroupStack) it.isExpanded = false
             it
         }.ifEmpty {
             // Build the grouped index stacks if they haven't been built
@@ -115,7 +113,6 @@ object StackManager {
     @Deprecated("")
     fun onStackInteractionDeprecated(ingredient: EmiIngredient) {
         Layout.isTextureDirty = true
-        EmiPlusPlus.LOGGER.info("onStackInteraction: $ingredient")
         when (ingredient) {
             is EmiGroupStack -> {
                 val stacks = displayedStacks

@@ -49,10 +49,6 @@ object Layout {
                     if (x == screenSpace.tw - 1 || at(y, x + 1)?.stackGroup != emiStack.stackGroup) {
                         tile.type = tile.type or TileType.RIGHT.bit
                     }
-//                    if (tile.type != 0) {
-//                        StackManager.stackTextureGrid.add(tile)
-//                        continue
-//                    }
 
                     if (at(y - 1, x - 1)?.stackGroup != emiStack.stackGroup
                         && at(y - 1, x)?.stackGroup == emiStack.stackGroup
@@ -103,7 +99,6 @@ object Layout {
                 context.fill(px + 17, py, 1, ENTRY_SIZE, 0x66FFFFFF)
                 ret = true
             }
-//            if (ret) return@forEach
 
             if (it.check(TileType.TOP_LEFT)) {
                 context.fill(px, py, 1, 1, 0x66FFFFFF)

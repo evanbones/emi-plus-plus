@@ -1,5 +1,8 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
     id("com.gradleup.shadow")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 architectury {
@@ -40,7 +43,7 @@ dependencies {
     forge("net.minecraftforge:forge:$forgeVersion")
     implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion")
 
-    modImplementation("maven.modrinth:mekanism:uxe1WQp4")
+    modCompileOnly("maven.modrinth:mekanism:uxe1WQp4")
     modImplementation("dev.emi:emi-forge:$emiVersion")
     modImplementation(libs.kubejs.forge)
 
@@ -74,4 +77,30 @@ tasks.remapJar {
 
 tasks.withType<net.fabricmc.loom.task.RemapSourcesJarTask> {
     enabled = false
+}
+
+publishMods {
+    file.set(tasks.remapJar.flatMap { it.archiveFile })
+    changelog = rootProject.file("CHANGELOG-LATEST.md").readText()
+    type = ReleaseType.STABLE
+    displayName = "Emi++ Forge ${project.version}"
+    modLoaders.add("forge")
+
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = "1411826"
+        minecraftVersions.add("1.20.1")
+
+        requires { slug = "kotlin-for-forge" }
+        requires { slug = "emi" }
+    }
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "N9WucjHL"
+        minecraftVersions.add("1.20.1")
+
+        requires { slug = "kotlin-for-forge" }
+        requires { slug = "emi" }
+    }
 }

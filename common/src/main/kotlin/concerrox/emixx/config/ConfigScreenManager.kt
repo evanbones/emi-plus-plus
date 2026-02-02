@@ -4,7 +4,6 @@ import com.electronwill.nightconfig.core.AbstractConfig
 import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.Minecraft
 import concerrox.emixx.content.creativemodetab.gui.CreativeModeTabConfigScreen
-import concerrox.emixx.content.stackgroup.gui.StackGroupConfigScreen
 import concerrox.emixx.text
 import dev.emi.emi.config.EmiConfig
 import dev.emi.emi.screen.ConfigScreen
@@ -61,7 +60,6 @@ object ConfigScreenManager {
                     else -> ActionWidget(itemTitle, itemTooltip, searcher) {
                         Minecraft.setScreen(when (itemValue) {
                             EmiPlusPlusConfig.disabledCreativeModeTabs -> CreativeModeTabConfigScreen(configScreen)
-                            EmiPlusPlusConfig.disabledStackGroups -> StackGroupConfigScreen(configScreen)
                             else -> error("[EMI++] Undefined config screen for $itemKey!")
                         })
                     }

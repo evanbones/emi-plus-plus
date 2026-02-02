@@ -1,20 +1,23 @@
 # EMI++
 
-**EMI++** is a Minecraft mod that acts as an extension to [EMI](https://github.com/emilyploszaj/emi), adding a variety of useful features, improvements, and customization options to enhance EMI.
+<a href='https://files.minecraftforge.net'><img alt="forge" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/forge_vector.svg"></a>
+<a href='https://fabricmc.net'><img alt="fabric" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/fabric_vector.svg"></a>
+
+**EMI++** is a Minecraft mod that acts as an extension to [EMI](https://github.com/emilyploszaj/emi), adding a variety
+of useful features, improvements, and customization options to enhance the EMI experience.
 
 ## Features
 
 EMI++ provides the following enhancements:
 
-* **Stack Grouping:** cleans up the EMI item list by grouping related items together.
-  * *Includes groups for:* Animal Armor, Banner Patterns, Copper Blocks, Infested Blocks, Minecarts, Pressure Plates, Spawn Eggs, and more.
-
-* **Creative Mode Tabs:** Displays Creative Mode tabs within the EMI interface.
-* **Item Tabs:** Improved navigation with item tabs.
-
-## Installation
-
-EMI++ is available for both **Fabric** and **Forge**.
+* **Stack Grouping:** Cleans up the EMI item list by grouping related items together (e.g., keeping all colored wools in
+  one expandable entry).
+    * *Includes built-in groups for:* Animal Armor, Banner Patterns, Copper Blocks, Infested Blocks, Minecarts, Pressure
+      Plates, Spawn Eggs, and more.
+* **Creative Mode Tabs:** Displays vanilla and modded Creative Mode tabs directly within the EMI interface for easy
+  browsing.
+* **Item Tabs:** Improved navigation with Creative Mode-style item tabs.
+* **Vanilla/Modern Theme:** A unique visual theme for the sidebar, depending on the EMI theme.
 
 ### Dependencies
 
@@ -33,35 +36,65 @@ EMI++ is available for both **Fabric** and **Forge**.
 
 ## Configuration
 
-EMI++ offers basic configuration options. You can access the configuration screen through the standard mod menu config integration or in-game EMI settings.
+EMI++ offers extensive configuration options to tailor the interface to your needs. You can configure the mod via the
+**in-game config screen** or by editing the configuration file directly.
 
-The compiled jar files will be located in the `fabric/build/libs` and `forge/build/libs` directories.
+### In-Game Config
 
-## Custom Stack Groups
+1. Open the EMI overlay.
+2. Click the **Config** (gear) icon.
+3. Scroll down to the **EMI++** section.
+4. From here you can toggle features and access sub-menus (such as the "Manage" button for Creative Mode Tabs).
 
-You can define new custom stack groups using either **JSON configuration files** or **KubeJS scripts**.
+### File Config
 
-### Method 1: JSON Configuration
+The configuration file is located at `config/emixx/emixx-common.toml`.
 
-This is the standard method for adding stack groups without additional mods.
+#### Creative Mode Tabs Settings
 
-1. **Locate the Config Folder:**
-    Navigate to your Minecraft instance's config folder and find the directory:
-   `config/emixx/groups/`
-   *(If the `groups` folder doesn't exist, create it).*
-2. **Create a JSON File:**
-   Create a new `.json` file in this folder (e.g., `my_custom_group.json`). The filename does not strictly matter, but it is good practice to match it to your group ID.
-3. **Define the Group:**
-   The JSON object must contain an `id` and a list of `contents`. 
-* **id**: A unique string identifier (e.g., `"mypack:currency"`).
-* **contents**: A list of ingredients to include. These can be item IDs (e.g., `"minecraft:diamond"`) or tags (e.g., `"#minecraft:logs"`).
-* **exclusions** *(optional)*: A list of ingredients to remove from the group if they were included by the `contents` (useful when using broad tags).
+Controls the display and behavior of the creative tabs sidebar.
 
+| Option                        | Type    | Default                   | Description                                                                                                          |
+|:------------------------------|:--------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------|
+| `enableCreativeModeTabs`      | Boolean | `true`                    | Master switch to enable or disable the creative mode tab sidebar entirely.                                           |
+| `syncSelectedCreativeModeTab` | Boolean | `true`                    | If enabled, clicking a tab in EMI++ will attempt to open that tab in the actual Creative Inventory screen (if open). |
+| `disabledCreativeModeTabs`    | List    | `["minecraft:op_blocks"]` | A list of tabs that should be hidden from the EMI++ interface.                                                       |
 
-**Example `config/emixx/groups/shiny_things.json`:**
+#### Stack Groups Settings
+
+Controls the item grouping behavior.
+
+| Option              | Type    | Default | Description                                                                                                     |
+|:--------------------|:--------|:--------|:----------------------------------------------------------------------------------------------------------------|
+| `enableStackGroups` | Boolean | `true`  | Master switch to enable or disable stack grouping. If disabled, all items will appear individually in the list. |
+
+## Customizing Stack Groups
+
+You can define new custom stack groups or modify existing ones using **JSON files** (via Resource Packs) or **KubeJS**.
+
+### Method 1: JSON Configuration (Resource Packs)
+
+EMI++ loads stack groups from the `stack_groups` directory within the assets of the game (loaded via Resource Packs or
+the config folder if configured).
+
+To create a custom group, create a JSON file in `assets/<namespace>/stack_groups/my_group.json`.
+
+**JSON Structure:**
+
+| Field        | Type    | Description                                                                 |
+|:-------------|:--------|:----------------------------------------------------------------------------|
+| `id`         | String  | A unique identifier (e.g., `"mypack:currency"`).                            |
+| `type`       | String  | Usually `"emixx:group"` for standard item lists.                            |
+| `enabled`    | Boolean | Set to `false` to disable this group.                                       |
+| `contents`   | List    | A list of items or tags to include.                                         |
+| `exclusions` | List    | *(Optional)* Items to remove from the group (useful when using broad tags). |
+
+**Example: Creating a shiny things group**
+
 ```json
 {
   "id": "mypack:shiny_things",
+  "type": "emixx:group",
   "contents": [
     "minecraft:diamond",
     "minecraft:emerald",
@@ -72,20 +105,33 @@ This is the standard method for adding stack groups without additional mods.
     "minecraft:purple_stained_glass"
   ]
 }
+
+```
+
+**Disabling Default Groups:**
+To disable a default stack group (e.g., spawn eggs), you must override its definition using a Resource Pack. Create a
+file with the same path/ID as the default group and set `"enabled": false`.
+
+*Example: Disabling the spawn eggs group*
+
+File: `assets/emixx/stack_groups/spawn_eggs.json`
+
+```json
+{
+  "enabled": false
+}
+
 ```
 
 ### Method 2: KubeJS
 
-If you have KubeJS installed, you can register groups programmatically.
+If you have KubeJS installed, you can register groups programmatically using the `EmiPlusPlusEvents` event group.
 
-1. **Create a Script:**
-   Create a script file in your `kubejs/client_scripts/` folder (e.g., `emi_groups.js`).
-2. **Register the Event:**
-   Use the `EmiPlusPlusEvents.registerGroups` event.
-3. **Add Groups:**
-   Call `event.register("id", ingredient)` to add a group. The `ingredient` can be an item ID, a tag, or other valid KubeJS ingredient parsables.
-   
+1. **Create a Script:** Place a script in your `kubejs/client_scripts/` folder.
+2. **Register the Event:** Use `EmiPlusPlusEvents.registerGroups`.
+
 **Example `kubejs/client_scripts/emi_groups.js`:**
+
 ```javascript
 EmiPlusPlusEvents.registerGroups(event => {
     // Create a group from a Tag
@@ -96,11 +142,6 @@ EmiPlusPlusEvents.registerGroups(event => {
 })
 ```
 
-### Notes
-
-* You may need to restart the game to see changes.
-* You can disable specific groups (default or custom) in the main `emixx-common.toml` config file under `disabledStackGroups`.
-
 ## License
 
-This project is licensed under the **MIT License**.
+[![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/evanbones/emi-plus-plus/blob/main/LICENSE)

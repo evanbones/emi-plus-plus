@@ -9,8 +9,6 @@ pluginManagement {
 
 rootProject.name = "emixx"
 
-include("stub")
-
 include("common")
 include("fabric")
 include("forge")

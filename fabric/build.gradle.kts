@@ -1,5 +1,8 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
     id("com.gradleup.shadow")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 architectury {
@@ -8,7 +11,7 @@ architectury {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/emixx-common.accesswidener")
+    accessWidenerPath = project(":common").loom.accessWidenerPath
 }
 
 val common: Configuration by configurations.creating
@@ -33,17 +36,7 @@ dependencies {
     shadowCommon(project(":common", "transformProductionFabric")) { isTransitive = false }
 }
 
-tasks.register<Copy>("copyAccessWidener") {
-    from(project(":common").loom.accessWidenerPath)
-    into("src/main/resources/")
-}
-
-tasks.named("validateAccessWidener") {
-    dependsOn("copyAccessWidener")
-}
-
 tasks.processResources {
-    dependsOn("copyAccessWidener")
     inputs.property("version", project.version)
     filesMatching("fabric.mod.json") {
         expand(
@@ -51,6 +44,11 @@ tasks.processResources {
                 "version" to project.version,
             )
         )
+    }
+
+    val common = project(":common")
+    from(common.sourceSets.main.get().resources) {
+        include("emixx-common.accesswidener")
     }
 }
 
@@ -61,4 +59,32 @@ tasks.shadowJar {
 
 tasks.remapJar {
     inputFile.set(tasks.shadowJar.get().archiveFile)
+}
+
+publishMods {
+    file.set(tasks.remapJar.flatMap { it.archiveFile })
+    changelog = rootProject.file("CHANGELOG-LATEST.md").readText()
+    type = ReleaseType.STABLE
+    displayName = "Emi++ Fabric - ${project.version}"
+    modLoaders.add("fabric")
+
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = "1411826"
+        minecraftVersions.add("1.20.1")
+
+        requires { slug = "fabric-api" }
+        requires { slug = "fabric-language-kotlin" }
+        requires { slug = "emi" }
+    }
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "N9WucjHL"
+        minecraftVersions.add("1.20.1")
+
+        requires { slug = "fabric-api" }
+        requires { slug = "fabric-language-kotlin" }
+        requires { slug = "emi" }
+    }
 }

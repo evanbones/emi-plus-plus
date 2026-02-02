@@ -10,15 +10,17 @@ import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.search.EmiSearch;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 
 import java.util.List;
 
-@Mixin(value = EmiSearch.SearchWorker.class, remap = false)
+@Mixin(targets = "dev.emi.emi.search.EmiSearch$SearchWorker", remap = false)
 public class EmiSearchSearchWorkerMixin {
 
     @WrapOperation(method = "run", at = @At(value = "INVOKE",
             target = "Ldev/emi/emi/search/EmiSearch;apply(Ldev/emi/emi/search/EmiSearch$SearchWorker;Ljava/util/List;)V"))
-    public void run(EmiSearch.SearchWorker worker, List<? extends EmiIngredient> stacks, Operation<Void> original) {
+    private void run(@Coerce Object worker, List<? extends EmiIngredient> stacks, Operation<Void> original) {
+
         synchronized (EmiSearch.class) {
             if (EmiScreenManager.getSearchPanel().getType() == SidebarType.INDEX) {
                 //noinspection unchecked: All the stacks in the index are EmiStack
@@ -28,5 +30,4 @@ public class EmiSearchSearchWorkerMixin {
             }
         }
     }
-
 }

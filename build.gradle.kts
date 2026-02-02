@@ -5,6 +5,7 @@ plugins {
     id("architectury-plugin") version "3.4-SNAPSHOT"
     id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
     id("com.gradleup.shadow") version "8.3.6" apply false
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
 }
 
 val minecraftVersion: String by project

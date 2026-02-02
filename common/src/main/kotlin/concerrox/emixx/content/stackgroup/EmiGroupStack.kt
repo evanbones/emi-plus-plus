@@ -15,14 +15,13 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 
-class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEmiStack<EmiStack>>) : EmiStack() {
+class EmiGroupStack(val group: StackGroup, internal var itemsNew: List<GroupedEmiStack<EmiStack>>) : EmiStack() {
 
     var isExpanded = false
 
-    @Deprecated("")
-    internal val items = mutableListOf<GroupedEmiStack<EmiStack>>()
+    val items: List<GroupedEmiStack<EmiStack>> get() = itemsNew
 
-    override fun isEmpty() = false
+    override fun isEmpty() = itemsNew.isEmpty()
 
     override fun getKey() = group
 
@@ -36,7 +35,7 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
     override fun getTooltip() = listOf(
         ClientTooltipComponent.create(name.visualOrderText),
         ClientTooltipComponent.create(
-            Component.literal(items.size.toString()).withStyle(ChatFormatting.DARK_GRAY)
+            Component.literal(itemsNew.size.toString()).withStyle(ChatFormatting.DARK_GRAY)
                 .append(text("stackgroup", "tooltip").withStyle(ChatFormatting.DARK_GRAY)).visualOrderText
         ),
     )
@@ -56,19 +55,20 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
             matrices().pushPose()
             matrices().translate(x.toFloat() + 1.6F, y.toFloat() + 1.6F, 0F)
             matrices().scale(0.8F, 0.8F, 0.8F)
-            if (items.size == 1) {
-                items[0].render(raw, 0, 0, delta, flags)
-            } else if (items.size == 2) {
+
+            if (itemsNew.size == 1) {
+                itemsNew[0].render(raw, 0, 0, delta, flags)
+            } else if (itemsNew.size == 2) {
                 matrices().translate(0.5F, 0F, 0F)
-                items[1].render(raw, 1, -1, delta, flags)
+                itemsNew[1].render(raw, 1, -1, delta, flags)
                 matrices().translate(0F, 0F, 10F)
-                items[0].render(raw, -2, 1, delta, flags)
-            } else if (items.size >= 3) {
-                items[2].render(raw, 3, -2, delta, flags)
+                itemsNew[0].render(raw, -2, 1, delta, flags)
+            } else if (itemsNew.size >= 3) {
+                itemsNew[2].render(raw, 3, -2, delta, flags)
                 matrices().translate(0F, 0F, 10F)
-                items[1].render(raw, 0, 0, delta, flags)
+                itemsNew[1].render(raw, 0, 0, delta, flags)
                 matrices().translate(0F, 0F, 10F)
-                items[0].render(raw, -3, 2, delta, flags)
+                itemsNew[0].render(raw, -3, 2, delta, flags)
             }
             matrices().popPose()
 
@@ -76,9 +76,8 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
         }
     }
 
-    override fun copy() = EmiGroupStack(group, listOf()).apply {
+    override fun copy() = EmiGroupStack(group, itemsNew).apply {
         isExpanded = this@EmiGroupStack.isExpanded
-        items.addAll(this@EmiGroupStack.items)
     }
 
     override fun getName(): MutableComponent {
@@ -92,7 +91,7 @@ class EmiGroupStack(val group: StackGroup, internal val itemsNew: List<GroupedEm
     override fun hashCode(): Int {
         var result = group.hashCode()
         result = 31 * result + isExpanded.hashCode()
-        result = 31 * result + items.hashCode()
+        result = 31 * result + itemsNew.hashCode()
         return result
     }
 }

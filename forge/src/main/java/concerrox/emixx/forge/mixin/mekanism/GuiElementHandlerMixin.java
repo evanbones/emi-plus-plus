@@ -12,8 +12,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class GuiElementHandlerMixin {
 
     @Redirect(method = "getAreasFor",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/AbstractWidget;visible:Z",
-                    opcode = Opcodes.GETFIELD))
+            at = @At(value = "FIELD",
+                    target = "Lnet/minecraft/client/gui/components/AbstractWidget;visible:Z",
+                    opcode = Opcodes.GETFIELD,
+                    remap = true))
     private static boolean skipEmiPlusPlusButtons(AbstractWidget instance) {
         if (instance instanceof ImageButton) return false;
         return instance.visible;
