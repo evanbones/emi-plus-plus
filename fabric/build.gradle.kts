@@ -65,7 +65,7 @@ publishMods {
     file.set(tasks.remapJar.flatMap { it.archiveFile })
     changelog = rootProject.file("CHANGELOG-LATEST.md").readText()
     type = ReleaseType.STABLE
-    displayName = "Emi++ Fabric - ${project.version}"
+    displayName = "EMI++ Fabric - ${project.version}"
     modLoaders.add("fabric")
 
     curseforge {

@@ -83,7 +83,7 @@ publishMods {
     file.set(tasks.remapJar.flatMap { it.archiveFile })
     changelog = rootProject.file("CHANGELOG-LATEST.md").readText()
     type = ReleaseType.STABLE
-    displayName = "Emi++ Forge ${project.version}"
+    displayName = "EMI++ Forge - ${project.version}"
     modLoaders.add("forge")
 
     curseforge {
