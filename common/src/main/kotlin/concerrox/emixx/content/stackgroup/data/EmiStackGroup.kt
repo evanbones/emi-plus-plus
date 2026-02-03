@@ -44,9 +44,16 @@ class EmiStackGroup(
             removeAll(ingredient.emiStacks)
         }
 
-        fun parse(json: JsonElement, id: ResourceLocation): EmiStackGroup? {
+        fun parse(json: JsonElement, filenameId: ResourceLocation): EmiStackGroup? {
             return try {
                 if (json !is JsonObject) error("Not a JSON object")
+
+                val finalId = if (json.has("id")) {
+                    ResourceLocation(GsonHelper.getAsString(json, "id"))
+                } else {
+                    filenameId
+                }
+
                 if (!GsonHelper.isArrayNode(json, "contents"))
                     error("Contents are either not present or not a list")
 
@@ -62,9 +69,9 @@ class EmiStackGroup(
                     }
                 }
 
-                EmiStackGroup(id, targets)
+                EmiStackGroup(finalId, targets)
             } catch (e: Exception) {
-                EmiPlusPlus.LOGGER.error("Failed to parse stack group $id: {}", e.message)
+                EmiPlusPlus.LOGGER.error("Failed to parse stack group $filenameId: {}", e.message)
                 null
             }
         }

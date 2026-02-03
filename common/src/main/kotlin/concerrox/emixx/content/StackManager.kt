@@ -54,7 +54,7 @@ object StackManager {
      */
     internal var stackTextureGrid = mutableListOf<Layout.Tile>()
 
-    internal fun reload() {
+    fun reload() {
         indexStacks = EmiStackList.filteredStacks
         groupedIndexStacks = listOf()
         StackGroupManager.buildGroupedEmiStacksAndStackGroupToContents(indexStacks)

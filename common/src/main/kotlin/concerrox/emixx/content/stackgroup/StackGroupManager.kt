@@ -14,7 +14,9 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.util.GsonHelper
-import net.minecraft.world.item.Item
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.io.path.div
 
 object StackGroupManager {
 
@@ -55,41 +57,101 @@ object StackGroupManager {
         typeRegistry[type] = factory
     }
 
-    internal fun reload() {
+    fun getGroupPath(tag: ResourceLocation): Path {
+        val name = tag.path.replace('/', '_')
+        val filename = "${tag.namespace}_$name.json"
+        return EmiPlusPlusConfig.CONFIG_DIRECTORY_PATH / "stack_groups" / filename
+    }
+
+    fun hasGroup(tag: ResourceLocation): Boolean {
+        return stackGroups.any { it.id == tag }
+    }
+
+    fun toggleTagGroup(tag: ResourceLocation) {
+        val isActive = hasGroup(tag)
+        val file = getGroupPath(tag)
+
+        if (isActive) {
+            saveGroupConfig(tag, false)
+        } else {
+            saveGroupConfig(tag, true)
+        }
+        reload()
+    }
+
+    private fun saveGroupConfig(tag: ResourceLocation, enabled: Boolean) {
+        val file = getGroupPath(tag)
+        val directory = file.parent
+
+        val json = JsonObject()
+        if (enabled) {
+            json.addProperty("type", "emixx:tag")
+            json.addProperty("id", tag.toString())
+            json.addProperty("tag", tag.toString())
+            json.addProperty("enabled", true)
+        } else {
+            json.addProperty("id", tag.toString())
+            json.addProperty("enabled", false)
+        }
+
+        try {
+            Files.createDirectories(directory)
+            Files.newBufferedWriter(file).use { writer ->
+                com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(json, writer)
+            }
+        } catch (e: Exception) {
+            EmiPlusPlus.LOGGER.error("Failed to save stack group", e)
+        }
+    }
+
+    fun deleteTagGroup(tag: ResourceLocation) {
+        try {
+            val file = getGroupPath(tag)
+            Files.deleteIfExists(file)
+            reload()
+        } catch (e: Exception) {
+            EmiPlusPlus.LOGGER.error("Failed to delete stack group", e)
+        }
+    }
+
+    fun reload() {
         stackGroups.clear()
 
         if (!EmiPlusPlusConfig.enableStackGroups.get()) return
 
-        val resourceManager = Minecraft.getInstance().resourceManager
         val loadedGroups = mutableMapOf<ResourceLocation, StackGroup>()
 
+        val resourceManager = Minecraft.getInstance().resourceManager
         val resources = resourceManager.listResources("stack_groups") { it.path.endsWith(".json") }
 
         for ((location, resource) in resources) {
             val namespace = location.namespace
             val path = location.path.removePrefix("stack_groups/").removeSuffix(".json")
             val id = ResourceLocation(namespace, path)
+            loadGroup(id, resource.openAsReader().use { JsonParser.parseReader(it).asJsonObject }, loadedGroups)
+        }
 
+        val configDir = EmiPlusPlusConfig.CONFIG_DIRECTORY_PATH / "stack_groups"
+        if (Files.exists(configDir)) {
             try {
-                resource.openAsReader().use { reader ->
-                    val json = JsonParser.parseReader(reader).asJsonObject
+                Files.list(configDir).forEach { path ->
+                    if (path.toString().endsWith(".json")) {
+                        try {
+                            val json = Files.newBufferedReader(path).use { JsonParser.parseReader(it).asJsonObject }
+                            var idString = if (json.has("id")) json.get("id").asString else null
+                            if (idString == null && json.has("tag")) idString = json.get("tag").asString
 
-                    if (GsonHelper.getAsBoolean(json, "enabled", true)) {
-                        val type = GsonHelper.getAsString(json, "type", "emixx:group")
-                        val factory = typeRegistry[type]
-
-                        if (factory != null) {
-                            val group = factory(id, json)
-                            if (group != null) {
-                                loadedGroups[id] = group
+                            if (idString != null) {
+                                val id = ResourceLocation(idString)
+                                loadGroup(id, json, loadedGroups)
                             }
-                        } else {
-                            EmiPlusPlus.LOGGER.error("Unknown stack group type '$type' in $location")
+                        } catch (e: Exception) {
+                            EmiPlusPlus.LOGGER.error("Failed to load user stack group $path", e)
                         }
                     }
                 }
             } catch (e: Exception) {
-                EmiPlusPlus.LOGGER.error("Failed to load stack group $id", e)
+                EmiPlusPlus.LOGGER.error("Failed to list user stack groups", e)
             }
         }
 
@@ -97,6 +159,34 @@ object StackGroupManager {
 
         if (isKubeJSLoaded()) {
             EmiPlusPlusKubeJSPlugin.REGISTER_GROUPS.post(RegisterStackGroupsEventJS())
+        }
+    }
+
+    private fun loadGroup(
+        id: ResourceLocation,
+        json: JsonObject,
+        loadedGroups: MutableMap<ResourceLocation, StackGroup>
+    ) {
+        try {
+            val enabled = GsonHelper.getAsBoolean(json, "enabled", true)
+            if (!enabled) {
+                loadedGroups.remove(id)
+                return
+            }
+
+            val type = GsonHelper.getAsString(json, "type", "emixx:group")
+            val factory = typeRegistry[type]
+
+            if (factory != null) {
+                val group = factory(id, json)
+                if (group != null) {
+                    loadedGroups[id] = group
+                }
+            } else {
+                EmiPlusPlus.LOGGER.error("Unknown stack group type '$type' for $id")
+            }
+        } catch (e: Exception) {
+            EmiPlusPlus.LOGGER.error("Failed to parse stack group $id", e)
         }
     }
 

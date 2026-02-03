@@ -63,7 +63,7 @@ object CreativeModeTabManager {
         }
     }
 
-    internal fun reload() {
+    fun reload() {
         disabledCreativeModeTabs.clear()
         disabledCreativeModeTabs.addAll(loadDisabledTabs())
 
@@ -104,7 +104,8 @@ object CreativeModeTabManager {
             else if (rightIndex != -1) newTab = (rightIndex + 5).toUInt()
         } else {
             // Default or Vanilla (Single bar)
-            val bar = if (theme == CreativeModeTabGui.TabTheme.DEFAULT) CreativeModeTabGui.topTabNavigationBar else CreativeModeTabGui.leftTabNavigationBar
+            val bar =
+                if (theme == CreativeModeTabGui.TabTheme.DEFAULT) CreativeModeTabGui.topTabNavigationBar else CreativeModeTabGui.leftTabNavigationBar
             val index = bar.visibleTabs.indexOf(tab)
             if (index != -1) newTab = index.toUInt()
         }
@@ -120,13 +121,17 @@ object CreativeModeTabManager {
             }
         }
 
-        if (theme == CreativeModeTabGui.TabTheme.BERRY) {
-            resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
-            resetFocus(CreativeModeTabGui.rightTabNavigationBar, 5)
-        } else if (theme == CreativeModeTabGui.TabTheme.DEFAULT) {
-            resetFocus(CreativeModeTabGui.topTabNavigationBar, 0)
-        } else {
-            resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
+        when (theme) {
+            CreativeModeTabGui.TabTheme.BERRY -> {
+                resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
+                resetFocus(CreativeModeTabGui.rightTabNavigationBar, 5)
+            }
+            CreativeModeTabGui.TabTheme.DEFAULT -> {
+                resetFocus(CreativeModeTabGui.topTabNavigationBar, 0)
+            }
+            else -> {
+                resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
+            }
         }
 
         val screen = Minecraft.screen
@@ -187,16 +192,20 @@ object CreativeModeTabManager {
     private fun updateTabs(): List<ItemTab> {
         val page = getTabPage(currentTabPage)
 
-        if (CreativeModeTabGui.currentTheme == CreativeModeTabGui.TabTheme.BERRY) {
-            val leftTabs = page.take(5).toMutableList()
-            val rightTabs = page.drop(5).take(6).toMutableList()
+        when (CreativeModeTabGui.currentTheme) {
+            CreativeModeTabGui.TabTheme.BERRY -> {
+                val leftTabs = page.take(5).toMutableList()
+                val rightTabs = page.drop(5).take(6).toMutableList()
 
-            CreativeModeTabGui.leftTabNavigationBar.setTabs(leftTabs)
-            CreativeModeTabGui.rightTabNavigationBar.setTabs(rightTabs)
-        } else if (CreativeModeTabGui.currentTheme == CreativeModeTabGui.TabTheme.VANILLA) {
-            CreativeModeTabGui.leftTabNavigationBar.setTabs(page.toMutableList())
-        } else {
-            CreativeModeTabGui.topTabNavigationBar.setTabs(page.toMutableList())
+                CreativeModeTabGui.leftTabNavigationBar.setTabs(leftTabs)
+                CreativeModeTabGui.rightTabNavigationBar.setTabs(rightTabs)
+            }
+            CreativeModeTabGui.TabTheme.VANILLA -> {
+                CreativeModeTabGui.leftTabNavigationBar.setTabs(page.toMutableList())
+            }
+            else -> {
+                CreativeModeTabGui.topTabNavigationBar.setTabs(page.toMutableList())
+            }
         }
 
         return page

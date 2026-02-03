@@ -26,9 +26,8 @@ public class EmiReloadManagerReloadWorkerMixin {
         EmiReloadManager.reloadStep = step;
         EmiReloadManager.reloadWorry = System.currentTimeMillis() + 10_000;
 
-        StackGroupManager.INSTANCE.reload$emixx_common();
-        StackManager.INSTANCE.reload$emixx_common();
-        CreativeModeTabManager.INSTANCE.reload$emixx_common();
+        StackGroupManager.INSTANCE.reload();
+        StackManager.INSTANCE.reload();
+        CreativeModeTabManager.INSTANCE.reload();
     }
-
 }

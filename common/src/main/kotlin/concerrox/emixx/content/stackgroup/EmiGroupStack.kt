@@ -11,6 +11,7 @@ import dev.emi.emi.runtime.EmiDrawContext
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.locale.Language
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
@@ -81,7 +82,13 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: List<GroupedEm
     }
 
     override fun getName(): MutableComponent {
-        return Component.translatable("stackgroup.emixx.${group.id.path}")
+        val key = "stackgroup.emixx.${group.id.path}"
+        if (Language.getInstance().has(key)) {
+            return Component.translatable(key)
+        }
+        return Component.literal(
+            group.id.path.split('_').joinToString(" ") { it.replaceFirstChar(Char::uppercase) }
+        )
     }
 
     override fun getTooltipText(): MutableList<Component> {

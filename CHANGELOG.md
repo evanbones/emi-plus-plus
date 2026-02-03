@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.1] - 2026-02-03
 
+## Added
+
+- Reimplemented stack group button toggle.
+- Automatic name parsing for manual stack group additions.
+
 ### Fixed
 
 - Reworked JSON serialization.
+- Hopefully fixed Mekanism compat.
 
 ## [1.2.0] - 2026-02-02
 
