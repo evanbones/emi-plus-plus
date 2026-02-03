@@ -5,5 +5,4 @@
 
 ### Fixed
 
-- Reworked JSON serialization.
 - Hopefully fixed Mekanism compat.
