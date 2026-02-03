@@ -16,32 +16,56 @@ class EmiStackGroup(
 ) : StackGroup(id) {
 
     companion object {
+
+        private fun normalizeIngredientJson(element: JsonElement): JsonElement {
+            return if (element.isJsonPrimitive) {
+                JsonObject().apply {
+                    addProperty("type", "item")
+                    addProperty("id", element.asString)
+                }
+            } else {
+                element
+            }
+        }
+
+        private fun deserialize(element: JsonElement): EmiIngredient {
+            return EmiIngredientSerializer.getDeserialized(
+                normalizeIngredientJson(element)
+            )
+        }
+
+        private fun MutableSet<EmiIngredient>.addIngredientWithStacks(ingredient: EmiIngredient) {
+            add(ingredient)
+            addAll(ingredient.emiStacks)
+        }
+
+        private fun MutableSet<EmiIngredient>.removeIngredientWithStacks(ingredient: EmiIngredient) {
+            remove(ingredient)
+            removeAll(ingredient.emiStacks)
+        }
+
         fun parse(json: JsonElement, id: ResourceLocation): EmiStackGroup? {
-            try {
-                if (json !is JsonObject) throw Exception("Not a JSON object")
-
+            return try {
+                if (json !is JsonObject) error("Not a JSON object")
                 if (!GsonHelper.isArrayNode(json, "contents"))
-                    throw Exception("Contents are either not present or not a list")
+                    error("Contents are either not present or not a list")
 
-                val targets: MutableSet<EmiIngredient> = Sets.newHashSet()
+                val targets = Sets.newHashSet<EmiIngredient>()
+
                 for (element in json.getAsJsonArray("contents")) {
-                    val ingredient = EmiIngredientSerializer.getDeserialized(element)
-                    targets.add(ingredient)
-                    targets.addAll(ingredient.emiStacks)
+                    targets.addIngredientWithStacks(deserialize(element))
                 }
 
                 if (GsonHelper.isArrayNode(json, "exclusions")) {
                     for (element in json.getAsJsonArray("exclusions")) {
-                        val ingredient = EmiIngredientSerializer.getDeserialized(element)
-                        targets.remove(ingredient)
-                        targets.removeAll(ingredient.emiStacks)
+                        targets.removeIngredientWithStacks(deserialize(element))
                     }
                 }
 
-                return EmiStackGroup(id, targets)
+                EmiStackGroup(id, targets)
             } catch (e: Exception) {
                 EmiPlusPlus.LOGGER.error("Failed to parse stack group $id: {}", e.message)
-                return null
+                null
             }
         }
     }
@@ -49,9 +73,10 @@ class EmiStackGroup(
     override fun match(stack: EmiIngredient): Boolean {
         return targets.any { target ->
             if (target is EmiStack && stack is EmiStack) {
-                return@any target.id == stack.id
+                target.id == stack.id
+            } else {
+                target == stack
             }
-            target == stack
         }
     }
 }
