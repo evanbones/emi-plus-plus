@@ -12,8 +12,25 @@ import net.minecraft.util.GsonHelper
 
 class EmiStackGroup(
     id: ResourceLocation,
-    val targets: Set<EmiIngredient>,
+    targets: Set<EmiIngredient>,
 ) : StackGroup(id) {
+
+    private val targetIds: Set<ResourceLocation>
+    private val otherTargets: List<EmiIngredient>
+
+    init {
+        val ids = HashSet<ResourceLocation>()
+        val others = ArrayList<EmiIngredient>()
+        for (target in targets) {
+            if (target is EmiStack) {
+                ids.add(target.id)
+            } else {
+                others.add(target)
+            }
+        }
+        targetIds = ids
+        otherTargets = others
+    }
 
     companion object {
 
@@ -78,12 +95,20 @@ class EmiStackGroup(
     }
 
     override fun match(stack: EmiIngredient): Boolean {
-        return targets.any { target ->
-            if (target is EmiStack && stack is EmiStack) {
-                target.id == stack.id
-            } else {
-                target == stack
+        if (stack is EmiStack) {
+            if (targetIds.contains(stack.id)) return true
+        }
+
+        if (otherTargets.isNotEmpty()) {
+            return otherTargets.any { target ->
+                if (target is EmiStack && stack is EmiStack) {
+                    target.id == stack.id
+                } else {
+                    target == stack
+                }
             }
         }
+
+        return false
     }
 }

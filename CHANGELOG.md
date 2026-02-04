@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed lag inside Tinker's anvils.
+- Fixed lag when using many stack groups.
 
 ## [1.2.2] - 2026-02-03
 
