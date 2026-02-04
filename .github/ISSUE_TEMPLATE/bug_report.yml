@@ -17,13 +17,13 @@ body:
                 2. 
                 3.
         validations:
-            required: true
+            required: false
     -   type: textarea
         attributes:
             label: Expected Result
             description: A clear and concise description of what you expected to happen
         validations:
-            required: true
+            required: false
     -   type: textarea
         attributes:
             label: Screenshots and Videos
@@ -35,6 +35,7 @@ body:
             label: Mod Version
             description: The version of EMI++ Backport you were using
             options:
+                - "1.2.3"
                 - "1.2.2"
                 - "1.2.1"
                 - "1.2.0"
