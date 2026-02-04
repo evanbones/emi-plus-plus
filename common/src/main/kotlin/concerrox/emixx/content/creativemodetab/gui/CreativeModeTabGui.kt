@@ -72,7 +72,8 @@ object CreativeModeTabGui {
 
         if (theme == TabTheme.DEFAULT) {
             val startX = indexScreenSpace.tx
-            val startY = indexScreenSpace.ty - (if (isHeaderVisible) EMI_HEADER_HEIGHT else 0) - CREATIVE_MODE_TAB_HEIGHT
+            val startY =
+                indexScreenSpace.ty - (if (isHeaderVisible) EMI_HEADER_HEIGHT else 0) - CREATIVE_MODE_TAB_HEIGHT
             val tileW = indexScreenSpace.tw
 
             tabCount = (tileW.toUInt() - 2u).coerceIn(1u, UByte.MAX_VALUE.toUInt())
@@ -109,6 +110,13 @@ object CreativeModeTabGui {
 
     internal fun initialize(screen: Screen) {
         this.screen = screen
+
+        screen.removeWidget(buttonPrevious)
+        screen.removeWidget(buttonNext)
+        screen.removeWidget(topTabNavigationBar)
+        screen.removeWidget(leftTabNavigationBar)
+        screen.removeWidget(rightTabNavigationBar)
+
         screen.addRenderableWidget(buttonPrevious)
         screen.addRenderableWidget(buttonNext)
         screen.addRenderableWidget(topTabNavigationBar)
@@ -119,7 +127,9 @@ object CreativeModeTabGui {
 
     internal fun contains(mouseX: Double, mouseY: Double): Boolean {
         fun check(bar: ItemTabNavigationBar): Boolean =
-            bar.visible && (bar.x..(bar.x + bar.width)).contains(mouseX.toInt()) && (bar.y..(bar.y + bar.height)).contains(mouseY.toInt())
+            bar.visible && (bar.x..(bar.x + bar.width)).contains(mouseX.toInt()) && (bar.y..(bar.y + bar.height)).contains(
+                mouseY.toInt()
+            )
 
         return check(topTabNavigationBar) || check(leftTabNavigationBar) || check(rightTabNavigationBar)
     }
