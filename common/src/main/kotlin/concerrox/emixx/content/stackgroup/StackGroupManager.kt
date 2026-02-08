@@ -26,6 +26,8 @@ object StackGroupManager {
     internal var groupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
     internal val groupedEmiStacks = hashSetOf<EmiStack>()
+    private val itemToGroups = mutableMapOf<EmiStack, MutableList<StackGroup>>()
+
     internal var stackGroupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
     init {
@@ -195,21 +197,22 @@ object StackGroupManager {
         val addedStackGroups = mutableSetOf<StackGroup>()
 
         val localGroupToGroupStacks = stackGroups.associateWith { group -> EmiGroupStack(group, listOf()) }
-        val groupsToCheck = stackGroups.toList()
 
         for (emiStack in source) {
-            if (emiStack !in groupedEmiStacks) {
+            val groups = itemToGroups[emiStack]
+
+            if (groups == null) {
                 result += emiStack
                 continue
             }
-            for (stackGroup in groupsToCheck) {
+
+            for (stackGroup in groups) {
                 val groupStack = localGroupToGroupStacks[stackGroup]!!
-                if (stackGroup.match(emiStack)) {
-                    groupStack.itemsNew += GroupedEmiStack(emiStack, stackGroup)
-                    if (stackGroup !in addedStackGroups) {
-                        addedStackGroups += stackGroup
-                        if (stackGroup.isEnabled) result += groupStack
-                    }
+                groupStack.itemsNew += GroupedEmiStack(emiStack, stackGroup)
+
+                if (stackGroup !in addedStackGroups) {
+                    addedStackGroups += stackGroup
+                    if (stackGroup.isEnabled) result += groupStack
                 }
             }
         }
@@ -219,11 +222,18 @@ object StackGroupManager {
 
     internal fun buildGroupedEmiStacksAndStackGroupToContents(source: List<EmiStack>) {
         groupedEmiStacks.clear()
+        itemToGroups.clear()
+
         val stackGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, listOf()) }
         for (emiStack in source) {
             for (stackGroup in stackGroups) {
                 if (!stackGroup.match(emiStack)) continue
-                if (stackGroup.isEnabled) groupedEmiStacks.add(emiStack)
+
+                if (stackGroup.isEnabled) {
+                    groupedEmiStacks.add(emiStack)
+                    itemToGroups.computeIfAbsent(emiStack) { mutableListOf() }.add(stackGroup)
+                }
+
                 stackGroupToGroupStacks[stackGroup]!!.itemsNew += GroupedEmiStack(emiStack, stackGroup)
             }
         }
