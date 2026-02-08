@@ -111,4 +111,8 @@ class EmiStackGroup(
 
         return false
     }
+
+    override fun getSafeMatchingIds(): Collection<ResourceLocation>? {
+        return targetIds
+    }
 }

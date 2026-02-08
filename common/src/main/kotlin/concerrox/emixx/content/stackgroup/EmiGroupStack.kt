@@ -16,7 +16,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 
-class EmiGroupStack(val group: StackGroup, internal var itemsNew: List<GroupedEmiStack<EmiStack>>) : EmiStack() {
+class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<GroupedEmiStack<EmiStack>>) : EmiStack() {
 
     var isExpanded = false
 

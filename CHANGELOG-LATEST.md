@@ -1,4 +1,3 @@
 ### Fixed
 
-- Further performance improvements when searching.
-- Fixed possible sidebar-related rendering crash.
+- Performance improvements when baking many stack groups.

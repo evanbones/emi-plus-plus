@@ -56,6 +56,10 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
     public int th;
 
     @Shadow
+    @Final
+    public int tw;
+
+    @Shadow
     public abstract int getWidth(int y);
 
     @Shadow
@@ -80,6 +84,10 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
      */
     @Overwrite
     public void render(EmiDrawContext context, int mouseX, int mouseY, float delta, int startIndex) {
+        if (getType() == SidebarType.INDEX) {
+            Layout.INSTANCE.checkGridSize(tw, th);
+        }
+
         if (startIndex != Layout.INSTANCE.getStartIndex()) {
             Layout.INSTANCE.setStartIndex(startIndex);
             Layout.INSTANCE.setTextureDirty(true);

@@ -5,6 +5,7 @@ import concerrox.emixx.content.stackgroup.GroupedEmiStack
 import dev.emi.emi.runtime.EmiDrawContext
 import dev.emi.emi.screen.EmiScreenManager
 
+// TODO: this needs to be refactored as it is quiet a mess
 object Layout {
 
     internal data class Tile(val x: Int, val y: Int, var type: Int) {
@@ -19,13 +20,13 @@ object Layout {
     var isClean = true
 
     var isTextureDirty = true
-        set(value) {
-            field = value
-            val space = ScreenManager.indexScreenSpace
-            if (space != null && space.th > 0) {
-                StackManager.stackGrid = Array(space.th) { arrayOfNulls(space.tw) }
-            }
+
+    fun checkGridSize(tw: Int, th: Int) {
+        if (StackManager.stackGrid.size < th || (StackManager.stackGrid.isNotEmpty() && StackManager.stackGrid[0].size < tw)) {
+            StackManager.stackGrid = Array(th) { arrayOfNulls(tw) }
+            isClean = false
         }
+    }
 
     // TODO: refactor this
     fun buildLayoutTiles(screenSpace: EmiScreenManager.ScreenSpace, context: EmiDrawContext) {
@@ -52,26 +53,22 @@ object Layout {
 
                     if (at(y - 1, x - 1)?.stackGroup != emiStack.stackGroup
                         && at(y - 1, x)?.stackGroup == emiStack.stackGroup
-                        && at(y, x - 1)?.stackGroup == emiStack.stackGroup
-                    ) {
+                        && at(y, x - 1)?.stackGroup == emiStack.stackGroup) {
                         tile.type = tile.type or TileType.TOP_LEFT.bit
                     }
                     if (at(y - 1, x + 1)?.stackGroup != emiStack.stackGroup
                         && at(y - 1, x)?.stackGroup == emiStack.stackGroup
-                        && at(y, x + 1)?.stackGroup == emiStack.stackGroup
-                    ) {
+                        && at(y, x + 1)?.stackGroup == emiStack.stackGroup) {
                         tile.type = tile.type or TileType.TOP_RIGHT.bit
                     }
                     if (at(y + 1, x - 1)?.stackGroup != emiStack.stackGroup
                         && at(y + 1, x)?.stackGroup == emiStack.stackGroup
-                        && at(y, x - 1)?.stackGroup == emiStack.stackGroup
-                    ) {
+                        && at(y, x - 1)?.stackGroup == emiStack.stackGroup) {
                         tile.type = tile.type or TileType.BOTTOM_LEFT.bit
                     }
                     if (at(y + 1, x + 1)?.stackGroup != emiStack.stackGroup
                         && at(y + 1, x)?.stackGroup == emiStack.stackGroup
-                        && at(y, x + 1)?.stackGroup == emiStack.stackGroup
-                    ) {
+                        && at(y, x + 1)?.stackGroup == emiStack.stackGroup) {
                         tile.type = tile.type or TileType.BOTTOM_RIGHT.bit
                     }
                     if (tile.type != 0) StackManager.stackTextureGrid.add(tile)

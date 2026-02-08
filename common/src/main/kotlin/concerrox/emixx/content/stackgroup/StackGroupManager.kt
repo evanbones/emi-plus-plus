@@ -26,6 +26,8 @@ object StackGroupManager {
     internal var groupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
     internal val groupedEmiStacks = hashSetOf<EmiStack>()
+
+    // Cache map to store which groups an item belongs to
     private val itemToGroups = mutableMapOf<EmiStack, MutableList<StackGroup>>()
 
     internal var stackGroupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
@@ -196,7 +198,7 @@ object StackGroupManager {
         val result = mutableListOf<EmiStack>()
         val addedStackGroups = mutableSetOf<StackGroup>()
 
-        val localGroupToGroupStacks = stackGroups.associateWith { group -> EmiGroupStack(group, listOf()) }
+        val localGroupToGroupStacks = stackGroups.associateWith { group -> EmiGroupStack(group, mutableListOf()) }
 
         for (emiStack in source) {
             val groups = itemToGroups[emiStack]
@@ -224,20 +226,48 @@ object StackGroupManager {
         groupedEmiStacks.clear()
         itemToGroups.clear()
 
-        val stackGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, listOf()) }
-        for (emiStack in source) {
-            for (stackGroup in stackGroups) {
-                if (!stackGroup.match(emiStack)) continue
+        val stackGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, mutableListOf()) }
 
-                if (stackGroup.isEnabled) {
-                    groupedEmiStacks.add(emiStack)
-                    itemToGroups.computeIfAbsent(emiStack) { mutableListOf() }.add(stackGroup)
+        val idToStacks = mutableMapOf<ResourceLocation, MutableList<EmiStack>>()
+        for (stack in source) {
+            idToStacks.computeIfAbsent(stack.id) { mutableListOf() }.add(stack)
+        }
+
+        val (fastGroups, slowGroups) = stackGroups.partition { it.getSafeMatchingIds() != null }
+
+        for (group in fastGroups) {
+            val ids = group.getSafeMatchingIds()!!
+            for (id in ids) {
+                val stacks = idToStacks[id] ?: continue
+                for (stack in stacks) {
+                    registerMatch(group, stack, stackGroupToGroupStacks)
                 }
-
-                stackGroupToGroupStacks[stackGroup]!!.itemsNew += GroupedEmiStack(emiStack, stackGroup)
             }
         }
+
+        if (slowGroups.isNotEmpty()) {
+            for (stack in source) {
+                for (group in slowGroups) {
+                    if (group.match(stack)) {
+                        registerMatch(group, stack, stackGroupToGroupStacks)
+                    }
+                }
+            }
+        }
+
         this.stackGroupToGroupStacks = stackGroupToGroupStacks
+    }
+
+    private fun registerMatch(
+        group: StackGroup,
+        stack: EmiStack,
+        groupStacksMap: Map<StackGroup, EmiGroupStack>
+    ) {
+        if (group.isEnabled) {
+            groupedEmiStacks.add(stack)
+            itemToGroups.computeIfAbsent(stack) { mutableListOf() }.add(group)
+        }
+        groupStacksMap[group]!!.itemsNew.add(GroupedEmiStack(stack, group))
     }
 
     private fun isKubeJSLoaded(): Boolean {
