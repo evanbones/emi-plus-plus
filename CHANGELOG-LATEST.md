@@ -1,3 +1,3 @@
 ### Fixed
 
-- Performance improvements when baking many stack groups.
+- Improved memory usage with large stackgroups.

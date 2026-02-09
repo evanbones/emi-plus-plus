@@ -27,8 +27,7 @@ object StackGroupManager {
 
     internal val groupedEmiStacks = hashSetOf<EmiStack>()
 
-    // Cache map to store which groups an item belongs to
-    private val itemToGroups = mutableMapOf<EmiStack, MutableList<StackGroup>>()
+    private val itemToGroupedStacks = mutableMapOf<EmiStack, MutableList<GroupedEmiStack<EmiStack>>>()
 
     internal var stackGroupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
@@ -201,20 +200,21 @@ object StackGroupManager {
         val localGroupToGroupStacks = stackGroups.associateWith { group -> EmiGroupStack(group, mutableListOf()) }
 
         for (emiStack in source) {
-            val groups = itemToGroups[emiStack]
+            val groupedStacks = itemToGroupedStacks[emiStack]
 
-            if (groups == null) {
+            if (groupedStacks == null) {
                 result += emiStack
                 continue
             }
 
-            for (stackGroup in groups) {
-                val groupStack = localGroupToGroupStacks[stackGroup]!!
-                groupStack.itemsNew += GroupedEmiStack(emiStack, stackGroup)
+            for (groupedStack in groupedStacks) {
+                val group = groupedStack.stackGroup
+                val groupStack = localGroupToGroupStacks[group]!!
+                groupStack.itemsNew += groupedStack
 
-                if (stackGroup !in addedStackGroups) {
-                    addedStackGroups += stackGroup
-                    if (stackGroup.isEnabled) result += groupStack
+                if (group !in addedStackGroups) {
+                    addedStackGroups += group
+                    if (group.isEnabled) result += groupStack
                 }
             }
         }
@@ -224,7 +224,7 @@ object StackGroupManager {
 
     internal fun buildGroupedEmiStacksAndStackGroupToContents(source: List<EmiStack>) {
         groupedEmiStacks.clear()
-        itemToGroups.clear()
+        itemToGroupedStacks.clear()
 
         val stackGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, mutableListOf()) }
 
@@ -263,11 +263,12 @@ object StackGroupManager {
         stack: EmiStack,
         groupStacksMap: Map<StackGroup, EmiGroupStack>
     ) {
+        val groupedStack = GroupedEmiStack(stack, group)
         if (group.isEnabled) {
             groupedEmiStacks.add(stack)
-            itemToGroups.computeIfAbsent(stack) { mutableListOf() }.add(group)
+            itemToGroupedStacks.computeIfAbsent(stack) { mutableListOf() }.add(groupedStack)
         }
-        groupStacksMap[group]!!.itemsNew.add(GroupedEmiStack(stack, group))
+        groupStacksMap[group]!!.itemsNew.add(groupedStack)
     }
 
     private fun isKubeJSLoaded(): Boolean {
