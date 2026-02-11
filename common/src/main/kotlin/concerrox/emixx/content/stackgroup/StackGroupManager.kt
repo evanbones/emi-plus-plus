@@ -72,7 +72,6 @@ object StackGroupManager {
 
     fun toggleTagGroup(tag: ResourceLocation) {
         val isActive = hasGroup(tag)
-        val file = getGroupPath(tag)
 
         if (isActive) {
             saveGroupConfig(tag, false)
@@ -107,13 +106,20 @@ object StackGroupManager {
         }
     }
 
-    fun deleteTagGroup(tag: ResourceLocation) {
-        try {
-            val file = getGroupPath(tag)
-            Files.deleteIfExists(file)
-            reload()
-        } catch (e: Exception) {
-            EmiPlusPlus.LOGGER.error("Failed to delete stack group", e)
+    fun appendStacksForMatchingGroups(query: String, results: MutableList<EmiStack>) {
+        val lowerQuery = query.lowercase()
+        val matchingGroups = stackGroups.filter { group ->
+            group.id.path.replace('_', ' ').contains(lowerQuery)
+        }
+
+        for (group in matchingGroups) {
+            val stacksInGroup = groupToGroupStacks[group]?.itemsNew ?: continue
+
+            for (groupedStack in stacksInGroup) {
+                if (!results.contains(groupedStack.realStack)) {
+                    results.add(groupedStack.realStack)
+                }
+            }
         }
     }
 

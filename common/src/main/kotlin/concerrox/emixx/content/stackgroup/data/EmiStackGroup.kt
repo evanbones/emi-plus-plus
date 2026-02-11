@@ -13,6 +13,7 @@ import net.minecraft.util.GsonHelper
 class EmiStackGroup(
     id: ResourceLocation,
     targets: Set<EmiIngredient>,
+    private val excludedIds: Set<ResourceLocation> = emptySet()
 ) : StackGroup(id) {
 
     private val targetIds: Set<ResourceLocation>
@@ -33,38 +34,33 @@ class EmiStackGroup(
     }
 
     companion object {
-
         private fun normalizeIngredientJson(element: JsonElement): JsonElement {
             if (element.isJsonPrimitive) {
                 val str = element.asString
                 if (str.startsWith("#")) {
                     return JsonObject().apply {
-                        addProperty("tag", str.substring(1))
+                        addProperty("type", "tag")
+                        val value = str.substring(1)
+                        addProperty("id", value)
+                        addProperty("tag", value)
+                        addProperty("registry", "minecraft:item")
                     }
                 }
                 return JsonObject().apply {
                     addProperty("type", "item")
                     addProperty("id", str)
                 }
-            } else {
-                return element
             }
+            return element
         }
 
         private fun deserialize(element: JsonElement): EmiIngredient {
-            return EmiIngredientSerializer.getDeserialized(
-                normalizeIngredientJson(element)
-            )
+            return EmiIngredientSerializer.getDeserialized(normalizeIngredientJson(element))
         }
 
         private fun MutableSet<EmiIngredient>.addIngredientWithStacks(ingredient: EmiIngredient) {
             add(ingredient)
             addAll(ingredient.emiStacks)
-        }
-
-        private fun MutableSet<EmiIngredient>.removeIngredientWithStacks(ingredient: EmiIngredient) {
-            remove(ingredient)
-            removeAll(ingredient.emiStacks)
         }
 
         fun parse(json: JsonElement, filenameId: ResourceLocation): EmiStackGroup? {
@@ -81,18 +77,21 @@ class EmiStackGroup(
                     error("Contents are either not present or not a list")
 
                 val targets = Sets.newHashSet<EmiIngredient>()
-
                 for (element in json.getAsJsonArray("contents")) {
                     targets.addIngredientWithStacks(deserialize(element))
                 }
 
+                val excludedIds = HashSet<ResourceLocation>()
                 if (GsonHelper.isArrayNode(json, "exclusions")) {
                     for (element in json.getAsJsonArray("exclusions")) {
-                        targets.removeIngredientWithStacks(deserialize(element))
+                        val exclusion = deserialize(element)
+                        for (stack in exclusion.emiStacks) {
+                            excludedIds.add(stack.id)
+                        }
                     }
                 }
 
-                EmiStackGroup(finalId, targets)
+                EmiStackGroup(finalId, targets, excludedIds)
             } catch (e: Exception) {
                 EmiPlusPlus.LOGGER.error("Failed to parse stack group $filenameId: {}", e.message)
                 null
@@ -101,6 +100,10 @@ class EmiStackGroup(
     }
 
     override fun match(stack: EmiIngredient): Boolean {
+        if (stack is EmiStack && excludedIds.contains(stack.id)) {
+            return false
+        }
+
         if (stack is EmiStack) {
             if (targetIds.contains(stack.id)) return true
         }
@@ -110,11 +113,10 @@ class EmiStackGroup(
                 if (target is EmiStack && stack is EmiStack) {
                     target.id == stack.id
                 } else {
-                    target.emiStacks.contains(stack)
+                    target.emiStacks.any { it.isEqual(stack as? EmiStack) }
                 }
             }
         }
-
         return false
     }
 

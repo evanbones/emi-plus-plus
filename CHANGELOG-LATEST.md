@@ -1,3 +1,8 @@
+### Added
+
+- Stack group names now show up in EMI search results.
+
 ### Fixed
 
-- Improved memory usage with large stackgroups.
+- Fixed highlights persisting in the EMI menu.
+- Fixed stackgroups not recursively populating from item tags.
