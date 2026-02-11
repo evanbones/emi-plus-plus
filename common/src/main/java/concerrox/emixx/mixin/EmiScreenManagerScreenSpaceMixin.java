@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -110,6 +111,14 @@ public abstract class EmiScreenManagerScreenSpaceMixin {
                 EmiRenderHelper.drawSlotHightlight(context, hx, hy, ENTRY_SIZE, ENTRY_SIZE, 0);
             }
             context.push();
+
+            if (getType() == SidebarType.INDEX && !Layout.INSTANCE.isClean()) {
+                EmiStack[][] grid = StackManager.INSTANCE.getStackGrid$emixx_common();
+                for (EmiStack[] row : grid) {
+                    if (row != null) Arrays.fill(row, null);
+                }
+            }
+
             outer:
             for (int yo = 0; yo < th; yo++) {
                 for (int xo = 0; xo < getWidth(yo); xo++) {

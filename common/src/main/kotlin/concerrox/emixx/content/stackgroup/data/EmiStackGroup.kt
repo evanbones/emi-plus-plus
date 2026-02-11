@@ -35,13 +35,19 @@ class EmiStackGroup(
     companion object {
 
         private fun normalizeIngredientJson(element: JsonElement): JsonElement {
-            return if (element.isJsonPrimitive) {
-                JsonObject().apply {
+            if (element.isJsonPrimitive) {
+                val str = element.asString
+                if (str.startsWith("#")) {
+                    return JsonObject().apply {
+                        addProperty("tag", str.substring(1))
+                    }
+                }
+                return JsonObject().apply {
                     addProperty("type", "item")
-                    addProperty("id", element.asString)
+                    addProperty("id", str)
                 }
             } else {
-                element
+                return element
             }
         }
 
@@ -104,7 +110,7 @@ class EmiStackGroup(
                 if (target is EmiStack && stack is EmiStack) {
                     target.id == stack.id
                 } else {
-                    target == stack
+                    target.emiStacks.contains(stack)
                 }
             }
         }
@@ -113,6 +119,6 @@ class EmiStackGroup(
     }
 
     override fun getSafeMatchingIds(): Collection<ResourceLocation>? {
-        return targetIds
+        return if (otherTargets.isEmpty()) targetIds else null
     }
 }

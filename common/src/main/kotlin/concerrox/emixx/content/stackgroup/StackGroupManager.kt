@@ -264,11 +264,15 @@ object StackGroupManager {
         groupStacksMap: Map<StackGroup, EmiGroupStack>
     ) {
         val groupedStack = GroupedEmiStack(stack, group)
+        val groupStack = groupStacksMap[group]!!
+
+        if (groupStack.itemsNew.any { it.realStack == stack }) return
+
         if (group.isEnabled) {
             groupedEmiStacks.add(stack)
             itemToGroupedStacks.computeIfAbsent(stack) { mutableListOf() }.add(groupedStack)
         }
-        groupStacksMap[group]!!.itemsNew.add(groupedStack)
+        groupStack.itemsNew.add(groupedStack)
     }
 
     private fun isKubeJSLoaded(): Boolean {
