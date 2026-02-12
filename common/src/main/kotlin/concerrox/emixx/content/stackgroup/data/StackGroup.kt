@@ -9,7 +9,9 @@ abstract class StackGroup(val id: ResourceLocation) {
 
     abstract fun match(stack: EmiIngredient): Boolean
 
-    open fun getSafeMatchingIds(): Collection<ResourceLocation>? = null
+    open fun getOptimizedIds(): Set<ResourceLocation>? {
+        return null
+    }
 
     companion object {
     }

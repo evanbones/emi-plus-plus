@@ -15,6 +15,31 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
 
     override fun render(draw: GuiGraphics, x: Int, y: Int, delta: Float, flags: Int) =
         realStack.render(draw, x, y, delta, flags)
+
+    override fun isEqual(stack: EmiStack?): Boolean {
+        if (stack is GroupedEmiStack<*>) {
+            return realStack.isEqual(stack.realStack, Comparison.compareNbt())
+        }
+        return realStack.isEqual(stack, Comparison.compareNbt())
+    }
+
+    override fun isEqual(stack: EmiStack?, comparison: Comparison?): Boolean {
+        if (stack is GroupedEmiStack<*>) {
+            return realStack.isEqual(stack.realStack, comparison)
+        }
+        return realStack.isEqual(stack, comparison)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other is GroupedEmiStack<*>) {
+            return realStack.isEqual(other.realStack, Comparison.compareNbt())
+        }
+        return realStack == other
+    }
+
+    override fun hashCode(): Int = realStack.hashCode()
+
     override fun comparison(comparison: Comparison): EmiStack = realStack.comparison(comparison)
     override fun comparison(comparison: Function<Comparison, Comparison>): EmiStack = realStack.comparison(comparison)
     override fun setRemainder(stack: EmiStack): EmiStack = realStack.setRemainder(stack)
@@ -36,11 +61,7 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
 
     override fun <T> getKeyOfType(clazz: Class<T>?): T? = realStack.getKeyOfType(clazz)
     override fun getItemStack(): ItemStack = realStack.itemStack
-    override fun isEqual(stack: EmiStack?): Boolean = realStack.isEqual(stack)
-    override fun isEqual(stack: EmiStack?, comparison: Comparison?): Boolean = realStack.isEqual(stack, comparison)
-    override fun getTooltip(): MutableList<ClientTooltipComponent> = realStack.tooltip
-    override fun equals(other: Any?): Boolean = realStack == other
-    override fun hashCode(): Int = realStack.hashCode()
-    override fun toString(): String = realStack.toString()
 
+    override fun getTooltip(): MutableList<ClientTooltipComponent> = realStack.tooltip
+    override fun toString(): String = realStack.toString()
 }

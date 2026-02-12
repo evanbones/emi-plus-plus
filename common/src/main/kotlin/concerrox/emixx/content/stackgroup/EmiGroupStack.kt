@@ -6,6 +6,7 @@ import concerrox.emixx.text
 import concerrox.emixx.util.push
 import dev.emi.emi.EmiPort
 import dev.emi.emi.EmiRenderHelper
+import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiStack
 import dev.emi.emi.runtime.EmiDrawContext
 import net.minecraft.ChatFormatting
@@ -19,18 +20,40 @@ import net.minecraft.network.chat.MutableComponent
 class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<GroupedEmiStack<EmiStack>>) : EmiStack() {
 
     var isExpanded = false
+    private val contentLookup = HashSet<StackWrapper>()
+
+    init {
+        itemsNew.forEach {
+            contentLookup.add(StackWrapper(it.realStack))
+        }
+    }
+
+    /**
+     * Tries to append a stack to this group.
+     * @return true if the stack was added, false if it was already present.
+     */
+    fun append(stack: GroupedEmiStack<EmiStack>): Boolean {
+        if (contentLookup.add(StackWrapper(stack.realStack))) {
+            itemsNew.add(stack)
+            return true
+        }
+        return false
+    }
+
+    private class StackWrapper(val stack: EmiStack) {
+        override fun equals(other: Any?): Boolean {
+            return other is StackWrapper && stack.isEqual(other.stack, Comparison.compareNbt())
+        }
+        override fun hashCode(): Int = stack.id.hashCode()
+    }
 
     val items: List<GroupedEmiStack<EmiStack>> get() = itemsNew
 
     override fun isEmpty() = itemsNew.isEmpty()
-
     override fun getKey() = group
-
     @Deprecated("")
     override fun getId() = group.id
-
     override fun equals(other: Any?) = this === other
-
     override fun toString() = getKey().toString()
 
     override fun getTooltip() = listOf(
@@ -77,8 +100,11 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
         }
     }
 
-    override fun copy() = EmiGroupStack(group, itemsNew).apply {
-        isExpanded = this@EmiGroupStack.isExpanded
+    override fun copy(): EmiGroupStack {
+        val copiedList = ArrayList(itemsNew)
+        return EmiGroupStack(group, copiedList).apply {
+            isExpanded = this@EmiGroupStack.isExpanded
+        }
     }
 
     override fun getName(): MutableComponent {

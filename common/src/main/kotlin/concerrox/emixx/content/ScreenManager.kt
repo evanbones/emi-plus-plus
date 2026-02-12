@@ -11,7 +11,7 @@ object ScreenManager {
 
     const val ENTRY_SIZE = 18
 
-    lateinit var screen: Screen
+    private var screen: Screen? = null
     var indexScreenSpace: EmiScreenManager.ScreenSpace? = null
 
     internal val isSearching
@@ -29,14 +29,20 @@ object ScreenManager {
     fun onIndexScreenSpaceCreated(indexScreenSpace: EmiScreenManager.ScreenSpace) {
         this.indexScreenSpace = indexScreenSpace
 
+        val currentScreen = screen ?: return
+
         if (isCreativeModeTabEnabled) {
-            CreativeModeTabGui.initialize(screen)
+            CreativeModeTabGui.initialize(currentScreen)
             CreativeModeTabManager.initialize()
         }
     }
 
     fun onMouseScrolled(mouseX: Double, mouseY: Double, amount: Double): Boolean {
-        return if (isCreativeModeTabEnabled && indexScreenSpace != null && CreativeModeTabGui.contains(mouseX, mouseY)) {
+        return if (isCreativeModeTabEnabled && indexScreenSpace != null && CreativeModeTabGui.contains(
+                mouseX,
+                mouseY
+            )
+        ) {
             CreativeModeTabGui.onMouseScrolled(amount)
         } else false
     }

@@ -7,6 +7,7 @@ import concerrox.emixx.config.EmiPlusPlusConfig
 import concerrox.emixx.content.stackgroup.data.*
 import concerrox.emixx.integration.kubejs.EmiPlusPlusKubeJSPlugin
 import concerrox.emixx.integration.kubejs.RegisterStackGroupsEventJS
+import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.client.Minecraft
@@ -21,15 +22,11 @@ import kotlin.io.path.div
 object StackGroupManager {
 
     private val typeRegistry = mutableMapOf<String, (ResourceLocation, JsonObject) -> StackGroup?>()
-
     internal val stackGroups = mutableListOf<StackGroup>()
-    internal var groupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
-    internal val groupedEmiStacks = hashSetOf<EmiStack>()
-
+    internal val groupedEmiStacks = mutableListOf<EmiStack>()
     private val itemToGroupedStacks = mutableMapOf<EmiStack, MutableList<GroupedEmiStack<EmiStack>>>()
-
-    internal var stackGroupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
+    internal var groupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
 
     init {
         registerType("emixx:group") { id, json -> EmiStackGroup.parse(json, id) }
@@ -38,13 +35,7 @@ object StackGroupManager {
             val tagName = GsonHelper.getAsString(json, "tag")
             val tagKey = TagKey.create(Registries.ITEM, ResourceLocation(tagName))
 
-            val targets = mutableSetOf<EmiIngredient>()
-            if (Minecraft.getInstance().level != null) {
-                val ingredient = EmiIngredient.of(tagKey)
-                targets.add(ingredient)
-                targets.addAll(ingredient.emiStacks)
-            }
-            EmiStackGroup(id, targets)
+            EmiStackGroup(id, setOf(EmiIngredient.of(tagKey)))
         }
 
         registerType("emixx:spawn_eggs") { _, _ -> SpawnEggItemGroup() }
@@ -108,6 +99,8 @@ object StackGroupManager {
 
     fun appendStacksForMatchingGroups(query: String, results: MutableList<EmiStack>) {
         val lowerQuery = query.lowercase()
+        val existingSet = if (results.isNotEmpty()) results.toHashSet() else mutableSetOf()
+
         val matchingGroups = stackGroups.filter { group ->
             group.id.path.replace('_', ' ').contains(lowerQuery)
         }
@@ -116,7 +109,7 @@ object StackGroupManager {
             val stacksInGroup = groupToGroupStacks[group]?.itemsNew ?: continue
 
             for (groupedStack in stacksInGroup) {
-                if (!results.contains(groupedStack.realStack)) {
+                if (existingSet.add(groupedStack.realStack)) {
                     results.add(groupedStack.realStack)
                 }
             }
@@ -131,13 +124,17 @@ object StackGroupManager {
         val loadedGroups = mutableMapOf<ResourceLocation, StackGroup>()
 
         val resourceManager = Minecraft.getInstance().resourceManager
-        val resources = resourceManager.listResources("stack_groups") { it.path.endsWith(".json") }
+        try {
+            val resources = resourceManager.listResources("stack_groups") { it.path.endsWith(".json") }
 
-        for ((location, resource) in resources) {
-            val namespace = location.namespace
-            val path = location.path.removePrefix("stack_groups/").removeSuffix(".json")
-            val id = ResourceLocation(namespace, path)
-            loadGroup(id, resource.openAsReader().use { JsonParser.parseReader(it).asJsonObject }, loadedGroups)
+            for ((location, resource) in resources) {
+                val namespace = location.namespace
+                val path = location.path.removePrefix("stack_groups/").removeSuffix(".json")
+                val id = ResourceLocation(namespace, path)
+                loadGroup(id, resource.openAsReader().use { JsonParser.parseReader(it).asJsonObject }, loadedGroups)
+            }
+        } catch (e: Exception) {
+            EmiPlusPlus.LOGGER.error("Failed to list stack groups", e)
         }
 
         val configDir = EmiPlusPlusConfig.CONFIG_DIRECTORY_PATH / "stack_groups"
@@ -201,30 +198,26 @@ object StackGroupManager {
 
     internal fun buildGroupedStacks(source: List<EmiStack>): List<EmiStack> {
         val result = mutableListOf<EmiStack>()
-        val addedStackGroups = mutableSetOf<StackGroup>()
-
-        val localGroupToGroupStacks = stackGroups.associateWith { group -> EmiGroupStack(group, mutableListOf()) }
+        val addedGroups = mutableSetOf<StackGroup>()
 
         for (emiStack in source) {
-            val groupedStacks = itemToGroupedStacks[emiStack]
+            val variants = itemToGroupedStacks[emiStack]
 
-            if (groupedStacks == null) {
+            if (variants == null) {
                 result += emiStack
                 continue
             }
 
-            for (groupedStack in groupedStacks) {
-                val group = groupedStack.stackGroup
-                val groupStack = localGroupToGroupStacks[group]!!
-                groupStack.itemsNew += groupedStack
-
-                if (group !in addedStackGroups) {
-                    addedStackGroups += group
-                    if (group.isEnabled) result += groupStack
+            for (grouped in variants) {
+                val group = grouped.stackGroup
+                if (group !in addedGroups) {
+                    addedGroups += group
+                    if (group.isEnabled) {
+                        groupToGroupStacks[group]?.let { result += it }
+                    }
                 }
             }
         }
-        groupToGroupStacks = localGroupToGroupStacks
         return result
     }
 
@@ -232,36 +225,41 @@ object StackGroupManager {
         groupedEmiStacks.clear()
         itemToGroupedStacks.clear()
 
-        val stackGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, mutableListOf()) }
+        val localGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, mutableListOf()) }
 
-        val idToStacks = mutableMapOf<ResourceLocation, MutableList<EmiStack>>()
-        for (stack in source) {
-            idToStacks.computeIfAbsent(stack.id) { mutableListOf() }.add(stack)
-        }
+        val indexedGroups = mutableMapOf<ResourceLocation, MutableList<StackGroup>>()
+        val globalGroups = mutableListOf<StackGroup>()
 
-        val (fastGroups, slowGroups) = stackGroups.partition { it.getSafeMatchingIds() != null }
-
-        for (group in fastGroups) {
-            val ids = group.getSafeMatchingIds()!!
-            for (id in ids) {
-                val stacks = idToStacks[id] ?: continue
-                for (stack in stacks) {
-                    registerMatch(group, stack, stackGroupToGroupStacks)
+        for (group in stackGroups) {
+            val optimizedIds = group.getOptimizedIds()
+            if (!optimizedIds.isNullOrEmpty()) {
+                for (id in optimizedIds) {
+                    indexedGroups.computeIfAbsent(id) { mutableListOf() }.add(group)
                 }
+            } else {
+                globalGroups.add(group)
             }
         }
 
-        if (slowGroups.isNotEmpty()) {
-            for (stack in source) {
-                for (group in slowGroups) {
+        for (stack in source) {
+            val stackId = stack.id
+
+            indexedGroups[stackId]?.let { groups ->
+                for (group in groups) {
                     if (group.match(stack)) {
-                        registerMatch(group, stack, stackGroupToGroupStacks)
+                        registerMatch(group, stack, localGroupToGroupStacks)
                     }
                 }
             }
+
+            for (group in globalGroups) {
+                if (group.match(stack)) {
+                    registerMatch(group, stack, localGroupToGroupStacks)
+                }
+            }
         }
 
-        this.stackGroupToGroupStacks = stackGroupToGroupStacks
+        this.groupToGroupStacks = localGroupToGroupStacks
     }
 
     private fun registerMatch(
@@ -269,16 +267,18 @@ object StackGroupManager {
         stack: EmiStack,
         groupStacksMap: Map<StackGroup, EmiGroupStack>
     ) {
+        val groupStack = groupStacksMap[group] ?: return
         val groupedStack = GroupedEmiStack(stack, group)
-        val groupStack = groupStacksMap[group]!!
 
-        if (groupStack.itemsNew.any { it.realStack == stack }) return
+        val wasAdded = groupStack.append(groupedStack)
 
-        if (group.isEnabled) {
-            groupedEmiStacks.add(stack)
+        if (wasAdded && group.isEnabled) {
+            if (groupedEmiStacks.none { it.isEqual(stack, Comparison.compareNbt()) }) {
+                groupedEmiStacks.add(stack)
+            }
+
             itemToGroupedStacks.computeIfAbsent(stack) { mutableListOf() }.add(groupedStack)
         }
-        groupStack.itemsNew.add(groupedStack)
     }
 
     private fun isKubeJSLoaded(): Boolean {

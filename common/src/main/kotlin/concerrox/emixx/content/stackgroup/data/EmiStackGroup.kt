@@ -4,6 +4,7 @@ import com.google.common.collect.Sets
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import concerrox.emixx.EmiPlusPlus
+import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer
@@ -16,24 +17,45 @@ class EmiStackGroup(
     private val excludedIds: Set<ResourceLocation> = emptySet()
 ) : StackGroup(id) {
 
-    private val targetIds: Set<ResourceLocation>
-    private val otherTargets: List<EmiIngredient>
+    private val targetMap: Map<ResourceLocation, List<EmiIngredient>>
+    private val allTargetIds: Set<ResourceLocation>
 
     init {
-        val ids = HashSet<ResourceLocation>()
-        val others = ArrayList<EmiIngredient>()
-        for (target in targets) {
-            if (target is EmiStack) {
-                ids.add(target.id)
-            } else {
-                others.add(target)
+        val tempMap = mutableMapOf<ResourceLocation, MutableList<EmiIngredient>>()
+        val tempIds = mutableSetOf<ResourceLocation>()
+
+        for (ingredient in targets) {
+            for (stack in ingredient.emiStacks) {
+                val stackId = stack.id
+                tempMap.computeIfAbsent(stackId) { mutableListOf() }.add(ingredient)
+                tempIds.add(stackId)
             }
         }
-        targetIds = ids
-        otherTargets = others
+        targetMap = tempMap
+        allTargetIds = tempIds
+    }
+
+    override fun getOptimizedIds(): Set<ResourceLocation> {
+        return allTargetIds
+    }
+
+    override fun match(stack: EmiIngredient): Boolean {
+        val emiStack = stack as? EmiStack ?: return false
+        val stackId = emiStack.id
+
+        if (excludedIds.contains(stackId)) return false
+
+        val relevantIngredients = targetMap[stackId] ?: return false
+        return relevantIngredients.any { target ->
+            if (target is EmiStack && !target.hasNbt()) {
+                return@any true
+            }
+            target.emiStacks.any { it.isEqual(emiStack, Comparison.compareNbt()) }
+        }
     }
 
     companion object {
+        // [Existing JSON parsing logic remains unchanged]
         private fun normalizeIngredientJson(element: JsonElement): JsonElement {
             if (element.isJsonPrimitive) {
                 val str = element.asString
@@ -58,11 +80,6 @@ class EmiStackGroup(
             return EmiIngredientSerializer.getDeserialized(normalizeIngredientJson(element))
         }
 
-        private fun MutableSet<EmiIngredient>.addIngredientWithStacks(ingredient: EmiIngredient) {
-            add(ingredient)
-            addAll(ingredient.emiStacks)
-        }
-
         fun parse(json: JsonElement, filenameId: ResourceLocation): EmiStackGroup? {
             return try {
                 if (json !is JsonObject) error("Not a JSON object")
@@ -78,7 +95,7 @@ class EmiStackGroup(
 
                 val targets = Sets.newHashSet<EmiIngredient>()
                 for (element in json.getAsJsonArray("contents")) {
-                    targets.addIngredientWithStacks(deserialize(element))
+                    targets.add(deserialize(element))
                 }
 
                 val excludedIds = HashSet<ResourceLocation>()
@@ -97,30 +114,5 @@ class EmiStackGroup(
                 null
             }
         }
-    }
-
-    override fun match(stack: EmiIngredient): Boolean {
-        if (stack is EmiStack && excludedIds.contains(stack.id)) {
-            return false
-        }
-
-        if (stack is EmiStack) {
-            if (targetIds.contains(stack.id)) return true
-        }
-
-        if (otherTargets.isNotEmpty()) {
-            return otherTargets.any { target ->
-                if (target is EmiStack && stack is EmiStack) {
-                    target.id == stack.id
-                } else {
-                    target.emiStacks.any { it.isEqual(stack as? EmiStack) }
-                }
-            }
-        }
-        return false
-    }
-
-    override fun getSafeMatchingIds(): Collection<ResourceLocation>? {
-        return if (otherTargets.isEmpty()) targetIds else null
     }
 }
