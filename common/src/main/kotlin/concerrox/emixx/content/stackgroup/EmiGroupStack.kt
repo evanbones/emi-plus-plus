@@ -8,7 +8,9 @@ import dev.emi.emi.EmiPort
 import dev.emi.emi.EmiRenderHelper
 import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiStack
+import dev.emi.emi.config.EmiConfig
 import dev.emi.emi.runtime.EmiDrawContext
+import dev.emi.emi.runtime.EmiHidden
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
@@ -44,13 +46,16 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
         override fun equals(other: Any?): Boolean {
             return other is StackWrapper && stack.isEqual(other.stack, Comparison.compareNbt())
         }
+
         override fun hashCode(): Int = stack.id.hashCode()
     }
 
-    val items: List<GroupedEmiStack<EmiStack>> get() = itemsNew
+    val items: List<GroupedEmiStack<EmiStack>>
+        get() = if (EmiConfig.editMode) itemsNew else itemsNew.filter { !EmiHidden.isHidden(it.realStack) }
 
-    override fun isEmpty() = itemsNew.isEmpty()
+    override fun isEmpty() = items.isEmpty()
     override fun getKey() = group
+
     @Deprecated("")
     override fun getId() = group.id
     override fun equals(other: Any?) = this === other
@@ -59,7 +64,7 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
     override fun getTooltip() = listOf(
         ClientTooltipComponent.create(name.visualOrderText),
         ClientTooltipComponent.create(
-            Component.literal(itemsNew.size.toString()).withStyle(ChatFormatting.DARK_GRAY)
+            Component.literal(items.size.toString()).withStyle(ChatFormatting.DARK_GRAY)
                 .append(text("stackgroup", "tooltip").withStyle(ChatFormatting.DARK_GRAY)).visualOrderText
         ),
     )
@@ -67,6 +72,7 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
     override fun getNbt(): CompoundTag? = null
 
     override fun render(raw: GuiGraphics, x: Int, y: Int, delta: Float, flags: Int) {
+        val currentItems = items
         EmiDrawContext.wrap(raw).push {
             if (isExpanded) {
                 fill(x - 1, y - 1, 1, ENTRY_SIZE, 0xFFFFFFFF.toInt())
@@ -80,19 +86,19 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
             matrices().translate(x.toFloat() + 1.6F, y.toFloat() + 1.6F, 0F)
             matrices().scale(0.8F, 0.8F, 0.8F)
 
-            if (itemsNew.size == 1) {
-                itemsNew[0].render(raw, 0, 0, delta, flags)
-            } else if (itemsNew.size == 2) {
+            if (currentItems.size == 1) {
+                currentItems[0].render(raw, 0, 0, delta, flags)
+            } else if (currentItems.size == 2) {
                 matrices().translate(0.5F, 0F, 0F)
-                itemsNew[1].render(raw, 1, -1, delta, flags)
+                currentItems[1].render(raw, 1, -1, delta, flags)
                 matrices().translate(0F, 0F, 10F)
-                itemsNew[0].render(raw, -2, 1, delta, flags)
-            } else if (itemsNew.size >= 3) {
-                itemsNew[2].render(raw, 3, -2, delta, flags)
+                currentItems[0].render(raw, -2, 1, delta, flags)
+            } else if (currentItems.size >= 3) {
+                currentItems[2].render(raw, 3, -2, delta, flags)
                 matrices().translate(0F, 0F, 10F)
-                itemsNew[1].render(raw, 0, 0, delta, flags)
+                currentItems[1].render(raw, 0, 0, delta, flags)
                 matrices().translate(0F, 0F, 10F)
-                itemsNew[0].render(raw, -3, 2, delta, flags)
+                currentItems[0].render(raw, -3, 2, delta, flags)
             }
             matrices().popPose()
 

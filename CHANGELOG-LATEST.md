@@ -1,3 +1,3 @@
-### Changed
+### Fixed
 
-- Searching for stack groups in EMI now requires a `%` prefix operator.
+- Hidden items in EMI are now also hidden in stack groups.
