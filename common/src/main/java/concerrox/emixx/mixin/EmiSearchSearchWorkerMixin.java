@@ -47,11 +47,14 @@ public class EmiSearchSearchWorkerMixin implements SearchWorkerBridge {
 
                 String query = ((SearchWorkerBridge) worker).emixx$getQuery();
 
-                if (query != null && !query.isEmpty()) {
-                    StackGroupManager.INSTANCE.appendStacksForMatchingGroups(query, combinedStacks);
+                if (query != null && query.startsWith("%")) {
+                    String groupQuery = query.substring(1);
+                    if (!groupQuery.isEmpty()) {
+                        StackGroupManager.INSTANCE.appendStacksForMatchingGroups(groupQuery, combinedStacks);
+                    }
                 }
 
-                StackManager.INSTANCE.buildStacks$emixx_common(combinedStacks);
+                StackManager.INSTANCE.buildStacks$emixx_common(combinedStacks, query);
             } else {
                 original.call(worker, stacks);
             }

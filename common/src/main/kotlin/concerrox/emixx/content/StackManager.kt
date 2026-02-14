@@ -10,8 +10,6 @@ import dev.emi.emi.runtime.EmiHidden
 import dev.emi.emi.screen.EmiScreenManager
 import dev.emi.emi.search.EmiSearch
 
-typealias Array2D<T> = Array<Array<T>>
-
 object StackManager {
 
     /**
@@ -45,13 +43,10 @@ object StackManager {
     internal var displayedStacks = mutableListOf<EmiStack>()
 
     /**
-     * A layout for the stacks -------------------, recreated every time when first rendered
+     * A layout for the stacks, recreated every time when first rendered
      */
     internal var stackGrid = arrayOf(arrayOf<EmiStack?>())
 
-    /**
-     * --------------------------------------
-     */
     internal var stackTextureGrid = mutableListOf<Layout.Tile>()
 
     fun reload() {
@@ -63,7 +58,7 @@ object StackManager {
 
     internal fun updateSourceStacks(sourceStacks: List<EmiStack>) {
         this.sourceStacks = sourceStacks
-        buildStacks(sourceStacks)
+        buildStacks(sourceStacks, null)
     }
 
     internal fun search(sourceStacks: List<EmiStack>, keyword: String) {
@@ -71,17 +66,24 @@ object StackManager {
         EmiSearch.search(keyword)
     }
 
-    internal fun buildStacks(searchedStacks: List<EmiStack>) {
+    internal fun buildStacks(searchedStacks: List<EmiStack>, query: String? = null) {
         this.searchedStacks = if (EmiConfig.editMode) {
             searchedStacks
         } else {
             searchedStacks.filter { !EmiHidden.isHidden(it) }
         }
-        buildGroupedStacks()
+        buildGroupedStacks(query)
         buildDisplayedStacks()
     }
 
-    private fun buildGroupedStacks() {
+    private fun buildGroupedStacks(query: String?) {
+        val shouldGroup = query.isNullOrEmpty() || query.startsWith("%")
+
+        if (!shouldGroup) {
+            groupedStacks = searchedStacks
+            return
+        }
+
         // If we're using the index stacks, use the grouped index stacks so we don't have to group them every time
         groupedStacks = if (searchedStacks == indexStacks) groupedIndexStacks.map {
             // TODO: fix this

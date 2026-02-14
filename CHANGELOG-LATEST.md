@@ -1,4 +1,3 @@
-### Fixed
+### Changed
 
-- Fixed rare EMI rendering error.
-- Fixed certain items with NBT not displaying their proper NBT.
+- Searching for stack groups in EMI now requires a `%` prefix operator.
