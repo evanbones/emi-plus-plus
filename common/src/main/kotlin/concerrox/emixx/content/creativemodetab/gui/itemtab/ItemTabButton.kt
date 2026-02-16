@@ -4,9 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem
 import concerrox.emixx.content.ScreenManager
 import concerrox.emixx.res
 import concerrox.emixx.util.GuiGraphicsUtils
+import dev.emi.emi.EmiRenderHelper
 import dev.emi.emi.runtime.EmiDrawContext
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.TabButton
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 
 class ItemTabButton(
     private val tabManager: ItemTabManager,
@@ -70,6 +73,14 @@ class ItemTabButton(
 
             if (isHovered && title != null) {
                 ScreenManager.customIndexTitle = title
+
+                context.push()
+                RenderSystem.disableDepthTest()
+                val client = Minecraft.getInstance()
+                val texts = listOf(ClientTooltipComponent.create(title.visualOrderText))
+                EmiRenderHelper.drawTooltip(client.screen, context, texts, mouseX, mouseY)
+                context.pop()
+
             } else {
                 ScreenManager.removeCustomIndexTitle(title)
             }

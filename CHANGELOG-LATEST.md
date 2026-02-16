@@ -1,3 +1,7 @@
-### Fixed
+### Added
 
-- Hidden items in EMI are now also hidden in stack groups.
+- Added tooltips to the Creative Mode style EMI tabs.
+
+### Changed
+
+- Improved dynamic stack group searching logic.

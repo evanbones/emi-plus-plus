@@ -200,6 +200,13 @@ object StackGroupManager {
         val result = mutableListOf<EmiStack>()
         val addedGroups = mutableSetOf<StackGroup>()
 
+        val groupMatches = mutableMapOf<StackGroup, MutableList<GroupedEmiStack<EmiStack>>>()
+        for (emiStack in source) {
+            itemToGroupedStacks[emiStack]?.forEach { grouped ->
+                groupMatches.computeIfAbsent(grouped.stackGroup) { mutableListOf() }.add(grouped)
+            }
+        }
+
         for (emiStack in source) {
             val variants = itemToGroupedStacks[emiStack]
 
@@ -208,14 +215,29 @@ object StackGroupManager {
                 continue
             }
 
+            var wasGrouped = false
             for (grouped in variants) {
                 val group = grouped.stackGroup
-                if (group !in addedGroups) {
-                    addedGroups += group
-                    if (group.isEnabled) {
-                        groupToGroupStacks[group]?.let { result += it }
+                val matches = groupMatches[group] ?: continue
+
+                if (group.isEnabled && matches.size >= 2) {
+                    if (group !in addedGroups) {
+                        addedGroups += group
+
+                        val cachedGroup = groupToGroupStacks[group]
+                        if (cachedGroup != null && cachedGroup.itemsNew.size == matches.size) {
+                            result += cachedGroup
+                        } else {
+                            result += EmiGroupStack(group, matches)
+                        }
                     }
+                    wasGrouped = true
+                    break
                 }
+            }
+
+            if (!wasGrouped) {
+                result += emiStack
             }
         }
         return result

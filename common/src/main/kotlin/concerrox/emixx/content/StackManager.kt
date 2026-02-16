@@ -77,13 +77,6 @@ object StackManager {
     }
 
     private fun buildGroupedStacks(query: String?) {
-        val shouldGroup = query.isNullOrEmpty() || query.startsWith("%")
-
-        if (!shouldGroup) {
-            groupedStacks = searchedStacks
-            return
-        }
-
         // If we're using the index stacks, use the grouped index stacks so we don't have to group them every time
         groupedStacks = if (searchedStacks == indexStacks) groupedIndexStacks.map {
             // TODO: fix this
