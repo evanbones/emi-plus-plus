@@ -1,7 +1,3 @@
-### Added
+### Fixed
 
-- Added tooltips to the Creative Mode style EMI tabs.
-
-### Changed
-
-- Improved dynamic stack group searching logic.
+- Fixed issue where stacks with NBT would be re-grouped.

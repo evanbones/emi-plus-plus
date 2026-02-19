@@ -203,7 +203,13 @@ object StackGroupManager {
         val groupMatches = mutableMapOf<StackGroup, MutableList<GroupedEmiStack<EmiStack>>>()
         for (emiStack in source) {
             itemToGroupedStacks[emiStack]?.forEach { grouped ->
-                groupMatches.computeIfAbsent(grouped.stackGroup) { mutableListOf() }.add(grouped)
+                if (grouped.realStack.isEqual(emiStack, Comparison.compareNbt())) {
+                    val list = groupMatches.computeIfAbsent(grouped.stackGroup) { mutableListOf() }
+
+                    if (!list.contains(grouped)) {
+                        list.add(grouped)
+                    }
+                }
             }
         }
 
@@ -217,6 +223,8 @@ object StackGroupManager {
 
             var wasGrouped = false
             for (grouped in variants) {
+                if (!grouped.realStack.isEqual(emiStack, Comparison.compareNbt())) continue
+
                 val group = grouped.stackGroup
                 val matches = groupMatches[group] ?: continue
 

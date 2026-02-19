@@ -128,9 +128,6 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
     }
 
     override fun hashCode(): Int {
-        var result = group.hashCode()
-        result = 31 * result + isExpanded.hashCode()
-        result = 31 * result + itemsNew.hashCode()
-        return result
+        return group.hashCode()
     }
 }
