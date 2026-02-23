@@ -1,3 +1,4 @@
 ### Fixed
 
-- Fixed issue where stacks with NBT would be re-grouped.
+- Improved performance while searching.
+- Reworked NBT matching again.

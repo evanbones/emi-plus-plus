@@ -4,7 +4,6 @@ import com.google.common.collect.Sets
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import concerrox.emixx.EmiPlusPlus
-import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer
@@ -47,15 +46,13 @@ class EmiStackGroup(
 
         val relevantIngredients = targetMap[stackId] ?: return false
         return relevantIngredients.any { target ->
-            if (target is EmiStack && !target.hasNbt()) {
-                return@any true
+            target.emiStacks.any {
+                it.id == stackId
             }
-            target.emiStacks.any { it.isEqual(emiStack, Comparison.compareNbt()) }
         }
     }
 
     companion object {
-        // [Existing JSON parsing logic remains unchanged]
         private fun normalizeIngredientJson(element: JsonElement): JsonElement {
             if (element.isJsonPrimitive) {
                 val str = element.asString

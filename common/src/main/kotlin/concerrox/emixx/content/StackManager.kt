@@ -77,32 +77,34 @@ object StackManager {
     }
 
     private fun buildGroupedStacks(query: String?) {
-        // If we're using the index stacks, use the grouped index stacks so we don't have to group them every time
-        groupedStacks = if (searchedStacks == indexStacks) groupedIndexStacks.map {
+        val isFullIndex = searchedStacks.size == indexStacks.size
+
+        groupedStacks = if (isFullIndex) groupedIndexStacks.map {
             // TODO: fix this
             it
         }.ifEmpty {
-            // Build the grouped index stacks if they haven't been built
             groupedIndexStacks = StackGroupManager.buildGroupedStacks(searchedStacks)
             groupedIndexStacks
         } else StackGroupManager.buildGroupedStacks(searchedStacks)
     }
 
-    // TODO: refactor
     private fun buildDisplayedStacks() {
-        displayedStacks = groupedStacks.toMutableList()
-        var i = 0
-        while (i < displayedStacks.size) {
-            val emiStack = displayedStacks[i]
+        val newDisplayedStacks = ArrayList<EmiStack>(groupedStacks.size)
+        for (emiStack in groupedStacks) {
             if (emiStack is EmiGroupStack) {
                 if (emiStack.items.size == 1) {
-                    displayedStacks[i] = emiStack.items[0].realStack
+                    newDisplayedStacks.add(emiStack.items[0].realStack)
                 } else if (emiStack.isExpanded) {
-                    displayedStacks.addAll(i + 1, emiStack.items)
+                    newDisplayedStacks.add(emiStack)
+                    newDisplayedStacks.addAll(emiStack.items)
+                } else {
+                    newDisplayedStacks.add(emiStack)
                 }
+            } else {
+                newDisplayedStacks.add(emiStack)
             }
-            i++
         }
+        displayedStacks = newDisplayedStacks
     }
 
     @Deprecated("")

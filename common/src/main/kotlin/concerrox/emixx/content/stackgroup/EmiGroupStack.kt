@@ -22,20 +22,21 @@ import net.minecraft.network.chat.MutableComponent
 class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<GroupedEmiStack<EmiStack>>) : EmiStack() {
 
     var isExpanded = false
-    private val contentLookup = HashSet<StackWrapper>()
-
-    init {
-        itemsNew.forEach {
-            contentLookup.add(StackWrapper(it.realStack))
-        }
-    }
+    private var contentLookup: HashSet<StackWrapper>? = null
 
     /**
      * Tries to append a stack to this group.
      * @return true if the stack was added, false if it was already present.
      */
     fun append(stack: GroupedEmiStack<EmiStack>): Boolean {
-        if (contentLookup.add(StackWrapper(stack.realStack))) {
+        if (contentLookup == null) {
+            contentLookup = HashSet()
+            itemsNew.forEach {
+                contentLookup!!.add(StackWrapper(it.realStack))
+            }
+        }
+
+        if (contentLookup!!.add(StackWrapper(stack.realStack))) {
             itemsNew.add(stack)
             return true
         }

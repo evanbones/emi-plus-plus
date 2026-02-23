@@ -17,6 +17,7 @@ import net.minecraft.tags.TagKey
 import net.minecraft.util.GsonHelper
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.*
 import kotlin.io.path.div
 
 object StackGroupManager {
@@ -25,8 +26,9 @@ object StackGroupManager {
     internal val stackGroups = mutableListOf<StackGroup>()
 
     internal val groupedEmiStacks = mutableListOf<EmiStack>()
-    private val itemToGroupedStacks = mutableMapOf<EmiStack, MutableList<GroupedEmiStack<EmiStack>>>()
     internal var groupToGroupStacks = mapOf<StackGroup, EmiGroupStack>()
+    private val itemToGroupedStacks = mutableMapOf<ResourceLocation, MutableList<GroupedEmiStack<EmiStack>>>()
+    private val stackToGroupedStacks = IdentityHashMap<EmiStack, MutableList<GroupedEmiStack<EmiStack>>>()
 
     init {
         registerType("emixx:group") { id, json -> EmiStackGroup.parse(json, id) }
@@ -197,46 +199,60 @@ object StackGroupManager {
     }
 
     internal fun buildGroupedStacks(source: List<EmiStack>): List<EmiStack> {
-        val result = mutableListOf<EmiStack>()
-        val addedGroups = mutableSetOf<StackGroup>()
+        val result = ArrayList<EmiStack>(source.size)
+        val addedGroups = Collections.newSetFromMap(IdentityHashMap<StackGroup, Boolean>())
 
-        val groupMatches = mutableMapOf<StackGroup, MutableList<GroupedEmiStack<EmiStack>>>()
+        val groupMatches = IdentityHashMap<StackGroup, MutableList<GroupedEmiStack<EmiStack>>>()
+
         for (emiStack in source) {
-            itemToGroupedStacks[emiStack]?.forEach { grouped ->
-                if (grouped.realStack.isEqual(emiStack, Comparison.compareNbt())) {
-                    val list = groupMatches.computeIfAbsent(grouped.stackGroup) { mutableListOf() }
+            // FAST PATH: Instant O(1) lookup, 0 NBT comparisons!
+            var variants = stackToGroupedStacks[emiStack]
 
-                    if (!list.contains(grouped)) {
-                        list.add(grouped)
-                    }
+            // FALLBACK: Slower NBT check only if the stack instance is new/dynamic
+            if (variants == null) {
+                val idVariants = itemToGroupedStacks[emiStack.id] ?: continue
+                variants = idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareNbt()) }.toMutableList()
+                if (variants.isEmpty()) continue
+            }
+
+            for (i in 0 until variants.size) {
+                val grouped = variants[i]
+                var list = groupMatches[grouped.stackGroup]
+                if (list == null) {
+                    list = ArrayList()
+                    groupMatches[grouped.stackGroup] = list
                 }
+                list.add(grouped)
             }
         }
 
         for (emiStack in source) {
-            val variants = itemToGroupedStacks[emiStack]
-
+            var variants = stackToGroupedStacks[emiStack]
             if (variants == null) {
-                result += emiStack
+                val idVariants = itemToGroupedStacks[emiStack.id]
+                if (idVariants != null) {
+                    variants = idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareNbt()) }.toMutableList()
+                }
+            }
+
+            if (variants.isNullOrEmpty()) {
+                result.add(emiStack)
                 continue
             }
 
             var wasGrouped = false
-            for (grouped in variants) {
-                if (!grouped.realStack.isEqual(emiStack, Comparison.compareNbt())) continue
-
+            for (i in 0 until variants.size) {
+                val grouped = variants[i]
                 val group = grouped.stackGroup
                 val matches = groupMatches[group] ?: continue
 
                 if (group.isEnabled && matches.size >= 2) {
-                    if (group !in addedGroups) {
-                        addedGroups += group
-
+                    if (addedGroups.add(group)) {
                         val cachedGroup = groupToGroupStacks[group]
                         if (cachedGroup != null && cachedGroup.itemsNew.size == matches.size) {
-                            result += cachedGroup
+                            result.add(cachedGroup)
                         } else {
-                            result += EmiGroupStack(group, matches)
+                            result.add(EmiGroupStack(group, matches))
                         }
                     }
                     wasGrouped = true
@@ -245,7 +261,7 @@ object StackGroupManager {
             }
 
             if (!wasGrouped) {
-                result += emiStack
+                result.add(emiStack)
             }
         }
         return result
@@ -254,7 +270,7 @@ object StackGroupManager {
     internal fun buildGroupedEmiStacksAndStackGroupToContents(source: List<EmiStack>) {
         groupedEmiStacks.clear()
         itemToGroupedStacks.clear()
-
+        stackToGroupedStacks.clear()
         val localGroupToGroupStacks = stackGroups.associateWith { EmiGroupStack(it, mutableListOf()) }
 
         val indexedGroups = mutableMapOf<ResourceLocation, MutableList<StackGroup>>()
@@ -307,7 +323,8 @@ object StackGroupManager {
                 groupedEmiStacks.add(stack)
             }
 
-            itemToGroupedStacks.computeIfAbsent(stack) { mutableListOf() }.add(groupedStack)
+            itemToGroupedStacks.computeIfAbsent(stack.id) { mutableListOf() }.add(groupedStack)
+            stackToGroupedStacks.computeIfAbsent(stack) { mutableListOf() }.add(groupedStack)
         }
     }
 
