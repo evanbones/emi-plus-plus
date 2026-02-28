@@ -6,9 +6,8 @@ import dev.emi.emi.api.stack.EmiIngredient
 import dev.latvian.mods.kubejs.KubeJSPlugin
 import dev.latvian.mods.kubejs.event.EventGroup
 import dev.latvian.mods.kubejs.event.EventJS
-import dev.latvian.mods.kubejs.item.InputItem
 import net.minecraft.resources.ResourceLocation
-import java.lang.reflect.Field
+import net.minecraft.world.item.crafting.Ingredient
 
 class EmiPlusPlusKubeJSPlugin : KubeJSPlugin() {
 
@@ -24,29 +23,17 @@ class EmiPlusPlusKubeJSPlugin : KubeJSPlugin() {
 
 class RegisterStackGroupsEventJS : EventJS() {
 
-    fun register(id: String, ingredient: Any) {
+    fun register(id: String, ingredient: Ingredient) {
         val resourceLocation = ResourceLocation(id)
 
-        val vanillaIngredient = InputItem.of(ingredient).ingredient
-        val emiIngredient = EmiIngredient.of(vanillaIngredient)
+        val emiIngredient = EmiIngredient.of(ingredient)
 
         val targets = mutableSetOf<EmiIngredient>()
         targets.add(emiIngredient)
         targets.addAll(emiIngredient.emiStacks)
 
         val group = EmiStackGroup(resourceLocation, targets)
-        addStackGroup(group)
-    }
 
-    private fun addStackGroup(group: EmiStackGroup) {
-        try {
-            val field: Field = StackGroupManager::class.java.getDeclaredField("stackGroups")
-            field.isAccessible = true
-            @Suppress("UNCHECKED_CAST")
-            val list = field.get(StackGroupManager) as MutableList<Any>
-            list.add(group)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        StackGroupManager.stackGroups.add(group)
     }
 }
