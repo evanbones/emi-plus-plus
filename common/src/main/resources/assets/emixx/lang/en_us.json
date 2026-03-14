@@ -18,6 +18,7 @@
   "emixx.emixx.configuration.disabledCreativeModeTabs.manage": "Configure...",
   "emixx.configuration.stackGroups": "Stack Groups",
   "emixx.configuration.enableStackGroups": "Enable Stack Groups",
+  "emixx.configuration.enableCreateStackGroupButton": "Enable Create Stack Group Button",
   "emixx.configuration.disabledStackGroups": "Disabled Stack Groups",
   "emixx.emixx.configuration.disabledStackGroups.manage": "Configure...",
 
@@ -87,5 +88,6 @@
   "emixx.configuration.syncSelectedCreativeModeTab.tooltip": "If enabled, selecting a tab in EMI++ will select it in the Creative Inventory and vice versa.",
   "emixx.configuration.disabledCreativeModeTabs.tooltip": "Configure which Creative Mode Tabs are hidden from the EMI++ sidebar.",
   "emixx.configuration.enableStackGroups.tooltip": "Enable or disable collapsing item groups (like enchanted books or potions) into single entries.",
+  "emixx.configuration.enableCreateStackGroupButton.tooltip": "Enable or disable the button in tag recipes to quickly create a stack group.",
   "emixx.configuration.disabledStackGroups.tooltip": "Configure which specific Stack Groups should not be collapsed."
 }

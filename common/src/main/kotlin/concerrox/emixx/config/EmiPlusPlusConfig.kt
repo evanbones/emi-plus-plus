@@ -36,6 +36,7 @@ class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
         lateinit var enableBerryTheme: ForgeConfigSpec.BooleanValue
         lateinit var disabledCreativeModeTabs: ForgeConfigSpec.ConfigValue<List<String>>
         lateinit var enableStackGroups: ForgeConfigSpec.BooleanValue
+        lateinit var enableCreateStackGroupButton: ForgeConfigSpec.BooleanValue
     }
 
     init {
@@ -49,6 +50,7 @@ class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
         }
         builder.group("stackGroups") {
             enableStackGroups = define("enableStackGroups", true)
+            enableCreateStackGroupButton = define("enableCreateStackGroupButton", true)
         }
         builder.group("miscellaneous") {
         }

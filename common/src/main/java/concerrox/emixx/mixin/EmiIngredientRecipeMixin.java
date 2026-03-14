@@ -1,6 +1,7 @@
 package concerrox.emixx.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import concerrox.emixx.config.EmiPlusPlusConfig;
 import concerrox.emixx.content.StackManager;
 import concerrox.emixx.content.stackgroup.StackGroupManager;
 import dev.emi.emi.api.recipe.EmiIngredientRecipe;
@@ -25,6 +26,7 @@ public class EmiIngredientRecipeMixin {
 
     @Inject(method = "addWidgets", at = @At("TAIL"))
     public void addCreateStackGroupButton(WidgetHolder widgets, CallbackInfo ci) {
+        if (!EmiPlusPlusConfig.enableCreateStackGroupButton.get()) return;
         if ((Object) this instanceof EmiTagRecipe emiTagRecipe) {
 
             ResourceLocation tagId = emiTagRecipe.key.location();

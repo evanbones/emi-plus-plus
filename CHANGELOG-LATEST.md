@@ -1,3 +1,3 @@
-### Fixed
+### Added
 
-- Improved KubeJS integration.
+- Added config option to disable stack group button.
