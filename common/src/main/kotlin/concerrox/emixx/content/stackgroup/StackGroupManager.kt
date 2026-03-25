@@ -104,7 +104,7 @@ object StackGroupManager {
         val existingSet = if (results.isNotEmpty()) results.toHashSet() else mutableSetOf()
 
         val matchingGroups = stackGroups.filter { group ->
-            group.id.path.replace('_', ' ').contains(lowerQuery)
+            group.id.path.replace('/', ' ').replace('_', ' ').contains(lowerQuery)
         }
 
         for (group in matchingGroups) {
@@ -142,8 +142,8 @@ object StackGroupManager {
         val configDir = EmiPlusPlusConfig.CONFIG_DIRECTORY_PATH / "stack_groups"
         if (Files.exists(configDir)) {
             try {
-                Files.list(configDir).forEach { path ->
-                    if (path.toString().endsWith(".json")) {
+                Files.walk(configDir).use { stream ->
+                    stream.filter { Files.isRegularFile(it) && it.toString().endsWith(".json") }.forEach { path ->
                         try {
                             val json = Files.newBufferedReader(path).use { JsonParser.parseReader(it).asJsonObject }
                             var idString = if (json.has("id")) json.get("id").asString else null
@@ -231,7 +231,8 @@ object StackGroupManager {
             if (variants == null) {
                 val idVariants = itemToGroupedStacks[emiStack.id]
                 if (idVariants != null) {
-                    variants = idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareNbt()) }.toMutableList()
+                    variants =
+                        idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareNbt()) }.toMutableList()
                 }
             }
 

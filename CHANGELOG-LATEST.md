@@ -1,3 +1,3 @@
 ### Added
 
-- Added config option to disable stack group button.
+- Added support for subfolders in stack group configs.
