@@ -15,6 +15,7 @@ accessible field net/minecraft/world/item/CreativeModeTabs INVENTORY Lnet/minecr
 accessible field net/minecraft/world/item/CreativeModeTabs HOTBAR Lnet/minecraft/resources/ResourceKey;
 accessible field net/minecraft/world/item/CreativeModeTabs OP_BLOCKS Lnet/minecraft/resources/ResourceKey;
 accessible field net/minecraft/world/item/CreativeModeTabs SEARCH Lnet/minecraft/resources/ResourceKey;
+accessible method net/minecraft/world/item/CreativeModeTabs streamAllTabs ()Ljava/util/stream/Stream;
 
 accessible method net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen selectTab (Lnet/minecraft/world/item/CreativeModeTab;)V
 accessible field net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen searchBox Lnet/minecraft/client/gui/components/EditBox;

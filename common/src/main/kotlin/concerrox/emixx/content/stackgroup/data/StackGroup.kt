@@ -1,9 +1,10 @@
 package concerrox.emixx.content.stackgroup.data
 
 import dev.emi.emi.api.stack.EmiIngredient
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
-abstract class StackGroup(val id: ResourceLocation) {
+abstract class StackGroup(val id: ResourceLocation, val name: Component? = null) {
 
     internal var isEnabled = true
 

@@ -11,7 +11,7 @@ import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.client.Minecraft
-import net.minecraft.core.registries.Registries
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.util.GsonHelper
@@ -35,9 +35,15 @@ object StackGroupManager {
 
         registerType("emixx:tag") { id, json ->
             val tagName = GsonHelper.getAsString(json, "tag")
-            val tagKey = TagKey.create(Registries.ITEM, ResourceLocation(tagName))
+            val registryName = GsonHelper.getAsString(json, "registry", "minecraft:item")
 
-            EmiStackGroup(id, setOf(EmiIngredient.of(tagKey)))
+            val registryKey = net.minecraft.resources.ResourceKey.createRegistryKey<Any>(ResourceLocation(registryName))
+            val tagKey = TagKey.create(registryKey, ResourceLocation(tagName))
+
+            val nameKey = if (json.has("name")) GsonHelper.getAsString(json, "name") else null
+            val customName = nameKey?.let { Component.translatable(it) }
+
+            EmiStackGroup(id, setOf(EmiIngredient.of(tagKey)), emptySet(), customName)
         }
 
         registerType("emixx:spawn_eggs") { _, _ -> SpawnEggItemGroup() }

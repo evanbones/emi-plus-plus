@@ -7,14 +7,16 @@ import concerrox.emixx.EmiPlusPlus
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.GsonHelper
 
 class EmiStackGroup(
     id: ResourceLocation,
     targets: Set<EmiIngredient>,
-    private val excludedIds: Set<ResourceLocation> = emptySet()
-) : StackGroup(id) {
+    private val excludedIds: Set<ResourceLocation> = emptySet(),
+    name: Component? = null
+) : StackGroup(id, name) {
 
     private val targetMap: Map<ResourceLocation, List<EmiIngredient>>
     private val allTargetIds: Set<ResourceLocation>
@@ -47,7 +49,7 @@ class EmiStackGroup(
         val relevantIngredients = targetMap[stackId] ?: return false
         return relevantIngredients.any { target ->
             target.emiStacks.any {
-                it.id == stackId
+                it.id == stackId && it.javaClass == emiStack.javaClass
             }
         }
     }
@@ -56,6 +58,26 @@ class EmiStackGroup(
         private fun normalizeIngredientJson(element: JsonElement): JsonElement {
             if (element.isJsonPrimitive) {
                 val str = element.asString
+                val colonCount = str.count { it == ':' }
+
+                if (colonCount == 2) {
+                    val type = str.substringBefore(':')
+                    val id = str.substringAfter(':')
+                    if (str.startsWith("#")) {
+                        return JsonObject().apply {
+                            addProperty("type", "tag")
+                            addProperty("registry", type.substring(1))
+                            addProperty("id", id)
+                            addProperty("tag", id)
+                        }
+                    } else {
+                        return JsonObject().apply {
+                            addProperty("type", type)
+                            addProperty("id", id)
+                        }
+                    }
+                }
+
                 if (str.startsWith("#")) {
                     return JsonObject().apply {
                         addProperty("type", "tag")
@@ -87,6 +109,9 @@ class EmiStackGroup(
                     filenameId
                 }
 
+                val nameKey = if (json.has("name")) GsonHelper.getAsString(json, "name") else null
+                val customName = nameKey?.let { Component.translatable(it) }
+
                 if (!GsonHelper.isArrayNode(json, "contents"))
                     error("Contents are either not present or not a list")
 
@@ -105,7 +130,7 @@ class EmiStackGroup(
                     }
                 }
 
-                EmiStackGroup(finalId, targets, excludedIds)
+                EmiStackGroup(finalId, targets, excludedIds, customName)
             } catch (e: Exception) {
                 EmiPlusPlus.LOGGER.error("Failed to parse stack group $filenameId: {}", e.message)
                 null

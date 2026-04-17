@@ -36,7 +36,7 @@ object CreativeModeTabManager {
         ResourceLocation(it)
     }.mapNotNull { creativeModeTab -> BuiltInRegistries.CREATIVE_MODE_TAB.get(creativeModeTab) }
 
-    internal fun getVisibleCreativeModeTabs() = BuiltInRegistries.CREATIVE_MODE_TAB.toMutableList().apply {
+    internal fun getVisibleCreativeModeTabs() = CreativeModeTabs.tabs().toMutableList().apply {
         removeIf { shouldHideTab(it) }
         if (indexCreativeModeTab != null) {
             add(0, indexCreativeModeTab)

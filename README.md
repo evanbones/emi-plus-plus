@@ -81,13 +81,14 @@ To create a custom group, create a JSON file in `assets/<namespace>/stack_groups
 
 **JSON Structure:**
 
-| Field        | Type    | Description                                                                 |
-|:-------------|:--------|:----------------------------------------------------------------------------|
-| `id`         | String  | A unique identifier (e.g., `"mypack:currency"`).                            |
-| `type`       | String  | Usually `"emixx:group"` for standard item lists.                            |
-| `enabled`    | Boolean | Set to `false` to disable this group.                                       |
-| `contents`   | List    | A list of items or tags to include.                                         |
-| `exclusions` | List    | *(Optional)* Items to remove from the group (useful when using broad tags). |
+| Field        | Type              | Description                                                                            |
+|:-------------|:------------------|:---------------------------------------------------------------------------------------|
+| `id`         | String            | A unique identifier (e.g., `"mypack:currency"`).                                       |
+| `name`       | String (Optional) | A translatable translation key for the group's name (e.g., `"mypack.group.currency"`). |
+| `type`       | String            | Usually `"emixx:group"` for standard item lists.                                       |
+| `enabled`    | Boolean           | Set to `false` to disable this group.                                                  |
+| `contents`   | List              | A list of items or tags to include.                                                    |
+| `exclusions` | List              | *(Optional)* Items to remove from the group (useful when using broad tags).            |
 
 **Example: Creating a shiny things group**
 
@@ -106,6 +107,26 @@ To create a custom group, create a JSON file in `assets/<namespace>/stack_groups
   ]
 }
 
+```
+
+**Virtual Objects (Fluids, Modifiers, etc.):**
+
+EMI++ supports grouping non-item objects such as Fluids, Tinkers' Construct Modifiers, or JEED effects. To do this,
+prefix the entry with its EMI registry type using the format `<type>:<namespace>:<path>`.
+
+*Example: Creating a special group*
+
+```json
+{
+  "id": "mypack:basic_fluids",
+  "name": "mypack.stack_group.basic_fluids",
+  "type": "emixx:group",
+  "contents": [
+    "fluid:minecraft:water",
+    "fluid:minecraft:lava",
+    "jeed:effect:minecraft:speed"
+  ]
+}
 ```
 
 **Disabling Default Groups:**

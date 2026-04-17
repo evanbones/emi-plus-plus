@@ -115,6 +115,8 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
     }
 
     override fun getName(): MutableComponent {
+        if (group.name != null) return group.name as MutableComponent
+
         val key = "stackgroup.emixx.${group.id.path}"
         if (Language.getInstance().has(key)) {
             return Component.translatable(key)
