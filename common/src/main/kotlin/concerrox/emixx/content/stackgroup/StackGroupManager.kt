@@ -12,6 +12,7 @@ import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.util.GsonHelper
@@ -37,7 +38,7 @@ object StackGroupManager {
             val tagName = GsonHelper.getAsString(json, "tag")
             val registryName = GsonHelper.getAsString(json, "registry", "minecraft:item")
 
-            val registryKey = net.minecraft.resources.ResourceKey.createRegistryKey<Any>(ResourceLocation(registryName))
+            val registryKey = ResourceKey.createRegistryKey<Any>(ResourceLocation(registryName))
             val tagKey = TagKey.create(registryKey, ResourceLocation(tagName))
 
             val nameKey = if (json.has("name")) GsonHelper.getAsString(json, "name") else null

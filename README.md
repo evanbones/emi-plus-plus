@@ -85,7 +85,7 @@ To create a custom group, create a JSON file in `assets/<namespace>/stack_groups
 |:-------------|:------------------|:---------------------------------------------------------------------------------------|
 | `id`         | String            | A unique identifier (e.g., `"mypack:currency"`).                                       |
 | `name`       | String (Optional) | A translatable translation key for the group's name (e.g., `"mypack.group.currency"`). |
-| `type`       | String            | Usually `"emixx:group"` for standard item lists.                                       |
+| `type`       | String            | Usually `"emixx:group"` for standard item lists. Can also be `emixx:tag`.              |
 | `enabled`    | Boolean           | Set to `false` to disable this group.                                                  |
 | `contents`   | List              | A list of items or tags to include.                                                    |
 | `exclusions` | List              | *(Optional)* Items to remove from the group (useful when using broad tags).            |
