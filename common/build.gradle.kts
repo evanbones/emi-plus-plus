@@ -14,7 +14,7 @@ val forgeConfigApiPortVersion: String by rootProject
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$mixinExtrasVersion")!!)!!)
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
 
     modCompileOnly("dev.emi:emi-xplat-intermediary:$emiVersion")
 

@@ -5,8 +5,6 @@ import com.google.gson.JsonParser
 import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.config.EmiPlusPlusConfig
 import concerrox.emixx.content.stackgroup.data.*
-import concerrox.emixx.integration.kubejs.EmiPlusPlusKubeJSPlugin
-import concerrox.emixx.integration.kubejs.RegisterStackGroupsEventJS
 import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiIngredient
 import dev.emi.emi.api.stack.EmiStack
@@ -171,10 +169,6 @@ object StackGroupManager {
         }
 
         stackGroups.addAll(loadedGroups.values.sortedBy { it.id.toString() })
-
-        if (isKubeJSLoaded()) {
-            EmiPlusPlusKubeJSPlugin.REGISTER_GROUPS.post(RegisterStackGroupsEventJS())
-        }
     }
 
     private fun loadGroup(
@@ -333,15 +327,6 @@ object StackGroupManager {
 
             itemToGroupedStacks.computeIfAbsent(stack.id) { mutableListOf() }.add(groupedStack)
             stackToGroupedStacks.computeIfAbsent(stack) { mutableListOf() }.add(groupedStack)
-        }
-    }
-
-    private fun isKubeJSLoaded(): Boolean {
-        return try {
-            Class.forName("dev.latvian.mods.kubejs.KubeJSPlugin")
-            true
-        } catch (_: Throwable) {
-            false
         }
     }
 }

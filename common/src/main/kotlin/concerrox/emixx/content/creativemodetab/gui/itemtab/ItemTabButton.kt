@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.TabButton
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.network.chat.Component
 
 class ItemTabButton(
     private val tabManager: ItemTabManager,
@@ -19,13 +20,13 @@ class ItemTabButton(
     private val style: ButtonStyle = ButtonStyle.TOP,
     private val isFirst: Boolean = false
 ) : TabButton(tabManager, tab, width, height) {
-
     enum class ButtonStyle { TOP, LEFT, RIGHT }
 
     private val isVisible
         get() = tab.creativeModeTab != null
 
     private val title = tab.creativeModeTab?.displayName
+    private var lastDisplayTitle: Component? = null
 
     companion object {
         private val TEXTURE_DEFAULT = res("textures/gui/buttons.png")
@@ -59,12 +60,10 @@ class ItemTabButton(
                 val u = if (isSelected) 188 else 152
                 val v = if (isSelected && isFirst) 30 else 2
                 val texture = if (style == ButtonStyle.RIGHT) TEXTURE_RIGHT else TEXTURE_LEFT
-
                 raw.pose().pushPose()
                 raw.pose().translate(0.0, 0.0, if (isSelected) 100.0 else 0.0)
                 context.drawTexture(texture, x, y, u, v, width, height)
                 raw.pose().popPose()
-
                 tab.creativeModeTab?.iconItem?.let { stack ->
                     val iconX = if (style == ButtonStyle.RIGHT) x + 6F else x + 8F
                     GuiGraphicsUtils.renderItem(raw, stack, iconX, y + 5F, 16F)
@@ -72,17 +71,28 @@ class ItemTabButton(
             }
 
             if (isHovered && title != null) {
-                ScreenManager.customIndexTitle = title
+                val client = Minecraft.getInstance()
+                val font = client.font
+
+                val spaceWidth = ScreenManager.indexScreenSpace?.tw ?: 0
+                val maxWidth = spaceWidth * ScreenManager.ENTRY_SIZE - 20
+
+                val displayTitle = if (maxWidth > 0 && font.width(title) > maxWidth) {
+                    Component.literal(font.plainSubstrByWidth(title.string, maxWidth - font.width("...")) + "...")
+                } else {
+                    title
+                }
+
+                lastDisplayTitle = displayTitle
+                ScreenManager.customIndexTitle = displayTitle
 
                 context.push()
                 RenderSystem.disableDepthTest()
-                val client = Minecraft.getInstance()
                 val texts = listOf(ClientTooltipComponent.create(title.visualOrderText))
                 EmiRenderHelper.drawTooltip(client.screen, context, texts, mouseX, mouseY)
                 context.pop()
-
             } else {
-                ScreenManager.removeCustomIndexTitle(title)
+                ScreenManager.removeCustomIndexTitle(lastDisplayTitle ?: title)
             }
         } else if (style == ButtonStyle.TOP) {
             context.drawTexture(TEXTURE_DEFAULT, x, y + height - 2, 32, 14, width, 2)

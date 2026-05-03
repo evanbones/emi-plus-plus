@@ -26,11 +26,16 @@ val developmentFabric: Configuration by configurations.getting
 val fabricLoaderVersion: String by rootProject
 val forgeConfigApiPortVersion: String by project
 val forgeVersion: String by project
+val mixinExtrasVersion: String by project
+
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
     modImplementation(libs.fabric.kotlin)
     modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forgeConfigApiPortVersion")
     modImplementation(libs.emi.fabric)
+
+    include(modImplementation("io.github.llamalad7:mixinextras-fabric:$mixinExtrasVersion")!!)
+    annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
 
     common(project(":common", "namedElements")) { isTransitive = false }
     shadowCommon(project(":common", "transformProductionFabric")) { isTransitive = false }

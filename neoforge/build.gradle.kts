@@ -41,10 +41,9 @@ dependencies {
     }
     modImplementation("mekanism:Mekanism:1.21.1-10.7.0.55")
     modImplementation("dev.emi:emi-neoforge:$emiVersion")
-    modImplementation(libs.kubejs.neoforge)
 
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
-    implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)
+    implementation("io.github.llamalad7:mixinextras-neoforge:$mixinExtrasVersion")
+    annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
 
     common(project(":common", "namedElements")) { isTransitive = false }
     shadowCommon(project(":common", "transformProductionNeoForge")) { isTransitive = false }

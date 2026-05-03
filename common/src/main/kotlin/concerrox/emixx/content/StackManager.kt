@@ -9,6 +9,7 @@ import dev.emi.emi.registry.EmiStackList
 import dev.emi.emi.runtime.EmiHidden
 import dev.emi.emi.screen.EmiScreenManager
 import dev.emi.emi.search.EmiSearch
+import net.minecraft.resources.ResourceLocation
 
 object StackManager {
 
@@ -41,6 +42,11 @@ object StackManager {
      * Stacks that are already laid out on the grid, and are going to be displayed.
      */
     internal var displayedStacks = mutableListOf<EmiStack>()
+
+    /**
+     * Stacks that are currently expanded.
+     */
+    internal val expandedStackGroups = mutableSetOf<ResourceLocation>()
 
     /**
      * A layout for the stacks, recreated every time when first rendered
@@ -78,7 +84,6 @@ object StackManager {
 
     private fun buildGroupedStacks(query: String?) {
         val isFullIndex = searchedStacks.size == indexStacks.size
-
         groupedStacks = if (isFullIndex) groupedIndexStacks.map {
             // TODO: fix this
             it
@@ -86,6 +91,12 @@ object StackManager {
             groupedIndexStacks = StackGroupManager.buildGroupedStacks(searchedStacks)
             groupedIndexStacks
         } else StackGroupManager.buildGroupedStacks(searchedStacks)
+
+        groupedStacks.forEach {
+            if (it is EmiGroupStack) {
+                it.isExpanded = expandedStackGroups.contains(it.group.id)
+            }
+        }
     }
 
     private fun buildDisplayedStacks() {
@@ -117,8 +128,10 @@ object StackManager {
                     for (i in 0 until ingredient.items.size) {
                         stacks.removeAt(stacks.indexOf(ingredient) + 1)
                     }
+                    expandedStackGroups -= ingredient.group.id
                 } else {
                     stacks.addAll(stacks.indexOf(ingredient) + 1, ingredient.items)
+                    expandedStackGroups += ingredient.group.id
                 }
                 // TODO: fix this
                 displayedStacks = stacks.toMutableList()
@@ -129,5 +142,4 @@ object StackManager {
             else -> {}
         }
     }
-
 }
