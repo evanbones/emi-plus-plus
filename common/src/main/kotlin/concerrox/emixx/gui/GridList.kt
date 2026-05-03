@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.Screen
 abstract class GridList<Contents>(
     private val screen: Screen
 ) : ContainerObjectSelectionList<GridList.TripleEntry<Contents>>(
-    Minecraft.getInstance(), screen.width, screen.height, 32, screen.height - 32, TripleEntry.HEIGHT
+    Minecraft.getInstance(), screen.width, screen.height, 0, TripleEntry.HEIGHT
 ) {
 
     init {

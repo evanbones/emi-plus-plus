@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "concerrox.emixx.neoforge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "plugin": "concerrox.emixx.neoforge.mixinplugin.EmiPlusPlusNeoForgeMixinPlugin",
+  "client": [
+    "mekanism.GuiElementHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+  ]
+}

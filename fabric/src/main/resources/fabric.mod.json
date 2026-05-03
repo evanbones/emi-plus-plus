@@ -9,8 +9,8 @@
     "evanbones"
   ],
   "contact": {
-    "homepage": "https://github.com/ConcerroX/emi-plus-plus/",
-    "sources": "https://github.com/ConcerroX/emi-plus-plus/"
+    "homepage": "https://github.com/evanbones/emi-plus-plus/",
+    "sources": "https://github.com/evanbones/emi-plus-plus/"
   },
   "license": "MIT",
   "icon": "icon.png",
@@ -36,11 +36,11 @@
     "emixx-common.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.25",
-    "minecraft": "~1.20.1",
-    "java": ">=17",
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
     "fabric-language-kotlin": ">=1.13.3+kotlin.2.1.21",
-    "forgeconfigapiport": ">=8.0.0"
+    "forgeconfigapiport": ">=21.0.0"
   },
   "accessWidener": "emixx-common.accesswidener"
 }

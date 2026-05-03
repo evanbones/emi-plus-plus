@@ -7,7 +7,7 @@ import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.WeatheringCopperFullBlock
 
-internal class CopperBlockItemGroup : StackGroup(ResourceLocation("copper_blocks")) {
+internal class CopperBlockItemGroup : StackGroup(ResourceLocation.withDefaultNamespace("copper_blocks")) {
 
     companion object {
         private val WAXED_COPPER_BLOCK_ITEMS = arrayOf(

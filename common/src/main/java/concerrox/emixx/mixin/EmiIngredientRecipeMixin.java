@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class EmiIngredientRecipeMixin {
 
     @Unique
-    private static final ResourceLocation BUTTONS_TEXTURE = new ResourceLocation("emixx", "textures/gui/buttons.png");
+    private static final ResourceLocation BUTTONS_TEXTURE = ResourceLocation.fromNamespaceAndPath("emixx", "textures/gui/buttons.png");
 
     @Inject(method = "addWidgets", at = @At("TAIL"))
     public void addCreateStackGroupButton(WidgetHolder widgets, CallbackInfo ci) {

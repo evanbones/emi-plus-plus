@@ -44,15 +44,15 @@ public abstract class EmiScreenManagerMixin {
      * Vanilla and Berry themes put tabs on the sides, so no header offset is needed.
      */
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "createScreenSpace", name = "headerOffset")
-    private static int modifyHeaderOffset(int original, EmiScreenManager.SidebarPanel panel, Screen screen,
+    private static int modifyHeaderOffset(int headerOffset, EmiScreenManager.SidebarPanel panel, Screen screen,
                                           List<Bounds> exclusion) {
         if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get()) {
             // Check current theme
             if (CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.DEFAULT) {
-                return original + CreativeModeTabGui.CREATIVE_MODE_TAB_HEIGHT;
+                return headerOffset + CreativeModeTabGui.CREATIVE_MODE_TAB_HEIGHT;
             }
         }
-        return original;
+        return headerOffset;
     }
 
     /**

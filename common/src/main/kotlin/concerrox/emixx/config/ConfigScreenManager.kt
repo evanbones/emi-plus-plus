@@ -13,9 +13,10 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.contents.TranslatableContents
-import net.minecraftforge.common.ForgeConfigSpec
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue
+import net.neoforged.neoforge.common.ModConfigSpec
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue
 import java.util.function.Supplier
+
 
 object ConfigScreenManager {
 
@@ -47,10 +48,11 @@ object ConfigScreenManager {
                 val itemValue = groupValue.get<ConfigValue<Any>>(itemKey)
                 val itemTitle = text("configuration.$itemKey")
 
-                val itemTooltip = listOf(ClientTooltipComponent.create(text("configuration.$itemKey.tooltip").visualOrderText))
+                val itemTooltip =
+                    listOf(ClientTooltipComponent.create(text("configuration.$itemKey.tooltip").visualOrderText))
 
                 val itemWidget = when (itemValue) {
-                    is ForgeConfigSpec.BooleanValue -> BooleanWidget(
+                    is ModConfigSpec.BooleanValue -> BooleanWidget(
                         itemTitle,
                         itemTooltip,
                         searcher,
@@ -58,10 +60,12 @@ object ConfigScreenManager {
                     )
 
                     else -> ActionWidget(itemTitle, itemTooltip, searcher) {
-                        Minecraft.setScreen(when (itemValue) {
-                            EmiPlusPlusConfig.disabledCreativeModeTabs -> CreativeModeTabConfigScreen(configScreen)
-                            else -> error("[EMI++] Undefined config screen for $itemKey!")
-                        })
+                        Minecraft.setScreen(
+                            when (itemValue) {
+                                EmiPlusPlusConfig.disabledCreativeModeTabs -> CreativeModeTabConfigScreen()
+                                else -> error("[EMI++] Undefined config screen for $itemKey!")
+                            }
+                        )
                     }
                 }.apply {
                     this.group = EmiConfig.ConfigGroup(groupKey)
@@ -86,7 +90,7 @@ object ConfigScreenManager {
     }
 
     private fun createBM(
-        bv: ForgeConfigSpec.BooleanValue, configSpec: ForgeConfigSpec
+        bv: ModConfigSpec.BooleanValue, configSpec: ModConfigSpec
     ): Mutator<Boolean> {
         return this.configScreen.run {
             object : Mutator<Boolean>() {

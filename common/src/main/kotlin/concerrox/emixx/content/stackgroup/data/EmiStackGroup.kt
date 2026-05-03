@@ -63,15 +63,15 @@ class EmiStackGroup(
                 if (colonCount == 2) {
                     val type = str.substringBefore(':')
                     val id = str.substringAfter(':')
-                    if (str.startsWith("#")) {
-                        return JsonObject().apply {
+                    return if (str.startsWith("#")) {
+                        JsonObject().apply {
                             addProperty("type", "tag")
                             addProperty("registry", type.substring(1))
                             addProperty("id", id)
                             addProperty("tag", id)
                         }
                     } else {
-                        return JsonObject().apply {
+                        JsonObject().apply {
                             addProperty("type", type)
                             addProperty("id", id)
                         }
@@ -104,7 +104,7 @@ class EmiStackGroup(
                 if (json !is JsonObject) error("Not a JSON object")
 
                 val finalId = if (json.has("id")) {
-                    ResourceLocation(GsonHelper.getAsString(json, "id"))
+                    ResourceLocation.parse(GsonHelper.getAsString(json, "id"))
                 } else {
                     filenameId
                 }

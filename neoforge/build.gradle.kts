@@ -7,25 +7,20 @@ plugins {
 
 architectury {
     platformSetupLoomIde()
-    forge()
+    neoForge()
 }
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
-
-    forge {
-        mixinConfig("emixx-common.mixins.json")
-        mixinConfig("emixx.mixins.json")
-    }
 }
 
 val common: Configuration by configurations.creating
 val shadowCommon: Configuration by configurations.creating
-val developmentForge: Configuration by configurations.getting
+val developmentNeoForge: Configuration by configurations.getting
 @Suppress("UnstableApiUsage") configurations {
     compileOnly.configure { extendsFrom(common) }
     runtimeOnly.configure { extendsFrom(common) }
-    developmentForge.extendsFrom(common)
+    developmentNeoForge.extendsFrom(common)
 }
 
 repositories {
@@ -35,28 +30,29 @@ repositories {
     maven("https://api.modrinth.com/maven")
 }
 
-val forgeVersion: String by project
-val kotlinForForgeVersion: String by project
-val emiVersion: String by project
-val mixinExtrasVersion: String by project
+val neoForgeVersion: String by rootProject
+val kotlinForForgeVersion: String by rootProject
+val emiVersion: String by rootProject
+val mixinExtrasVersion: String by rootProject
 dependencies {
-    forge("net.minecraftforge:forge:$forgeVersion")
-    implementation("thedarkcolour:kotlinforforge:$kotlinForForgeVersion")
-
-    modCompileOnly("maven.modrinth:mekanism:uxe1WQp4")
-    modImplementation("dev.emi:emi-forge:$emiVersion")
-    modImplementation(libs.kubejs.forge)
+    neoForge("net.neoforged:neoforge:$neoForgeVersion")
+    implementation("thedarkcolour:kotlinforforge-neoforge:$kotlinForForgeVersion") {
+        exclude(group = "net.neoforged.fancymodloader", module = "loader")
+    }
+    modImplementation("mekanism:Mekanism:1.21.1-10.7.0.55")
+    modImplementation("dev.emi:emi-neoforge:$emiVersion")
+    modImplementation(libs.kubejs.neoforge)
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")!!)
     implementation(include("io.github.llamalad7:mixinextras-forge:$mixinExtrasVersion")!!)
 
     common(project(":common", "namedElements")) { isTransitive = false }
-    shadowCommon(project(":common", "transformProductionForge")) { isTransitive = false }
+    shadowCommon(project(":common", "transformProductionNeoForge")) { isTransitive = false }
 }
 
 tasks.processResources {
     inputs.property("version", project.version)
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand(
             mapOf(
                 "version" to project.version,
@@ -83,13 +79,13 @@ publishMods {
     file.set(tasks.remapJar.flatMap { it.archiveFile })
     changelog = rootProject.file("CHANGELOG-LATEST.md").readText()
     type = ReleaseType.STABLE
-    displayName = "EMI++ Forge - ${project.version}"
-    modLoaders.add("forge")
+    displayName = "EMI++ NeoForge - ${project.version}"
+    modLoaders.add("neoforge")
 
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = "1411826"
-        minecraftVersions.add("1.20.1")
+        minecraftVersions.add("1.21.1")
 
         requires { slug = "kotlin-for-forge" }
         requires { slug = "emi" }
@@ -98,7 +94,7 @@ publishMods {
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = "N9WucjHL"
-        minecraftVersions.add("1.20.1")
+        minecraftVersions.add("1.21.1")
 
         requires { slug = "kotlin-for-forge" }
         requires { slug = "emi" }

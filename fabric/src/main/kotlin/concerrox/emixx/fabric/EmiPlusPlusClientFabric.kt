@@ -2,15 +2,15 @@ package concerrox.emixx.fabric
 
 import concerrox.emixx.EmiPlusPlus
 import concerrox.emixx.config.EmiPlusPlusConfig
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry
 import net.fabricmc.api.ClientModInitializer
-import net.minecraftforge.fml.config.ModConfig
+import net.neoforged.fml.config.ModConfig
 
 class EmiPlusPlusClientFabric : ClientModInitializer {
 
     override fun onInitializeClient() {
         EmiPlusPlus.initializeClient(EmiPlusPlusPlatformFabric)
-        ForgeConfigRegistry.INSTANCE.register(
+        NeoForgeConfigRegistry.INSTANCE.register(
             EmiPlusPlus.MOD_ID, ModConfig.Type.CLIENT, EmiPlusPlusConfig.CONFIG_SPEC, "emixx/emixx-client.toml"
         )
     }

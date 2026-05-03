@@ -18,9 +18,9 @@ dependencies {
 
     modCompileOnly("dev.emi:emi-xplat-intermediary:$emiVersion")
 
-    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common:$forgeConfigApiPortVersion")
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:$forgeConfigApiPortVersion")
 
-    modCompileOnly(libs.kubejs.forge)
+    modCompileOnly(libs.kubejs.neoforge)
 }
 
 tasks.remapJar {

@@ -6,6 +6,7 @@ import concerrox.emixx.content.ScreenManager
 import concerrox.emixx.content.StackManager
 import concerrox.emixx.content.creativemodetab.gui.CreativeModeTabGui
 import concerrox.emixx.content.creativemodetab.gui.itemtab.ItemTab
+import concerrox.emixx.res
 import dev.emi.emi.api.stack.EmiStack
 import dev.emi.emi.screen.EmiScreenManager
 import net.minecraft.client.gui.components.Button
@@ -33,7 +34,7 @@ object CreativeModeTabManager {
     private val creativeModeTabs = getVisibleCreativeModeTabs()
 
     internal fun loadDisabledTabs() = EmiPlusPlusConfig.disabledCreativeModeTabs.get().map {
-        ResourceLocation(it)
+        ResourceLocation.parse(it)
     }.mapNotNull { creativeModeTab -> BuiltInRegistries.CREATIVE_MODE_TAB.get(creativeModeTab) }
 
     internal fun getVisibleCreativeModeTabs() = CreativeModeTabs.tabs().toMutableList().apply {

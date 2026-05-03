@@ -1,6 +1,6 @@
 modLoader = "kotlinforforge"
-loaderVersion = "[4.10,)"
-issueTrackerURL = "https://github.com/ConcerroX/emi-plus-plus/issues"
+loaderVersion = "[5.3,)"
+issueTrackerURL = "https://github.com/evanbones/emi-plus-plus/issues"
 license = "MIT Licensed"
 
 [[mods]]
@@ -20,22 +20,15 @@ config = "emixx.mixins.json"
 config = "emixx-common.mixins.json"
 
 [[dependencies.emixx]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[21.1,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.emixx]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20.1, 1.21)"
+versionRange = "[1.21.1,)"
 ordering = "NONE"
 side = "CLIENT"
-
-[[dependencies.emixx]]
-modId = "emi"
-mandatory = true
-versionRange = "[1.1.22,)"
-ordering = "BEFORE"
-side = "BOTH"

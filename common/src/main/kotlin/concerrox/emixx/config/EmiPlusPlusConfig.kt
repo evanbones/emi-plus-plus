@@ -1,21 +1,23 @@
 package concerrox.emixx.config
 
+import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.file.CommentedFileConfig
 import concerrox.emixx.EmiPlusPlus
-import net.minecraftforge.common.ForgeConfigSpec
+import net.neoforged.fml.config.IConfigSpec
+import net.neoforged.neoforge.common.ModConfigSpec
 import kotlin.io.path.div
 
-private fun ForgeConfigSpec.Builder.group(path: String, action: ForgeConfigSpec.Builder.() -> Unit) = apply {
+private fun ModConfigSpec.Builder.group(path: String, action: ModConfigSpec.Builder.() -> Unit) = apply {
     push(path)
     action(this)
     pop()
 }
 
-class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
+class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
 
     companion object {
-        private val CONFIG_PAIR = ForgeConfigSpec.Builder().configure(::EmiPlusPlusConfig)
-        val CONFIG_SPEC: ForgeConfigSpec = CONFIG_PAIR.right
+        private val CONFIG_PAIR = ModConfigSpec.Builder().configure(::EmiPlusPlusConfig)
+        val CONFIG_SPEC: ModConfigSpec = CONFIG_PAIR.right
         val CONFIG_DIRECTORY_PATH = EmiPlusPlus.PLATFORM.configDirectoryPath / EmiPlusPlus.MOD_ID
 
         fun save() {
@@ -25,18 +27,26 @@ class EmiPlusPlusConfig(builder: ForgeConfigSpec.Builder) {
         fun ensureLoaded() {
             if (!CONFIG_SPEC.isLoaded) {
                 val configFile = CONFIG_DIRECTORY_PATH / "${EmiPlusPlus.MOD_ID}-common.toml"
-                val configData = CommentedFileConfig.builder(configFile).sync().build()
+                val configData = CommentedFileConfig.builder(configFile)
+                    .sync()
+                    .preserveInsertionOrder()
+                    .autosave()
+                    .build()
                 configData.load()
-                CONFIG_SPEC.setConfig(configData)
+
+                CONFIG_SPEC.acceptConfig(object : IConfigSpec.ILoadedConfig {
+                    override fun config(): CommentedConfig = configData
+                    override fun save() = configData.save()
+                })
             }
         }
 
-        lateinit var enableCreativeModeTabs: ForgeConfigSpec.BooleanValue
-        lateinit var syncSelectedCreativeModeTab: ForgeConfigSpec.BooleanValue
-        lateinit var enableBerryTheme: ForgeConfigSpec.BooleanValue
-        lateinit var disabledCreativeModeTabs: ForgeConfigSpec.ConfigValue<List<String>>
-        lateinit var enableStackGroups: ForgeConfigSpec.BooleanValue
-        lateinit var enableCreateStackGroupButton: ForgeConfigSpec.BooleanValue
+        lateinit var enableCreativeModeTabs: ModConfigSpec.BooleanValue
+        lateinit var syncSelectedCreativeModeTab: ModConfigSpec.BooleanValue
+        lateinit var enableBerryTheme: ModConfigSpec.BooleanValue
+        lateinit var disabledCreativeModeTabs: ModConfigSpec.ConfigValue<List<String>>
+        lateinit var enableStackGroups: ModConfigSpec.BooleanValue
+        lateinit var enableCreateStackGroupButton: ModConfigSpec.BooleanValue
     }
 
     init {

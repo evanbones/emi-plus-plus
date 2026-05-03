@@ -2,9 +2,8 @@ package concerrox.emixx.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.emi.emi.config.SidebarTheme;
+import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.BoMScreen;
-import dev.emi.emi.config.EmiConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -22,19 +21,22 @@ public class BoMScreenMixin extends Screen {
 
     @Inject(at = @At("HEAD"), method = "render", remap = true)
     private void render(GuiGraphics raw, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (EmiConfig.rightSidebarTheme == SidebarTheme.VANILLA) {
-            raw.pose().pushPose();
-            raw.pose().translate(0, 0, -200);
-            this.renderBackground(raw);
-            raw.pose().popPose();
-        } else {
-            this.renderBackground(raw);
-        }
+        renderBackground(raw, mouseX, mouseY, delta); // Render the vanilla blurry background
     }
 
     @WrapOperation(method = "render",
-            at = @At(value = "INVOKE", target = "Ldev/emi/emi/screen/BoMScreen;renderDirtBackground(Lnet/minecraft/client/gui/GuiGraphics;)V"),
+            at = @At(value = "INVOKE", target = "Ldev/emi/emi/runtime/EmiDrawContext;fill(IIIII)V", remap = false),
             remap = true)
-    private void suppressDirtBackground(BoMScreen instance, GuiGraphics guiGraphics, Operation<Void> original) {
+    private void modifyMouseReleased(EmiDrawContext instance, int x, int y, int width, int height, int color,
+                                     Operation<Void> original) {
+        // Passed so that the dark background will not be rendered
     }
+
+    @WrapOperation(method = "render", at = @At(value = "INVOKE",
+            target = "Ldev/emi/emi/screen/BoMScreen;renderMenuBackground(Lnet/minecraft/client/gui/GuiGraphics;)V"),
+            remap = true)
+    private void modifyMouseReleased(BoMScreen instance, GuiGraphics guiGraphics, Operation<Void> original) {
+        // Passed so that the dirt background will not be rendered
+    }
+
 }

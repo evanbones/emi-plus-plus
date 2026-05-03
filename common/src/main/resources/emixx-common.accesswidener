@@ -3,10 +3,13 @@ accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (L
 accessible method net/minecraft/client/gui/screens/Screen addWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
 accessible method net/minecraft/client/gui/screens/Screen removeWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)V
 
-mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/GridLayout;
+accessible method net/minecraft/client/gui/components/tabs/TabNavigationBar <init> (ILnet/minecraft/client/gui/components/tabs/TabManager;Ljava/lang/Iterable;)V
+mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/LinearLayout;
 mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar tabButtons Lcom/google/common/collect/ImmutableList;
-accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/GridLayout;
+mutable field net/minecraft/client/gui/components/tabs/TabNavigationBar tabs Lcom/google/common/collect/ImmutableList;
+accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar layout Lnet/minecraft/client/gui/layouts/LinearLayout;
 accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar tabButtons Lcom/google/common/collect/ImmutableList;
+accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar tabs Lcom/google/common/collect/ImmutableList;
 accessible field net/minecraft/client/gui/components/tabs/TabNavigationBar width I
 
 accessible field net/minecraft/client/gui/GuiGraphics pose Lcom/mojang/blaze3d/vertex/PoseStack;

@@ -5,7 +5,7 @@ import dev.emi.emi.api.stack.Comparison
 import dev.emi.emi.api.stack.EmiStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
@@ -23,9 +23,9 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
 
     override fun isEqual(stack: EmiStack?): Boolean {
         if (stack is GroupedEmiStack<*>) {
-            return realStack.isEqual(stack.realStack, Comparison.compareNbt())
+            return realStack.isEqual(stack.realStack, Comparison.compareComponents())
         }
-        return realStack.isEqual(stack, Comparison.compareNbt())
+        return realStack.isEqual(stack, Comparison.compareComponents())
     }
 
     override fun isEqual(stack: EmiStack?, comparison: Comparison?): Boolean {
@@ -38,7 +38,7 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other is GroupedEmiStack<*>) {
-            return realStack.isEqual(other.realStack, Comparison.compareNbt())
+            return realStack.isEqual(other.realStack, Comparison.compareComponents())
         }
         return realStack == other
     }
@@ -57,7 +57,7 @@ class GroupedEmiStack<T : EmiStack>(val realStack: T, val stackGroup: StackGroup
         return copy
     }
 
-    override fun getNbt(): CompoundTag? = realStack.nbt
+    override fun getComponentChanges(): DataComponentPatch = realStack.componentChanges
 
     override fun getKey(): Any = realStack.key
     override fun getId(): ResourceLocation = realStack.id

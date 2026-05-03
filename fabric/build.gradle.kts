@@ -71,7 +71,7 @@ publishMods {
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = "1411826"
-        minecraftVersions.add("1.20.1")
+        minecraftVersions.add("1.21.1")
 
         requires { slug = "fabric-api" }
         requires { slug = "fabric-language-kotlin" }
@@ -81,7 +81,7 @@ publishMods {
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = "N9WucjHL"
-        minecraftVersions.add("1.20.1")
+        minecraftVersions.add("1.21.1")
 
         requires { slug = "fabric-api" }
         requires { slug = "fabric-language-kotlin" }

@@ -38,8 +38,8 @@ object StackGroupManager {
             val tagName = GsonHelper.getAsString(json, "tag")
             val registryName = GsonHelper.getAsString(json, "registry", "minecraft:item")
 
-            val registryKey = ResourceKey.createRegistryKey<Any>(ResourceLocation(registryName))
-            val tagKey = TagKey.create(registryKey, ResourceLocation(tagName))
+            val registryKey = ResourceKey.createRegistryKey<Any>(ResourceLocation.parse(registryName))
+            val tagKey = TagKey.create(registryKey, ResourceLocation.parse(tagName))
 
             val nameKey = if (json.has("name")) GsonHelper.getAsString(json, "name") else null
             val customName = nameKey?.let { Component.translatable(it) }
@@ -139,7 +139,7 @@ object StackGroupManager {
             for ((location, resource) in resources) {
                 val namespace = location.namespace
                 val path = location.path.removePrefix("stack_groups/").removeSuffix(".json")
-                val id = ResourceLocation(namespace, path)
+                val id = ResourceLocation.fromNamespaceAndPath(namespace, path)
                 loadGroup(id, resource.openAsReader().use { JsonParser.parseReader(it).asJsonObject }, loadedGroups)
             }
         } catch (e: Exception) {
@@ -157,7 +157,7 @@ object StackGroupManager {
                             if (idString == null && json.has("tag")) idString = json.get("tag").asString
 
                             if (idString != null) {
-                                val id = ResourceLocation(idString)
+                                val id = ResourceLocation.parse(idString)
                                 loadGroup(id, json, loadedGroups)
                             }
                         } catch (e: Exception) {
@@ -212,13 +212,12 @@ object StackGroupManager {
         val groupMatches = IdentityHashMap<StackGroup, MutableList<GroupedEmiStack<EmiStack>>>()
 
         for (emiStack in source) {
-            // FAST PATH: Instant O(1) lookup, 0 NBT comparisons!
             var variants = stackToGroupedStacks[emiStack]
 
-            // FALLBACK: Slower NBT check only if the stack instance is new/dynamic
             if (variants == null) {
                 val idVariants = itemToGroupedStacks[emiStack.id] ?: continue
-                variants = idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareNbt()) }.toMutableList()
+                variants =
+                    idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareComponents()) }.toMutableList()
                 if (variants.isEmpty()) continue
             }
 
@@ -239,7 +238,8 @@ object StackGroupManager {
                 val idVariants = itemToGroupedStacks[emiStack.id]
                 if (idVariants != null) {
                     variants =
-                        idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareNbt()) }.toMutableList()
+                        idVariants.filter { it.realStack.isEqual(emiStack, Comparison.compareComponents()) }
+                            .toMutableList()
                 }
             }
 
@@ -327,7 +327,7 @@ object StackGroupManager {
         val wasAdded = groupStack.append(groupedStack)
 
         if (wasAdded && group.isEnabled) {
-            if (groupedEmiStacks.none { it.isEqual(stack, Comparison.compareNbt()) }) {
+            if (groupedEmiStacks.none { it.isEqual(stack, Comparison.compareComponents()) }) {
                 groupedEmiStacks.add(stack)
             }
 

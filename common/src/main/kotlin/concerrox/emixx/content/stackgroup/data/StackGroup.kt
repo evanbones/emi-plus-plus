@@ -14,6 +14,5 @@ abstract class StackGroup(val id: ResourceLocation, val name: Component? = null)
         return null
     }
 
-    companion object {
-    }
+    companion object
 }

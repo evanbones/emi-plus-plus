@@ -14,8 +14,8 @@ import dev.emi.emi.runtime.EmiHidden
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.locale.Language
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 
@@ -45,7 +45,7 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
 
     private class StackWrapper(val stack: EmiStack) {
         override fun equals(other: Any?): Boolean {
-            return other is StackWrapper && stack.isEqual(other.stack, Comparison.compareNbt())
+            return other is StackWrapper && stack.isEqual(other.stack, Comparison.compareComponents())
         }
 
         override fun hashCode(): Int = stack.id.hashCode()
@@ -70,7 +70,7 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
         ),
     )
 
-    override fun getNbt(): CompoundTag? = null
+    override fun getComponentChanges(): DataComponentPatch = DataComponentPatch.EMPTY
 
     override fun render(raw: GuiGraphics, x: Int, y: Int, delta: Float, flags: Int) {
         val currentItems = items
