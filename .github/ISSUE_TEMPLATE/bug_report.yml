@@ -35,6 +35,7 @@ body:
       label: Mod Version
       description: The version of EMI++ Backport you were using
       options:
+        - "2.0.0"
         - "1.4.0"
         - "1.3.3"
         - "1.3.2"
@@ -67,6 +68,7 @@ body:
       options:
         - "Forge"
         - "Fabric"
+        - "NeoForge"
     validations:
       required: true
   - type: textarea
