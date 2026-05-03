@@ -1,6 +1,5 @@
 package concerrox.emixx.content.creativemodetab.gui
 
-import concerrox.emixx.config.EmiPlusPlusConfig
 import concerrox.emixx.content.ScreenManager
 import concerrox.emixx.content.creativemodetab.CreativeModeTabManager
 import concerrox.emixx.content.creativemodetab.gui.itemtab.ItemTabManager
@@ -21,12 +20,12 @@ object CreativeModeTabGui {
     private const val EMI_HEADER_HEIGHT = 18
     const val VERTICAL_TAB_WIDTH = 35
 
-    enum class TabTheme { DEFAULT, VANILLA, BERRY }
+    enum class TabTheme { DEFAULT, VANILLA }
 
     val currentTheme: TabTheme
         get() {
             if (EmiConfig.rightSidebarTheme == SidebarTheme.VANILLA) {
-                return if (EmiPlusPlusConfig.enableBerryTheme.get()) TabTheme.BERRY else TabTheme.VANILLA
+                return TabTheme.VANILLA
             }
             return TabTheme.DEFAULT
         }
@@ -53,9 +52,10 @@ object CreativeModeTabGui {
         CreativeModeTabManager.nextPage()
     }.matchScreenManagerVisibility().pos(0, 0)
 
-    private val buttonScrollDown = ImageButton(8, 4, u = 0, v = 0, { CreativeModeTabManager.scrollOffset < CreativeModeTabManager.maxScroll }) {
-        CreativeModeTabManager.nextPage()
-    }.matchScreenManagerVisibility().withTexture(res("textures/gui/scroll_down.png"), 8, 4).pos(0, 0)
+    private val buttonScrollDown =
+        ImageButton(8, 4, u = 0, v = 0, { CreativeModeTabManager.scrollOffset < CreativeModeTabManager.maxScroll }) {
+            CreativeModeTabManager.nextPage()
+        }.matchScreenManagerVisibility().withTexture(res("textures/gui/scroll_down.png"), 8, 8).pos(0, 0)
 
     private var scrollAccumulator = 0.0
 
@@ -90,7 +90,7 @@ object CreativeModeTabGui {
 
             val leftX = indexScreenSpace.tx - VERTICAL_TAB_WIDTH - margin + horizontalOffset
 
-            if (theme == TabTheme.BERRY) {
+            if (theme == TabTheme.VANILLA) {
                 val availableHeight = indexScreenSpace.th * ScreenManager.ENTRY_SIZE
                 tabCount = (availableHeight / 27).toUInt().coerceAtLeast(1u)
 
@@ -151,7 +151,7 @@ object CreativeModeTabGui {
 
         if (theme == TabTheme.DEFAULT) {
             targetBar = topTabNavigationBar
-        } else if (theme == TabTheme.VANILLA || theme == TabTheme.BERRY) {
+        } else if (theme == TabTheme.VANILLA) {
             targetBar = leftTabNavigationBar
         }
 

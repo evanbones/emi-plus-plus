@@ -15,7 +15,6 @@ import dev.emi.emi.config.SidebarType;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.search.EmiSearch;
 import kotlin.NotImplementedError;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,14 +41,13 @@ public abstract class EmiScreenManagerMixin {
     }
 
     /**
-     * Add extra space for the EMI++ header, ONLY if in Default theme.
-     * Vanilla and Berry themes put tabs on the sides, so no header offset is needed.
+     * Add extra space for the EMI++ header, if in Default theme.
+     * Vanilla theme puts tabs on the sides, so no header offset is needed.
      */
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "createScreenSpace", name = "headerOffset")
     private static int modifyHeaderOffset(int headerOffset, EmiScreenManager.SidebarPanel panel, Screen screen,
                                           List<Bounds> exclusion) {
         if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get()) {
-            // Check current theme
             if (CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.DEFAULT) {
                 return headerOffset + CreativeModeTabGui.CREATIVE_MODE_TAB_HEIGHT;
             }
@@ -114,25 +112,17 @@ public abstract class EmiScreenManagerMixin {
     }
 
     /**
-     * Add an exclusion area so the EMI widget shrinks horizontally to make room for the Berry tabs.
+     * Add an exclusion area so the EMI widget shrinks horizontally to make room for the left creative tabs.
      */
     @ModifyVariable(at = @At("HEAD"), method = "createScreenSpace", argsOnly = true)
     private static List<Bounds> addEmixxExclusionAreas(List<Bounds> exclusion, EmiScreenManager.SidebarPanel panel) {
-        if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get() &&
-                CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.BERRY) {
+        if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get()) {
 
             List<Bounds> newExclusions = new ArrayList<>();
-            int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-
-            int maxRight = screenWidth - 38;
+            int tabSpace = 35;
 
             for (Bounds b : exclusion) {
-                int newRight = Math.min(b.x() + b.width() + 43, maxRight);
-                int newWidth = newRight - b.x();
-
-                if (newWidth > 0) {
-                    newExclusions.add(new Bounds(b.x(), b.y(), newWidth, b.height()));
-                }
+                newExclusions.add(new Bounds(b.x(), b.y(), b.width() + tabSpace, b.height()));
             }
             return newExclusions;
         }

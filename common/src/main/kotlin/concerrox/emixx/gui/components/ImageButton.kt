@@ -14,9 +14,17 @@ import net.minecraft.resources.ResourceLocation
 import java.util.function.BooleanSupplier
 
 class ImageButton : SizedButtonWidget {
+    private val isActiveSupplier: BooleanSupplier
+    private val baseU: Int
+    private val baseV: Int
+
     constructor(
         width: Int, height: Int, u: Int, v: Int, isActive: BooleanSupplier, action: OnPress
-    ) : super(0, 0, width, height, u, v, isActive, action)
+    ) : super(0, 0, width, height, u, v, isActive, action) {
+        this.isActiveSupplier = isActive
+        this.baseU = u
+        this.baseV = v
+    }
 
     companion object {
         internal val TEXTURE = res("textures/gui/buttons.png")
@@ -44,12 +52,15 @@ class ImageButton : SizedButtonWidget {
 
     override fun renderWidget(raw: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         if (matchScreenManagerVisibility && EmiScreenManager.isDisabled()) return
+
+        this.active = isActiveSupplier.asBoolean
+        val currentV = if (!this.active) baseV + height else baseV
+
         RenderSystem.enableBlend()
         RenderSystem.enableDepthTest()
-
         raw.blit(
             texture, x, y,
-            getU(mouseX, mouseY).toFloat(), getV(mouseX, mouseY).toFloat(),
+            baseU.toFloat(), currentV.toFloat(),
             width, height, textureWidth, textureHeight
         )
 

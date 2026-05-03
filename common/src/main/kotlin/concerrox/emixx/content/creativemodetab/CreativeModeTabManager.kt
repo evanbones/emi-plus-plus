@@ -130,7 +130,7 @@ object CreativeModeTabManager {
         val count = CreativeModeTabGui.tabCount.toInt()
         val pageTabs = creativeModeTabs.drop(scrollOffset).take(count).map { ItemTab(it) }
         val bar = when (CreativeModeTabGui.currentTheme) {
-            CreativeModeTabGui.TabTheme.BERRY, CreativeModeTabGui.TabTheme.VANILLA -> {
+            CreativeModeTabGui.TabTheme.VANILLA -> {
                 CreativeModeTabGui.leftTabNavigationBar.apply { setTabs(pageTabs.toMutableList()) }
             }
 
