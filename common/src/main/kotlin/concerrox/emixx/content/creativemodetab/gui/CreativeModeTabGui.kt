@@ -91,12 +91,11 @@ object CreativeModeTabGui {
             val leftX = indexScreenSpace.tx - VERTICAL_TAB_WIDTH - margin + horizontalOffset
 
             if (theme == TabTheme.VANILLA) {
-                val availableHeight = indexScreenSpace.th * ScreenManager.ENTRY_SIZE
-                tabCount = (availableHeight / 27).toUInt().coerceAtLeast(1u)
+                val availableHeight = (indexScreenSpace.th * ScreenManager.ENTRY_SIZE) + 26
 
+                tabCount = (availableHeight / 27).toUInt().coerceAtLeast(1u)
                 leftTabNavigationBar.visible = true
                 leftTabNavigationBar.pos(leftX, startY)
-
                 buttonScrollDown.visible = true
                 buttonScrollDown.pos(leftX + 13, startY + (tabCount.toInt() * 27) + 6)
             } else {

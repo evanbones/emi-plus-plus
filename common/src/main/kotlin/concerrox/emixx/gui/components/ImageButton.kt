@@ -67,7 +67,7 @@ class ImageButton : SizedButtonWidget {
         if (isMouseOver(mouseX.toDouble(), mouseY.toDouble()) && text != null && active) {
             val context = EmiDrawContext.wrap(raw)
             context.push()
-            RenderSystem.disableDepthTest()
+            raw.pose().translate(0f, 0f, 400f)
             val client = Minecraft.getInstance()
             val texts = text.get().map(EmiPort::ordered).map(ClientTooltipComponent::create)
             EmiRenderHelper.drawTooltip(client.screen, context, texts, mouseX, mouseY)

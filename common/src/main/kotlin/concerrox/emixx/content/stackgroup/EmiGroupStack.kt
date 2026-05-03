@@ -14,10 +14,12 @@ import dev.emi.emi.runtime.EmiHidden
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.client.renderer.entity.ItemRenderer
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.locale.Language
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import java.lang.reflect.Field
 
 class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<GroupedEmiStack<EmiStack>>) : EmiStack() {
 
@@ -92,14 +94,20 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
             } else if (currentItems.size == 2) {
                 matrices().translate(0.5F, 0F, 0F)
                 currentItems[1].render(raw, 1, -1, delta, flags)
+
+                ShadowDropCompat.setSuppress(true)
                 matrices().translate(0F, 0F, 10F)
                 currentItems[0].render(raw, -2, 1, delta, flags)
+                ShadowDropCompat.setSuppress(false)
             } else if (currentItems.size >= 3) {
                 currentItems[2].render(raw, 3, -2, delta, flags)
+
+                ShadowDropCompat.setSuppress(true)
                 matrices().translate(0F, 0F, 10F)
                 currentItems[1].render(raw, 0, 0, delta, flags)
                 matrices().translate(0F, 0F, 10F)
                 currentItems[0].render(raw, -3, 2, delta, flags)
+                ShadowDropCompat.setSuppress(false)
             }
             matrices().popPose()
 
@@ -132,5 +140,31 @@ class EmiGroupStack(val group: StackGroup, internal var itemsNew: MutableList<Gr
 
     override fun hashCode(): Int {
         return group.hashCode()
+    }
+
+    private object ShadowDropCompat {
+        private var shadowField: Field? = null
+        private var initialized = false
+
+        fun setSuppress(suppress: Boolean) {
+            if (!initialized) {
+                initialized = true
+                try {
+                    shadowField = ItemRenderer::class.java.declaredFields
+                        .firstOrNull {
+                            it.type == java.lang.Boolean.TYPE && it.name.contains(
+                                "isRenderingShadow",
+                                ignoreCase = true
+                            )
+                        }
+                    shadowField?.isAccessible = true
+                } catch (_: Exception) {
+                }
+            }
+            try {
+                shadowField?.set(null, suppress)
+            } catch (_: Exception) {
+            }
+        }
     }
 }

@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(value = EmiScreenManager.class, remap = false)
@@ -115,17 +114,18 @@ public abstract class EmiScreenManagerMixin {
      * Add an exclusion area so the EMI widget shrinks horizontally to make room for the left creative tabs.
      */
     @ModifyVariable(at = @At("HEAD"), method = "createScreenSpace", argsOnly = true)
-    private static List<Bounds> addEmixxExclusionAreas(List<Bounds> exclusion, EmiScreenManager.SidebarPanel panel) {
+    private static Bounds modifyEmixxBounds(Bounds bounds, EmiScreenManager.SidebarPanel panel) {
         if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get()) {
-
-            List<Bounds> newExclusions = new ArrayList<>();
-            int tabSpace = 35;
-
-            for (Bounds b : exclusion) {
-                newExclusions.add(new Bounds(b.x(), b.y(), b.width() + tabSpace, b.height()));
+            if (CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.VANILLA) {
+                int tabSpace = 35;
+                return new Bounds(
+                        bounds.x() + tabSpace,
+                        bounds.y(),
+                        Math.max(0, bounds.width() - tabSpace),
+                        bounds.height()
+                );
             }
-            return newExclusions;
         }
-        return exclusion;
+        return bounds;
     }
 }

@@ -4,12 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem
 import concerrox.emixx.content.ScreenManager
 import concerrox.emixx.res
 import concerrox.emixx.util.GuiGraphicsUtils
-import dev.emi.emi.EmiRenderHelper
 import dev.emi.emi.runtime.EmiDrawContext
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.TabButton
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.network.chat.Component
 
 class ItemTabButton(
@@ -73,25 +72,19 @@ class ItemTabButton(
             if (isHovered && title != null) {
                 val client = Minecraft.getInstance()
                 val font = client.font
-
                 val spaceWidth = ScreenManager.indexScreenSpace?.tw ?: 0
                 val maxWidth = spaceWidth * ScreenManager.ENTRY_SIZE - 20
-
                 val displayTitle = if (maxWidth > 0 && font.width(title) > maxWidth) {
                     Component.literal(font.plainSubstrByWidth(title.string, maxWidth - font.width("...")) + "...")
                 } else {
                     title
                 }
-
                 lastDisplayTitle = displayTitle
                 ScreenManager.customIndexTitle = displayTitle
 
-                context.push()
-                RenderSystem.disableDepthTest()
-                val texts = listOf(ClientTooltipComponent.create(title.visualOrderText))
-                EmiRenderHelper.drawTooltip(client.screen, context, texts, mouseX, mouseY)
-                context.pop()
+                this.tooltip = Tooltip.create(displayTitle)
             } else {
+                this.tooltip = null
                 ScreenManager.removeCustomIndexTitle(lastDisplayTitle ?: title)
             }
         } else if (style == ButtonStyle.TOP) {
