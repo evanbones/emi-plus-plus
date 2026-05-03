@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(value = EmiScreenManager.class, remap = false)
@@ -109,5 +110,25 @@ public abstract class EmiScreenManagerMixin {
     private static boolean modifyMouseReleased(EmiIngredient instance, Operation<Boolean> original) {
         if (instance instanceof EmiGroupStack) StackManager.INSTANCE.onStackInteractionDeprecated(instance);
         return original.call(instance);
+    }
+
+    /**
+     * Add an exclusion area so the EMI widget shrinks horizontally to make room for the Berry tabs.
+     */
+    @ModifyVariable(at = @At("HEAD"), method = "createScreenSpace", argsOnly = true)
+    private static List<Bounds> addEmixxExclusionAreas(List<Bounds> exclusion, EmiScreenManager.SidebarPanel panel) {
+        if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get() &&
+                CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.BERRY) {
+
+            var bar = CreativeModeTabGui.INSTANCE.getLeftTabNavigationBar$emixx_common();
+            if (bar.visible) {
+                List<Bounds> newExclusions = new ArrayList<>(exclusion);
+
+                newExclusions.add(new Bounds(bar.getX(), bar.getY(), bar.getWidth() + 8, bar.getHeight()));
+
+                return newExclusions;
+            }
+        }
+        return exclusion;
     }
 }

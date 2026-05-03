@@ -10,12 +10,10 @@ import dev.emi.emi.screen.widget.SizedButtonWidget
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
+import net.minecraft.resources.ResourceLocation
 import java.util.function.BooleanSupplier
 
-
 class ImageButton : SizedButtonWidget {
-
-    // Main constructor
     constructor(
         width: Int, height: Int, u: Int, v: Int, isActive: BooleanSupplier, action: OnPress
     ) : super(0, 0, width, height, u, v, isActive, action)
@@ -29,20 +27,34 @@ class ImageButton : SizedButtonWidget {
     }
 
     private var matchScreenManagerVisibility = false
+    private var textureWidth = 256
+    private var textureHeight = 256
 
     fun matchScreenManagerVisibility(): ImageButton {
         matchScreenManagerVisibility = true
         return this
     }
 
+    fun withTexture(customTexture: ResourceLocation, width: Int = 256, height: Int = 256): ImageButton {
+        this.texture = customTexture
+        this.textureWidth = width
+        this.textureHeight = height
+        return this
+    }
+
     override fun renderWidget(raw: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         if (matchScreenManagerVisibility && EmiScreenManager.isDisabled()) return
-
-        val context = EmiDrawContext.wrap(raw)
         RenderSystem.enableBlend()
         RenderSystem.enableDepthTest()
-        context.drawTexture(texture, x, y, getU(mouseX, mouseY), getV(mouseX, mouseY), width, height)
+
+        raw.blit(
+            texture, x, y,
+            getU(mouseX, mouseY).toFloat(), getV(mouseX, mouseY).toFloat(),
+            width, height, textureWidth, textureHeight
+        )
+
         if (isMouseOver(mouseX.toDouble(), mouseY.toDouble()) && text != null && active) {
+            val context = EmiDrawContext.wrap(raw)
             context.push()
             RenderSystem.disableDepthTest()
             val client = Minecraft.getInstance()
@@ -52,5 +64,4 @@ class ImageButton : SizedButtonWidget {
         }
         RenderSystem.disableBlend()
     }
-
 }
