@@ -20,8 +20,8 @@ object CreativeModeTabManager {
         CreativeModeTabs.INVENTORY, CreativeModeTabs.HOTBAR, CreativeModeTabs.SEARCH
     ).mapNotNull(BuiltInRegistries.CREATIVE_MODE_TAB::get)
 
-    private var scrollOffset = 0
-    private var currentTab: UInt? = null
+    internal var scrollOffset = 0
+    private var currentTab: CreativeModeTab? = null
 
     private var isSelectingVanillaCreativeInventoryTabByEmiPlusPlus = false
     private var isSelectingEmiPlusPlusCreativeModeTabByVanilla = false
@@ -30,7 +30,7 @@ object CreativeModeTabManager {
     private val disabledCreativeModeTabs = mutableListOf(*loadDisabledTabs().toTypedArray())
     private val creativeModeTabs = getVisibleCreativeModeTabs()
 
-    private val maxScroll: Int
+    internal val maxScroll: Int
         get() = maxOf(0, creativeModeTabs.size - CreativeModeTabGui.tabCount.toInt())
 
     internal fun loadDisabledTabs() = EmiPlusPlusConfig.disabledCreativeModeTabs.get().map {
@@ -89,41 +89,26 @@ object CreativeModeTabManager {
             Minecraft.execute { onTabSelected(tab) }
             return
         }
+        val selectedModeTab = tab.creativeModeTab ?: return
+        if (currentTab == selectedModeTab) return
+        currentTab = selectedModeTab
 
         val theme = CreativeModeTabGui.currentTheme
-        var newTab: UInt? = null
-
         val bar = if (theme == CreativeModeTabGui.TabTheme.DEFAULT)
             CreativeModeTabGui.topTabNavigationBar
         else
             CreativeModeTabGui.leftTabNavigationBar
 
-        val index = bar.visibleTabs.indexOf(tab)
-        if (index != -1) newTab = index.toUInt()
-
-        if (newTab == null) return
-        if (currentTab == newTab) return
-        currentTab = newTab
-
-        val resetFocus =
-            { resetBar: concerrox.emixx.content.creativemodetab.gui.itemtab.ItemTabNavigationBar, offset: Int ->
-                resetBar.tabButtons.forEachIndexed { i, it ->
-                    if ((i + offset).toUInt() != currentTab) it.isFocused = false
-                }
-            }
-
-        when (theme) {
-            CreativeModeTabGui.TabTheme.DEFAULT -> {
-                resetFocus(CreativeModeTabGui.topTabNavigationBar, 0)
-            }
-
-            else -> {
-                resetFocus(CreativeModeTabGui.leftTabNavigationBar, 0)
+        bar.tabButtons.forEach { it.isFocused = false }
+        bar.tabButtons.forEach {
+            val btnTab = it.tab() as? ItemTab
+            if (btnTab != null && btnTab.creativeModeTab == currentTab) {
+                bar.setFocusedChild(it)
             }
         }
 
         val screen = Minecraft.screen
-        if (!isSelectingEmiPlusPlusCreativeModeTabByVanilla && EmiPlusPlusConfig.syncSelectedCreativeModeTab.get() && tab.creativeModeTab != null && screen is CreativeModeInventoryScreen) {
+        if (!isSelectingEmiPlusPlusCreativeModeTabByVanilla && EmiPlusPlusConfig.syncSelectedCreativeModeTab.get() && screen is CreativeModeInventoryScreen) {
             isSelectingVanillaCreativeInventoryTabByEmiPlusPlus = true
             screen.selectTab(tab.creativeModeTab)
             screen.searchBox.setCanLoseFocus(true)
@@ -132,14 +117,37 @@ object CreativeModeTabManager {
         }
 
         val sourceStacks = if (tab.creativeModeTab == indexCreativeModeTab) StackManager.indexStacks else {
-            tab.creativeModeTab!!.displayItems.map(EmiStack::of)
+            tab.creativeModeTab.displayItems.map(EmiStack::of)
         }
-
         if (ScreenManager.isSearching) {
             StackManager.search(sourceStacks, EmiScreenManager.search.value)
         } else {
             StackManager.updateSourceStacks(sourceStacks)
         }
+    }
+
+    private fun updateTabs(): List<ItemTab> {
+        val count = CreativeModeTabGui.tabCount.toInt()
+        val pageTabs = creativeModeTabs.drop(scrollOffset).take(count).map { ItemTab(it) }
+        val bar = when (CreativeModeTabGui.currentTheme) {
+            CreativeModeTabGui.TabTheme.BERRY, CreativeModeTabGui.TabTheme.VANILLA -> {
+                CreativeModeTabGui.leftTabNavigationBar.apply { setTabs(pageTabs.toMutableList()) }
+            }
+
+            else -> {
+                CreativeModeTabGui.topTabNavigationBar.apply { setTabs(pageTabs.toMutableList()) }
+            }
+        }
+
+        bar.tabButtons.forEach { it.isFocused = false }
+        bar.tabButtons.forEach { btn ->
+            val tab = btn.tab() as? ItemTab
+            if (tab != null && tab.creativeModeTab == currentTab && currentTab != null) {
+                bar.setFocusedChild(btn)
+            }
+        }
+
+        return pageTabs
     }
 
     internal fun onCreativeModeInventoryScreenTabSelected(tab: CreativeModeTab) {
@@ -175,21 +183,5 @@ object CreativeModeTabManager {
                 isSelectingEmiPlusPlusCreativeModeTabByVanilla = false
             }
         }
-    }
-
-    private fun updateTabs(): List<ItemTab> {
-        val count = CreativeModeTabGui.tabCount.toInt()
-        val pageTabs = creativeModeTabs.drop(scrollOffset).take(count).map { ItemTab(it) }
-
-        when (CreativeModeTabGui.currentTheme) {
-            CreativeModeTabGui.TabTheme.BERRY, CreativeModeTabGui.TabTheme.VANILLA -> {
-                CreativeModeTabGui.leftTabNavigationBar.setTabs(pageTabs.toMutableList())
-            }
-
-            else -> {
-                CreativeModeTabGui.topTabNavigationBar.setTabs(pageTabs.toMutableList())
-            }
-        }
-        return pageTabs
     }
 }

@@ -15,6 +15,7 @@ import dev.emi.emi.config.SidebarType;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.search.EmiSearch;
 import kotlin.NotImplementedError;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -120,14 +121,20 @@ public abstract class EmiScreenManagerMixin {
         if (panel.getType() == SidebarType.INDEX && EmiPlusPlusConfig.enableCreativeModeTabs.get() &&
                 CreativeModeTabGui.INSTANCE.getCurrentTheme() == CreativeModeTabGui.TabTheme.BERRY) {
 
-            var bar = CreativeModeTabGui.INSTANCE.getLeftTabNavigationBar$emixx_common();
-            if (bar.visible) {
-                List<Bounds> newExclusions = new ArrayList<>(exclusion);
+            List<Bounds> newExclusions = new ArrayList<>();
+            int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 
-                newExclusions.add(new Bounds(bar.getX(), bar.getY(), bar.getWidth() + 8, bar.getHeight()));
+            int maxRight = screenWidth - 38;
 
-                return newExclusions;
+            for (Bounds b : exclusion) {
+                int newRight = Math.min(b.x() + b.width() + 43, maxRight);
+                int newWidth = newRight - b.x();
+
+                if (newWidth > 0) {
+                    newExclusions.add(new Bounds(b.x(), b.y(), newWidth, b.height()));
+                }
             }
+            return newExclusions;
         }
         return exclusion;
     }

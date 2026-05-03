@@ -53,7 +53,7 @@ object CreativeModeTabGui {
         CreativeModeTabManager.nextPage()
     }.matchScreenManagerVisibility().pos(0, 0)
 
-    private val buttonScrollDown = ImageButton(8, 4, u = 0, v = 0, { true }) {
+    private val buttonScrollDown = ImageButton(8, 4, u = 0, v = 0, { CreativeModeTabManager.scrollOffset < CreativeModeTabManager.maxScroll }) {
         CreativeModeTabManager.nextPage()
     }.matchScreenManagerVisibility().withTexture(res("textures/gui/scroll_down.png"), 8, 4).pos(0, 0)
 
