@@ -14,7 +14,6 @@ private fun ModConfigSpec.Builder.group(path: String, action: ModConfigSpec.Buil
 }
 
 class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
-
     companion object {
         private val CONFIG_PAIR = ModConfigSpec.Builder().configure(::EmiPlusPlusConfig)
         val CONFIG_SPEC: ModConfigSpec = CONFIG_PAIR.right
@@ -33,7 +32,6 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
                     .autosave()
                     .build()
                 configData.load()
-
                 CONFIG_SPEC.acceptConfig(object : IConfigSpec.ILoadedConfig {
                     override fun config(): CommentedConfig = configData
                     override fun save() = configData.save()
@@ -43,7 +41,9 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
 
         lateinit var enableCreativeModeTabs: ModConfigSpec.BooleanValue
         lateinit var syncSelectedCreativeModeTab: ModConfigSpec.BooleanValue
+        lateinit var showCreativeTabNameInSearchbar: ModConfigSpec.BooleanValue
         lateinit var disabledCreativeModeTabs: ModConfigSpec.ConfigValue<List<String>>
+
         lateinit var enableStackGroups: ModConfigSpec.BooleanValue
         lateinit var enableCreateStackGroupButton: ModConfigSpec.BooleanValue
     }
@@ -52,14 +52,17 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
         builder.group("creativeModeTabs") {
             enableCreativeModeTabs = define("enableCreativeModeTabs", true)
             syncSelectedCreativeModeTab = define("syncSelectedCreativeModeTab", true)
+            showCreativeTabNameInSearchbar = define("showCreativeTabNameInSearchbar", false)
             disabledCreativeModeTabs = defineListAllowEmpty(listOf("disabledCreativeModeTabs"), {
                 listOf("minecraft:op_blocks")
             }, { it is String })
         }
+
         builder.group("stackGroups") {
             enableStackGroups = define("enableStackGroups", true)
             enableCreateStackGroupButton = define("enableCreateStackGroupButton", true)
         }
+
         builder.group("miscellaneous") {
         }
     }

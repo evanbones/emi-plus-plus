@@ -1,4 +1,7 @@
+### Added
+
+- Added config option to disable the creative tab display.
+
 ### Fixed
 
-- Fixed incompatibility with Shadow Drop.
-- Fixed slightly cramped Creative tabs when in Vanilla theme.
+- Fixed missing copper blocks in the `copper_blocks` stackgroup.

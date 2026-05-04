@@ -8,18 +8,14 @@ import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.WeatheringCopperFullBlock
 
 internal class CopperBlockItemGroup : StackGroup(ResourceLocation.withDefaultNamespace("copper_blocks")) {
-
     companion object {
         private val WAXED_COPPER_BLOCK_ITEMS = arrayOf(
             Items.WAXED_COPPER_BLOCK,
             Items.WAXED_CUT_COPPER,
-
             Items.WAXED_EXPOSED_COPPER,
             Items.WAXED_EXPOSED_CUT_COPPER,
-
             Items.WAXED_WEATHERED_COPPER,
             Items.WAXED_WEATHERED_CUT_COPPER,
-
             Items.WAXED_OXIDIZED_COPPER,
             Items.WAXED_OXIDIZED_CUT_COPPER
         )
@@ -28,8 +24,11 @@ internal class CopperBlockItemGroup : StackGroup(ResourceLocation.withDefaultNam
     override fun match(stack: EmiIngredient): Boolean {
         if (stack !is EmiStack) return false
         val item = stack.itemStack.item
-        return item is BlockItem && (item.block is WeatheringCopperFullBlock ||
-                item in WAXED_COPPER_BLOCK_ITEMS)
-    }
+        val path = stack.id.path
 
+        return item is BlockItem && (item.block is WeatheringCopperFullBlock ||
+                item in WAXED_COPPER_BLOCK_ITEMS ||
+                path.contains("copper_bulb") ||
+                path.contains("copper_grate"))
+    }
 }
