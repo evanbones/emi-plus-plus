@@ -82,6 +82,8 @@
   "stackgroup.emixx.spawn_eggs": "Spawn Eggs",
   "stackgroup.emixx.copper_blocks": "Copper Blocks",
 
+  "emixx.configuration.showCreativeTabNameInSearchbar": "Show Tab Name in Search Bar",
+  "emixx.configuration.showCreativeTabNameInSearchbar.tooltip": "Displays the name of the currently selected creative mode tab in the EMI search bar when hovered.",
   "emixx.configuration.enableCreativeModeTabs.tooltip": "Enable or disable the Creative Mode Tabs sidebar entirely.",
   "emixx.configuration.syncSelectedCreativeModeTab.tooltip": "If enabled, selecting a tab in EMI++ will select it in the Creative Inventory and vice versa.",
   "emixx.configuration.disabledCreativeModeTabs.tooltip": "Configure which Creative Mode Tabs are hidden from the EMI++ sidebar.",

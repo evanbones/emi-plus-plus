@@ -52,7 +52,7 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
         builder.group("creativeModeTabs") {
             enableCreativeModeTabs = define("enableCreativeModeTabs", true)
             syncSelectedCreativeModeTab = define("syncSelectedCreativeModeTab", true)
-            showCreativeTabNameInSearchbar = define("showCreativeTabNameInSearchbar", false)
+            showCreativeTabNameInSearchbar = define("showCreativeTabNameInSearchbar", true)
             disabledCreativeModeTabs = defineListAllowEmpty(listOf("disabledCreativeModeTabs"), {
                 listOf("minecraft:op_blocks")
             }, { it is String })

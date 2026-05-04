@@ -1,7 +1,4 @@
-### Added
-
-- Added config option to disable the creative tab display.
-
 ### Fixed
 
-- Fixed missing copper blocks in the `copper_blocks` stackgroup.
+- Fixed missing lang entries for new config option.
+- Fixed missing chiseled copper blocks in the copper block stackgroup.

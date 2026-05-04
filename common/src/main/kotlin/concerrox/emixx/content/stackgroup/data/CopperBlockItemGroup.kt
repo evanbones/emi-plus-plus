@@ -29,6 +29,7 @@ internal class CopperBlockItemGroup : StackGroup(ResourceLocation.withDefaultNam
         return item is BlockItem && (item.block is WeatheringCopperFullBlock ||
                 item in WAXED_COPPER_BLOCK_ITEMS ||
                 path.contains("copper_bulb") ||
-                path.contains("copper_grate"))
+                path.contains("copper_grate") ||
+                path.contains("chiseled_copper"))
     }
 }
