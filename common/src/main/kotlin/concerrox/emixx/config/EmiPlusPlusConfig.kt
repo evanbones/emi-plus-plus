@@ -43,7 +43,7 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
         lateinit var syncSelectedCreativeModeTab: ModConfigSpec.BooleanValue
         lateinit var showCreativeTabNameInSearchbar: ModConfigSpec.BooleanValue
         lateinit var disabledCreativeModeTabs: ModConfigSpec.ConfigValue<List<String>>
-
+        lateinit var emiOnlyInRecipeBook: ModConfigSpec.BooleanValue
         lateinit var enableStackGroups: ModConfigSpec.BooleanValue
         lateinit var enableCreateStackGroupButton: ModConfigSpec.BooleanValue
     }
@@ -64,6 +64,7 @@ class EmiPlusPlusConfig(builder: ModConfigSpec.Builder) {
         }
 
         builder.group("miscellaneous") {
+            emiOnlyInRecipeBook = define("emiOnlyInRecipeBook", false)
         }
     }
 }

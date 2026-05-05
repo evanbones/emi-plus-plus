@@ -1,4 +1,11 @@
+### Added
+
+- Added a config option to only have EMI open when the recipe book is open.
+
+### Changed
+
+- Slightly tweaked vanilla-style Creative tabs.
+
 ### Fixed
 
-- Fixed missing lang entries for new config option.
-- Fixed missing chiseled copper blocks in the copper block stackgroup.
+- Fixed top Creative tab missing a single pixel (literally unplayable).

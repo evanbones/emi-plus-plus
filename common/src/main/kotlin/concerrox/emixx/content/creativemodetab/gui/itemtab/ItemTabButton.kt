@@ -59,7 +59,7 @@ class ItemTabButton(
                 GuiGraphicsUtils.renderItem(raw, tab.creativeModeTab?.iconItem, x + 4F, y + yOff, 10F)
             } else {
                 val u = if (isSelected) 188 else 152
-                val v = if (isSelected && isFirst) 30 else 2
+                val v = if (isSelected && isFirst) 29 else 2
                 val texture = if (style == ButtonStyle.RIGHT) TEXTURE_RIGHT else TEXTURE_LEFT
 
                 raw.pose().pushPose()

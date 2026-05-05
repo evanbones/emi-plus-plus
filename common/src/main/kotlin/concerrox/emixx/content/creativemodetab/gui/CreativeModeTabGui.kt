@@ -84,7 +84,7 @@ object CreativeModeTabGui {
             buttonNext.visible = true
             buttonNext.pos(topTabNavigationBar.x + topTabNavigationBar.width, startY + 2)
         } else {
-            val startY = indexScreenSpace.ty - 26
+            val startY = indexScreenSpace.ty - 27
             val margin = 8
             val horizontalOffset = 8
 
