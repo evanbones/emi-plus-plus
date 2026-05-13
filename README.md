@@ -23,15 +23,13 @@ EMI++ provides the following enhancements:
 
 **Fabric:**
 
-* Minecraft `~1.20.1`
-* Fabric Loader `>=0.14.25`
-* Fabric Language Kotlin `>=1.13.3+kotlin.2.1.21`
+* Fabric Loader
+* Fabric Language Kotlin
 * [EMI](https://github.com/emilyploszaj/emi)
 
 **Forge:**
 
-* Minecraft `1.20.1` - `1.21`
-* Kotlin for Forge `[4.10,)`
+* Kotlin for Forge
 * [EMI](https://github.com/emilyploszaj/emi)
 
 ## Configuration
@@ -74,8 +72,7 @@ You can define new custom stack groups or modify existing ones using **JSON file
 
 ### Method 1: JSON Configuration (Resource Packs)
 
-EMI++ loads stack groups from the `stack_groups` directory within the assets of the game (loaded via Resource Packs or
-the config folder if configured).
+EMI++ loads stack groups from the `stack_groups` directory within the assets of the game (loaded via Resource Packs).
 
 To create a custom group, create a JSON file in `assets/<namespace>/stack_groups/my_group.json`.
 
