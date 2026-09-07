@@ -1,3 +1,3 @@
 ### Fixed
 
-- Fixed block tag tooltips displaying invisible blocks.
+- Improved compatibility with other mods that modify EMI.
