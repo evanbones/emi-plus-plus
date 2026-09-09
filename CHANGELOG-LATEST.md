@@ -1,4 +1,4 @@
 ### Fixed
 
-- Fixed startup crash.
-- Fixed block tag tooltips displaying invisible blocks.
+- Fixed Fabric crashes.
+- Improved compatibility with other mods that modify EMI.

@@ -276,7 +276,7 @@ public abstract class EmiScreenManagerMixin {
     }
 
     @WrapOperation(
-            at = @At(value = "INVOKE", target = "Ldev/emi/emi/registry/EmiDragDropHandlers;dropStack(Lnet/minecraft/client/gui/screens/Screen;Ldev/emi/emi/api/stack/EmiIngredient;II)Z"),
+            at = @At(value = "INVOKE", target = "Ldev/emi/emi/registry/EmiDragDropHandlers;dropStack(Lnet/minecraft/client/gui/screens/Screen;Ldev/emi/emi/api/stack/EmiIngredient;II)Z", remap = true),
             method = "mouseReleased"
     )
     private static boolean wrapDropStack(Screen screen, EmiIngredient stack, int x, int y, Operation<Boolean> original) {

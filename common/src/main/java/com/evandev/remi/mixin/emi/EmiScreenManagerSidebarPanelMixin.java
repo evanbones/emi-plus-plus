@@ -266,7 +266,8 @@ public abstract class EmiScreenManagerSidebarPanelMixin implements SidebarPanelW
         return (leftBound + rightBound) / 2;
     }
 
-    @WrapOperation(method = "drawHeader", at = @At(value = "INVOKE", target = "Ldev/emi/emi/runtime/EmiDrawContext;drawCenteredText(Lnet/minecraft/network/chat/Component;II)V"))
+    @WrapOperation(method = "drawHeader", at = @At(value = "INVOKE",
+            target = "Ldev/emi/emi/runtime/EmiDrawContext;drawCenteredText(Lnet/minecraft/network/chat/Component;II)V", remap = true))
     private void verticalCenterHeaderText(EmiDrawContext instance, Component text, int x, int y, Operation<Void> original) {
         if (ReliableEmiConfig.isVerticalScrollbarEnabled()) {
             y += 1;
