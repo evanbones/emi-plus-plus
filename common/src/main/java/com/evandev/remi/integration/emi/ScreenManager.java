@@ -3,7 +3,7 @@ package com.evandev.remi.integration.emi;
 import com.evandev.remi.config.ReliableEmiConfig;
 import com.evandev.remi.feature.creativemodetab.CreativeModeTabManager;
 import com.evandev.remi.feature.creativemodetab.gui.CreativeModeTabGui;
-import com.evandev.remi.mixin.emi.EmiScreenManagerAccessor;
+import com.evandev.remi.mixin.emi.accessor.EmiScreenManagerAccessor;
 import dev.emi.emi.screen.EmiScreenManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

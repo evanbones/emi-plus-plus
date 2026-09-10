@@ -1,4 +1,9 @@
 {
+  "remi.command.reload.success": "Reliable EMI configuration reloaded.",
+  "remi.command.reload.failure": "Failed to reload Reliable EMI configuration: %s",
+  "command.remi.reload.success": "Reliable EMI configuration reloaded.",
+  "command.remi.reload.failure": "Failed to reload Reliable EMI configuration: %s",
+
   "stackgroup.remi.tooltip": " item(s)",
 
   "emi.sidebar.type.workstation": "Workstation",

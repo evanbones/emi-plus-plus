@@ -42,7 +42,10 @@ public class StackGroupManager {
 
         BiFunction<ResourceLocation, JsonObject, StackGroup> tagFactory = (id, json) -> {
             String tagName = GsonHelper.getAsString(json, "tag");
-            String registryName = GsonHelper.getAsString(json, "registry", "minecraft:item");
+            String registryName = json.has("registry")
+                    ? GsonHelper.getAsString(json, "registry")
+                    : EmiStackGroup.resolveTagRegistry(ResourceLocation.tryParse(tagName));
+            registryName = EmiStackGroup.normalizeRegistry(registryName);
             @SuppressWarnings("rawtypes")
             TagKey tagKey = TagKey.create(
                     ResourceKey.createRegistryKey(ResourceLocation.parse(registryName)),
@@ -104,6 +107,18 @@ public class StackGroupManager {
         return resolveGroupPath(filename);
     }
 
+    public static Path getStackGroupsDir() {
+        Path dir = Services.PLATFORM.getConfigDirectory().resolve(ReliableEmi.MOD_ID).resolve("stack_groups");
+        try {
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
+            }
+        } catch (Exception e) {
+            ReliableEmi.LOGGER.error("Failed to create stack_groups directory", e);
+        }
+        return dir;
+    }
+
     public static Path getGroupPath(ResourceLocation tag) {
         String name = tag.getPath().replace('/', '_');
         String filename = tag.getNamespace() + "_" + name + ".json";
@@ -111,7 +126,8 @@ public class StackGroupManager {
     }
 
     private static Path resolveGroupPath(String filename) {
-        Path remiPath = Services.PLATFORM.getConfigDirectory().resolve("remi").resolve("stack_groups").resolve(filename);
+        Path remiDir = getStackGroupsDir();
+        Path remiPath = remiDir.resolve(filename);
         if (Files.exists(remiPath)) {
             return remiPath;
         }
@@ -119,7 +135,7 @@ public class StackGroupManager {
         if (Files.exists(emixxPath)) {
             return emixxPath;
         }
-        return ReliableEmiConfig.getConfigDir().resolve("stack_groups").resolve(filename);
+        return remiPath;
     }
 
     public static StackGroup getGroup(TagKey<?> tagKey) {
@@ -242,7 +258,7 @@ public class StackGroupManager {
             json.addProperty("type", "remi:tag");
             json.addProperty("id", tag.toString());
             json.addProperty("tag", tag.toString());
-            json.addProperty("registry", "minecraft:item");
+            json.addProperty("registry", EmiStackGroup.resolveTagRegistry(tag));
             json.addProperty("enabled", enabled);
             try (var writer = Files.newBufferedWriter(file)) {
                 new GsonBuilder().setPrettyPrinting().create().toJson(json, writer);
@@ -311,7 +327,7 @@ public class StackGroupManager {
         }
 
         List<Path> configDirs = new ArrayList<>();
-        Path primaryDir = ReliableEmiConfig.getConfigDir().resolve("stack_groups");
+        Path primaryDir = getStackGroupsDir();
         if (Files.exists(primaryDir)) {
             configDirs.add(primaryDir);
         }
@@ -331,7 +347,10 @@ public class StackGroupManager {
                             idString = json.get("id").getAsString();
                         } else if (json.has("tag")) {
                             String tag = json.get("tag").getAsString();
-                            String registry = json.has("registry") ? json.get("registry").getAsString() : "minecraft:item";
+                            String registry = json.has("registry")
+                                    ? json.get("registry").getAsString()
+                                    : EmiStackGroup.resolveTagRegistry(ResourceLocation.tryParse(tag));
+                            registry = EmiStackGroup.normalizeRegistry(registry);
                             if (registry.equals("minecraft:item")) {
                                 idString = tag;
                             } else {

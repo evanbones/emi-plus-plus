@@ -11,6 +11,7 @@ import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -55,10 +56,6 @@ public class EmiStackGroup extends StackGroup {
 
     public EmiStackGroup(ResourceLocation id, Set<EmiIngredient> targets, Set<ResourceLocation> excludedIds, List<Pattern> regexes, Component name) {
         this(id, null, targets, excludedIds, regexes, name);
-    }
-
-    public @Nullable TagKey<?> getTagKey() {
-        return tagKey;
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -132,6 +129,58 @@ public class EmiStackGroup extends StackGroup {
         };
     }
 
+    public static String normalizeRegistry(String reg) {
+        if (reg == null) return "minecraft:item";
+        String lower = reg.toLowerCase(Locale.ROOT);
+        return switch (lower) {
+            case "item", "items", "minecraft:item" -> "minecraft:item";
+            case "block", "blocks", "minecraft:block" -> "minecraft:block";
+            case "fluid", "fluids", "minecraft:fluid" -> "minecraft:fluid";
+            case "entity", "entities", "entity_type", "entity_types", "minecraft:entity_type" ->
+                    "minecraft:entity_type";
+            default -> reg.contains(":") ? reg : "minecraft:" + reg;
+        };
+    }
+
+    public static String resolveTagRegistry(ResourceLocation tagLoc) {
+        if (tagLoc == null) return "minecraft:item";
+
+        TagKey<Item> itemKey = TagKey.create(BuiltInRegistries.ITEM.key(), tagLoc);
+        if (BuiltInRegistries.ITEM.getTag(itemKey).filter(h -> h.size() > 0).isPresent()) {
+            return "minecraft:item";
+        }
+
+        TagKey<Block> blockKey = TagKey.create(BuiltInRegistries.BLOCK.key(), tagLoc);
+        if (BuiltInRegistries.BLOCK.getTag(blockKey).filter(h -> h.size() > 0).isPresent()) {
+            return "minecraft:block";
+        }
+
+        TagKey<Fluid> fluidKey = TagKey.create(BuiltInRegistries.FLUID.key(), tagLoc);
+        if (BuiltInRegistries.FLUID.getTag(fluidKey).filter(h -> h.size() > 0).isPresent()) {
+            return "minecraft:fluid";
+        }
+
+        TagKey<EntityType<?>> entityKey = TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), tagLoc);
+        if (BuiltInRegistries.ENTITY_TYPE.getTag(entityKey).filter(h -> h.size() > 0).isPresent()) {
+            return "minecraft:entity_type";
+        }
+
+        if (BuiltInRegistries.ITEM.getTag(itemKey).isPresent()) {
+            return "minecraft:item";
+        }
+        if (BuiltInRegistries.BLOCK.getTag(blockKey).isPresent()) {
+            return "minecraft:block";
+        }
+        if (BuiltInRegistries.FLUID.getTag(fluidKey).isPresent()) {
+            return "minecraft:fluid";
+        }
+        if (BuiltInRegistries.ENTITY_TYPE.getTag(entityKey).isPresent()) {
+            return "minecraft:entity_type";
+        }
+
+        return "minecraft:item";
+    }
+
     private static JsonElement normalizeIngredientJson(JsonElement element) {
         if (element == null || element.isJsonNull()) return element;
 
@@ -140,11 +189,28 @@ public class EmiStackGroup extends StackGroup {
                 if (obj.has("type")) {
                     String typeStr = obj.get("type").getAsString();
                     String normType = normalizeType(typeStr);
+                    JsonObject copy = null;
                     if (!normType.equals(typeStr)) {
-                        JsonObject copy = obj.deepCopy();
+                        copy = obj.deepCopy();
                         copy.addProperty("type", normType);
-                        return copy;
                     }
+                    if ("tag".equals(normType)) {
+                        String reg = obj.has("registry") ? obj.get("registry").getAsString() : null;
+                        if (reg == null) {
+                            String tagId = obj.has("id") ? obj.get("id").getAsString() : obj.has("tag") ? obj.get("tag").getAsString() : null;
+                            if (tagId != null) {
+                                if (copy == null) copy = obj.deepCopy();
+                                copy.addProperty("registry", resolveTagRegistry(ResourceLocation.tryParse(tagId)));
+                            }
+                        } else {
+                            String normReg = normalizeRegistry(reg);
+                            if (!normReg.equals(reg)) {
+                                if (copy == null) copy = obj.deepCopy();
+                                copy.addProperty("registry", normReg);
+                            }
+                        }
+                    }
+                    if (copy != null) return copy;
                 } else if (obj.has("id")) {
                     String idStr = obj.get("id").getAsString();
                     ResourceLocation resLoc = ResourceLocation.tryParse(idStr);
@@ -167,8 +233,7 @@ public class EmiStackGroup extends StackGroup {
         String str = element.getAsString();
         if (str.startsWith("#")) {
             String value = str.substring(1);
-            long colons = value.chars().filter(c -> c == ':').count();
-            return getJsonObject(colons, value);
+            return getJsonObject(value);
         }
 
         String[] split = str.split(":");
@@ -218,26 +283,46 @@ public class EmiStackGroup extends StackGroup {
         return obj;
     }
 
-    private static @NotNull JsonObject getJsonObject(long colons, String value) {
+    private static @NotNull JsonObject getJsonObject(String value) {
         JsonObject obj = new JsonObject();
         obj.addProperty("type", "tag");
-        if (colons >= 2) {
-            int firstColon = value.indexOf(':');
-            String reg = value.substring(0, firstColon);
-            String tagId = value.substring(firstColon + 1);
-            obj.addProperty("registry", reg);
-            obj.addProperty("id", tagId);
-            obj.addProperty("tag", tagId);
-        } else {
-            obj.addProperty("id", value);
-            obj.addProperty("tag", value);
-            obj.addProperty("registry", "minecraft:item");
+        int lastColon = value.lastIndexOf(':');
+        if (lastColon > 0) {
+            int secondLastColon = value.lastIndexOf(':', lastColon - 1);
+            if (secondLastColon > 0) {
+                String reg = value.substring(0, secondLastColon);
+                String tagId = value.substring(secondLastColon + 1);
+                String normReg = normalizeRegistry(reg);
+                obj.addProperty("registry", normReg);
+                obj.addProperty("id", tagId);
+                obj.addProperty("tag", tagId);
+                return obj;
+            }
         }
+        String tagId = value.contains(":") ? value : "minecraft:" + value;
+        String registry = resolveTagRegistry(ResourceLocation.tryParse(tagId));
+        obj.addProperty("id", tagId);
+        obj.addProperty("tag", tagId);
+        obj.addProperty("registry", registry);
         return obj;
     }
 
     private static EmiIngredient deserialize(JsonElement element) {
-        return EmiIngredientSerializer.getDeserialized(normalizeIngredientJson(element));
+        JsonElement normalized = normalizeIngredientJson(element);
+        EmiIngredient ingredient = EmiIngredientSerializer.getDeserialized(normalized);
+        if ((ingredient == null || ingredient.isEmpty()) && normalized instanceof JsonObject obj && "tag".equals(GsonHelper.getAsString(obj, "type", null))) {
+            String registryName = GsonHelper.getAsString(obj, "registry", "minecraft:item");
+            String tagId = GsonHelper.getAsString(obj, "id", GsonHelper.getAsString(obj, "tag", null));
+            if (tagId != null) {
+                ResourceLocation regLoc = ResourceLocation.tryParse(registryName);
+                ResourceLocation idLoc = ResourceLocation.tryParse(tagId);
+                if (regLoc != null && idLoc != null) {
+                    TagKey<?> tagKey = TagKey.create(ResourceKey.createRegistryKey(regLoc), idLoc);
+                    ingredient = new TagEmiIngredient(tagKey, 1);
+                }
+            }
+        }
+        return ingredient;
     }
 
     private static Pattern compilePattern(String raw) {
@@ -292,8 +377,10 @@ public class EmiStackGroup extends StackGroup {
             Set<ResourceLocation> excluded = new HashSet<>();
             if (GsonHelper.isArrayNode(obj, "exclusions")) {
                 for (JsonElement e : obj.getAsJsonArray("exclusions")) {
-                    for (EmiStack s : deserialize(e).getEmiStacks()) {
-                        excluded.add(s.getId());
+                    for (EmiStack s : getIngredientStacks(deserialize(e))) {
+                        if (s != null && s.getId() != null) {
+                            excluded.add(s.getId());
+                        }
                     }
                 }
             }
@@ -350,6 +437,10 @@ public class EmiStackGroup extends StackGroup {
             }
         }
         return candidates;
+    }
+
+    public @Nullable TagKey<?> getTagKey() {
+        return tagKey;
     }
 
     @Override

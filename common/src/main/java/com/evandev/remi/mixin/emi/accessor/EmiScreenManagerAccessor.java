@@ -1,4 +1,4 @@
-package com.evandev.remi.mixin.emi;
+package com.evandev.remi.mixin.emi.accessor;
 
 import dev.emi.emi.screen.EmiScreenManager;
 import org.spongepowered.asm.mixin.Mixin;

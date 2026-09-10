@@ -1,7 +1,9 @@
 package com.evandev.remi.config;
 
 import com.evandev.ReliableEmi;
+import com.evandev.remi.feature.creativemodetab.CreativeModeTabManager;
 import com.evandev.remi.feature.creativemodetab.gui.CreativeModeTabGui;
+import com.evandev.remi.feature.stackgroup.StackGroupManager;
 import com.evandev.remi.feature.workstation.WorkstationSidebarManager;
 import com.evandev.remi.integration.emi.StackManager;
 import com.evandev.remi.platform.Services;
@@ -211,11 +213,36 @@ public class ReliableEmiConfig {
         save();
     }
 
+    public static void reload() {
+        load();
+        try {
+            CreativeModeTabManager.reload();
+        } catch (Throwable t) {
+            ReliableEmi.LOGGER.error("Failed to reload creative mode tabs", t);
+        }
+        try {
+            StackGroupManager.reload();
+        } catch (Throwable t) {
+            ReliableEmi.LOGGER.error("Failed to reload stack groups", t);
+        }
+        try {
+            StackManager.reload();
+        } catch (Throwable t) {
+            ReliableEmi.LOGGER.error("Failed to reload stack manager", t);
+        }
+        try {
+            EmiScreenManager.recalculate();
+        } catch (Throwable t) {
+            ReliableEmi.LOGGER.error("Failed to recalculate EMI screen manager", t);
+        }
+    }
+
     public static void save() {
         StackManager.invalidateStacks();
         Path path = getConfigPath();
         try {
             Files.createDirectories(path.getParent());
+            StackGroupManager.getStackGroupsDir();
             try (Writer writer = Files.newBufferedWriter(path)) {
                 GSON.toJson(collectData(), writer);
             }

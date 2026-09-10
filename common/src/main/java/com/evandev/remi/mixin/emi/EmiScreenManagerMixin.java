@@ -8,7 +8,8 @@ import com.evandev.remi.gui.components.ScrollbarWidget;
 import com.evandev.remi.integration.emi.Layout;
 import com.evandev.remi.integration.emi.ScreenManager;
 import com.evandev.remi.integration.emi.StackManager;
-import com.evandev.remi.mixin.minecraft.AbstractContainerScreenAccessor;
+import com.evandev.remi.mixin.minecraft.accessor.AbstractContainerScreenAccessor;
+import com.evandev.remi.mixin.minecraft.accessor.SlotWrapperAccessor;
 import com.evandev.remi.util.SidebarPanelWithScrollOffset;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -19,9 +20,6 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.config.*;
-import dev.emi.emi.network.CreateItemC2SPacket;
-import dev.emi.emi.network.EmiNetwork;
-import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.screen.widget.EmiSearchWidget;
 import dev.emi.emi.search.EmiSearch;
@@ -290,8 +288,20 @@ public abstract class EmiScreenManagerMixin {
     }
 
     @Unique
+    private static Slot remi$unwrapSlot(Slot slot) {
+        if (slot instanceof SlotWrapperAccessor accessor) {
+            return accessor.remi$getTarget();
+        }
+        return slot;
+    }
+
+    @Unique
     private static Slot remi$getSlotUnderMouse(AbstractContainerScreen<?> screen, int mouseX, int mouseY) {
         if (screen instanceof AbstractContainerScreenAccessor accessor) {
+            Slot slot = accessor.remi$findSlot(mouseX, mouseY);
+            if (slot != null) {
+                return slot;
+            }
             return accessor.remi$getHoveredSlot();
         }
         return null;
@@ -362,43 +372,54 @@ public abstract class EmiScreenManagerMixin {
             return false;
         }
 
-        ItemStack toGive = itemStack.copy();
-        int amount = Screen.hasShiftDown() ? toGive.getMaxStackSize() : 1;
-        toGive.setCount(amount);
-
         Slot targetSlot = remi$getSlotUnderMouse(screen, x, y);
-        boolean isPlayerInventory = targetSlot != null && targetSlot.container == client.player.getInventory();
-
-        if (isPlayerInventory) {
-            if (client.player.isCreative() && client.gameMode != null) {
-                int creativeSlotId = remi$getCreativeSlotId(targetSlot.getContainerSlot());
-                if (creativeSlotId != -1) {
-                    targetSlot.setByPlayer(toGive);
-                    client.gameMode.handleCreativeModeItemAdd(toGive, creativeSlotId);
-                    return true;
-                }
-            } else {
-                String slotName = remi$getCommandSlotName(targetSlot.getContainerSlot());
-                if (slotName != null && client.level != null) {
-                    ItemInput argument = new ItemInput(toGive.getItemHolder(), toGive.getComponentsPatch());
-                    String command = "item replace entity @s " + slotName + " with " + argument.serialize(client.level.registryAccess()) + " " + amount;
-                    if (command.length() < 256) {
-                        client.player.connection.sendUnsignedCommand(command);
-                        return true;
-                    }
-                }
-            }
+        if (targetSlot == null) {
+            return false;
         }
 
-        if (EmiClient.onServer) {
-            EmiNetwork.sendToServer(new CreateItemC2SPacket(0, toGive));
-            return true;
-        } else if (client.level != null) {
-            ItemInput argument = new ItemInput(toGive.getItemHolder(), toGive.getComponentsPatch());
-            String command = "give @s " + argument.serialize(client.level.registryAccess()) + " " + amount;
-            if (command.length() < 256) {
-                client.player.connection.sendUnsignedCommand(command);
+        Slot effectiveSlot = remi$unwrapSlot(targetSlot);
+        if (effectiveSlot == null || effectiveSlot.container != client.player.getInventory()) {
+            return false;
+        }
+
+        ItemStack toGive = itemStack.copy();
+        ItemStack current = targetSlot.getItem();
+        int amount = Screen.hasShiftDown() ? toGive.getMaxStackSize() : 1;
+        if (!current.isEmpty() && ItemStack.isSameItemSameComponents(current, toGive) && !Screen.hasShiftDown()) {
+            amount = Math.min(current.getCount() + 1, toGive.getMaxStackSize());
+        }
+        toGive.setCount(amount);
+
+        if (!targetSlot.mayPlace(toGive) || !effectiveSlot.mayPlace(toGive)) {
+            return false;
+        }
+
+        if (client.player.isCreative() && client.gameMode != null) {
+            int creativeSlotId;
+            if (effectiveSlot.index >= 0 && effectiveSlot.index < client.player.inventoryMenu.slots.size()
+                    && client.player.inventoryMenu.slots.get(effectiveSlot.index) == effectiveSlot) {
+                creativeSlotId = effectiveSlot.index;
+            } else {
+                creativeSlotId = remi$getCreativeSlotId(effectiveSlot.getContainerSlot());
+            }
+
+            if (creativeSlotId != -1) {
+                targetSlot.setByPlayer(toGive);
+                if (effectiveSlot != targetSlot) {
+                    effectiveSlot.setByPlayer(toGive);
+                }
+                client.gameMode.handleCreativeModeItemAdd(toGive, creativeSlotId);
                 return true;
+            }
+        } else {
+            String slotName = remi$getCommandSlotName(effectiveSlot.getContainerSlot());
+            if (slotName != null && client.level != null) {
+                ItemInput argument = new ItemInput(toGive.getItemHolder(), toGive.getComponentsPatch());
+                String command = "item replace entity @s " + slotName + " with " + argument.serialize(client.level.registryAccess()) + " " + amount;
+                if (command.length() < 256) {
+                    client.player.connection.sendUnsignedCommand(command);
+                    return true;
+                }
             }
         }
         return false;

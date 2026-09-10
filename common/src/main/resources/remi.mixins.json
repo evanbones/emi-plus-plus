@@ -7,7 +7,6 @@
     "emi.BoMScreenMixin",
     "emi.EmiFavoritesMixin",
     "emi.EmiReloadManagerReloadWorkerMixin",
-    "emi.EmiScreenManagerAccessor",
     "emi.EmiScreenManagerMixin",
     "emi.EmiScreenManagerScreenSpaceMixin",
     "emi.EmiScreenManagerSidebarPanelMixin",
@@ -17,11 +16,13 @@
     "emi.EmiStackListMixin",
     "emi.NameQueryMixin",
     "emi.QueryTypeMixin",
-    "minecraft.AbstractContainerScreenAccessor",
+    "emi.accessor.EmiScreenManagerAccessor",
     "minecraft.CreativeModeInventoryScreenMixin",
     "minecraft.EditBoxMixin",
     "minecraft.RecipeBookComponentMixin",
-    "minecraft.ScreenMixin"
+    "minecraft.ScreenMixin",
+    "minecraft.accessor.AbstractContainerScreenAccessor",
+    "minecraft.accessor.SlotWrapperAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -29,16 +30,16 @@
   "mixins": [
     "emi.CreateItemC2SPacketMixin",
     "emi.EmiApiMixin",
+    "emi.EmiConfigMixin",
     "emi.EmiIngredientRecipeMixin",
+    "emi.EmiSidebarsMixin",
     "emi.EmiTagRecipeMixin",
     "emi.RegexTagQueryMixin",
-    "emi.SidebarTypeMixin",
-    "emi.EmiSidebarsMixin",
     "emi.SidebarButtonWidgetMixin",
-    "emi.SizedButtonWidgetAccessor",
+    "emi.SidebarTypeMixin",
     "emi.TagEmiIngredientMixin",
     "emi.TagQueryMixin",
     "emi.VanillaPluginMixin",
-    "emi.EmiConfigMixin"
+    "emi.accessor.SizedButtonWidgetAccessor"
   ]
 }

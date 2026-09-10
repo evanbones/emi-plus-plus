@@ -1,6 +1,5 @@
 package com.evandev.remi.feature.creativemodetab.gui.itemtab;
 
-import com.evandev.ReliableEmi;
 import com.evandev.remi.config.ReliableEmiConfig;
 import com.evandev.remi.feature.creativemodetab.gui.CreativeModeTabGui;
 import com.evandev.remi.integration.emi.ScreenManager;
@@ -8,25 +7,25 @@ import com.google.common.collect.ImmutableList;
 import dev.emi.emi.config.SidebarTheme;
 import dev.emi.emi.screen.EmiScreenManager;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.TabButton;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemTabNavigationBar extends AbstractWidget {
+public class ItemTabNavigationBar extends AbstractContainerWidget {
     private final ItemTabManager tabManager;
     private final boolean isVertical;
     private final boolean isRightSide;
     public List<ItemTabButton> tabButtons = new ArrayList<>();
     public List<ItemTab> visibleTabs = new ArrayList<>();
     private GridLayout layout = new GridLayout();
-    private GuiEventListener focusedChild;
 
     public ItemTabNavigationBar(ItemTabManager tabManager, boolean isVertical, boolean isRightSide) {
         super(0, 0, 0, 0, Component.empty());
@@ -117,33 +116,33 @@ public class ItemTabNavigationBar extends AbstractWidget {
     }
 
     @Override
+    public List<? extends GuiEventListener> children() {
+        return this.tabButtons;
+    }
+
+    @Override
     public void renderWidget(@NotNull GuiGraphics raw, int mouseX, int mouseY, float partialTick) {
         if (EmiScreenManager.isDisabled()) return;
         tabButtons.forEach(b -> b.render(raw, mouseX, mouseY, partialTick));
     }
 
-    public void setFocusedChild(GuiEventListener child) {
-        if (focusedChild != null) focusedChild.setFocused(false);
-        focusedChild = child;
-        if (child != null) {
-            child.setFocused(true);
-            if (child instanceof TabButton tb) {
-                tabManager.setCurrentTab(tb.tab(), false);
-            }
+    @Override
+    public void setFocused(@Nullable GuiEventListener child) {
+        super.setFocused(child);
+        if (child instanceof TabButton tb) {
+            tabManager.setCurrentTab(tb.tab(), false);
         }
     }
 
-    @Override
-    public void setFocused(boolean focused) {
-        super.setFocused(focused);
-        if (!focused) setFocusedChild(null);
+    public void setFocusedChild(GuiEventListener child) {
+        setFocused(child);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (TabButton child : tabButtons) {
             if (child.mouseClicked(mouseX, mouseY, button)) {
-                setFocusedChild(child);
+                setFocused(child);
                 return true;
             }
         }

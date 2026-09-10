@@ -59,9 +59,9 @@ public class ItemTabButton extends TabButton {
     private final ItemTab tab;
     private final ButtonStyle style;
     private final Component title;
+    private final TabPosition position;
     private ResourceLocation customIcon;
     private Component lastDisplayTitle;
-    private final TabPosition position;
 
     public ItemTabButton(ItemTabManager tabManager, ItemTab tab, int width, int height,
                          ButtonStyle style, TabPosition tabPosition) {
@@ -72,6 +72,7 @@ public class ItemTabButton extends TabButton {
         this.position = tabPosition;
         this.title = tab.creativeModeTab() != null ? tab.creativeModeTab().getDisplayName() : null;
         this.customIcon = fetchRecreativeIcon(tab.creativeModeTab());
+        this.visible = tab.creativeModeTab() != null;
     }
 
     private static ResourceLocation fetchRecreativeIcon(CreativeModeTab tab) {
@@ -135,7 +136,7 @@ public class ItemTabButton extends TabButton {
         if (style == ButtonStyle.TOP) {
             iconY -= (panel != null ? panel.theme.verticalPadding : 0) / 4;
         } else {
-            iconX -= (panel != null ? panel.theme.verticalPadding: 0) / 4;
+            iconX -= (panel != null ? panel.theme.verticalPadding : 0) / 4;
             sprites = isVanillaTheme ? VERTICAL_VANILLA_SPRITES : VERTICAL_SPRITES;
         }
 
@@ -169,9 +170,12 @@ public class ItemTabButton extends TabButton {
     }
 
     public enum ButtonStyle {TOP, LEFT, RIGHT}
+
     public enum TabPosition {FIRST, MIDDLE, LAST}
 
-    public record TabSprites(ResourceLocation middle, ResourceLocation first, ResourceLocation last, ResourceLocation middleSelected, ResourceLocation firstSelected, ResourceLocation lastSelected) {
+    public record TabSprites(ResourceLocation middle, ResourceLocation first, ResourceLocation last,
+                             ResourceLocation middleSelected, ResourceLocation firstSelected,
+                             ResourceLocation lastSelected) {
         public ResourceLocation get(boolean selected, TabPosition position) {
             if (selected) {
                 return switch (position) {

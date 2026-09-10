@@ -2,6 +2,7 @@ package com.evandev.remi.mixin.emi;
 
 import com.evandev.ReliableEmi;
 import com.evandev.remi.feature.workstation.WorkstationSidebarManager;
+import com.evandev.remi.mixin.emi.accessor.SizedButtonWidgetAccessor;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.screen.widget.SidebarButtonWidget;
