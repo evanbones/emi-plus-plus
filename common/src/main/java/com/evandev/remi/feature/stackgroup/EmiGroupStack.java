@@ -162,8 +162,14 @@ public class EmiGroupStack extends EmiStack implements StackBatcher.Batchable {
             RenderSystem.disableBlend();
         }
 
-        if ((flags & RENDER_ICON) != 0) {
-            List<GroupedEmiStack<EmiStack>> items = getItems();
+        if (batchedSprites != null && (flags & RENDER_ICON) == 0) {
+            for (TextureAtlasSprite sprite : batchedSprites) {
+                SodiumCompat.markSpriteActive(sprite);
+            }
+        }
+
+        List<GroupedEmiStack<EmiStack>> items = getItems();
+        if (!items.isEmpty()) {
             context.push();
             context.matrices().translate(x + 1.6F, y + 1.6F, 0F);
             context.matrices().scale(0.8F, 0.8F, 0.8F);
@@ -183,10 +189,6 @@ public class EmiGroupStack extends EmiStack implements StackBatcher.Batchable {
                 items.get(0).render(raw, -3, 2, delta, flags);
             }
             context.pop();
-        } else if (batchedSprites != null) {
-            for (TextureAtlasSprite sprite : batchedSprites) {
-                SodiumCompat.markSpriteActive(sprite);
-            }
         }
 
         RenderSystem.enableBlend();
